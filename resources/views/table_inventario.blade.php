@@ -16,15 +16,15 @@
 <div class="mt-4">
     @foreach ($warehouse as $key => $store)
         <div class="card">
-            <div class="card-body">
+            <div class="card-body col-sm-12" style="overflow: auto;">
                 <h5 class="h4">{{$store->name}}</h5>
-                <table class="table table-sm table-bordered mt-4 tablaData" id="tabla_products">
+                <table class="table table-sm table-bordered mt-4 tablaData" id="tabla_products" style="width: 100%; overflow: auto;">
                     <thead>
                         <tr style="background-color: #efefef">
                             {{-- <th>.</th> --}}
                             <th>Código</th>
                             <th>Producto</th>
-                            <th>Descripción</th>
+                            {{-- <th>Descripción</th> --}}
                             <th>Stock</th>
                             <th>Posición</th>
                         </tr>
@@ -35,7 +35,7 @@
                                 {{-- <td class="td_product"><input type="checkbox" name="products[{{$product->id}}][check]" id="prod{{$product->id}}" {{isset($store) && $store->products()->where('id_product', $product->id)->exists() ? 'checked' : ''}}></td> --}}
                                 <td class="td_product">{{$product->code}}</td>
                                 <td class="td_product">{{$product->name}}</td>
-                                <td class="td_product">{{$product->description}}</td>
+                                {{-- <td class="td_product">{{$product->description}}</td> --}}
                                 {{-- <td class="td_product" onclick="check_td_product({{$product->id}})"><input type="number" name="products[{{$product->id}}][stock]" value="{{isset($store) && isset($store->products()->where('id_product', $product->id)->first()->pivot) ? $store->products()->where('id_product', $product->id)->first()->pivot->stock : ''}}" id="input_stock_prod{{$product->id}}"></td> --}}
                                 <td class="td_product">{{$product->pivot->stock}}</td>
                                 {{-- <td class="td_product">{{}}</td> --}}
