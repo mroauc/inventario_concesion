@@ -58,7 +58,7 @@ class UserController extends AppBaseController
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
         $user = $this->userRepository->create($input);
-        foreach ($input['concessions'] as $id_concession => $value) {
+        foreach ($input['concession'] as $id_concession => $value) {
             $user->concessions()->attach($id_concession);
         }
 
