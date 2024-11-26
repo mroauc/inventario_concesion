@@ -210,6 +210,7 @@ class ProductController extends AppBaseController
         $product->code = $product_store->product->code;
         $product->stock = $product_store->stock;
         $product->store = $product_store->id_store;
+        $product->position = implode('- ', $product_store->positions()->select('position')->get()->pluck('position')->toArray());
         if($product){
             return view('modal_inventario')->with('product', $product);
         }
@@ -219,12 +220,26 @@ class ProductController extends AppBaseController
     public function storeModal(Request $request){
         $input = $request->all();
         $product_store = \App\Models\Product_Store::where('id_product', $input['id_product'])->where('id_store', $input['id_store'])->first();
-        if($product_store->product->id_concession == auth()->user()->id_concession){
-            $product_store->stock = $input['stock_product'];
-            $product_store->save();
-            return redirect(route('home'));
+        if($product_store->product->id_concession != auth()->user()->id_concession){
+            return 'el producto no pertenece a la concesion del usuario';
         }
-        return 'el producto no pertenece a la concesion del usuario';
+        $product_store->stock = $input['stock_product'];
+        $product_store->save();
+        return redirect(route('home'));
+    }
+
+    public function changeStockAjax(Request $request){
+        $input = $request->all();
+
+        $product_store = \App\Models\Product_Store::where('id_product', $input['id_product'])->where('id_store', $input['id_store'])->first();
+        if($product_store->product->id_concession != auth()->user()->id_concession){
+            return 'el producto no pertenece a la concesion del usuario';
+        }
+
+        $product_store->stock = $input['stock_product'];
+        $product_store->save();
+
+        return response()->json(['resp' => true]);
     }
 
     public function export_products(Request $request){

@@ -60,7 +60,7 @@ class Product extends Model
     ];
 
     public function warehouses(){
-        return $this->belongsToMany('App\Models\Store','product_stores', 'id_store', 'id_product')->withPivot('id', 'stock', 'position')->using('App\Models\Product_Store');
+        return $this->belongsToMany('App\Models\Store','product_stores', 'id_store', 'id_product')->withPivot('id', 'stock')->using('App\Models\Product_Store');
     }
     
 }

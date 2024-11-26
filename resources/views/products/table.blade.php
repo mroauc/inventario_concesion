@@ -1,12 +1,13 @@
 <div class="table-responsive">
     <input type="text" class="inputFiltroTabla" id="filtro">
-    <table class="table filtroTabla" id="products-table">
+    <table class="table filtroTabla tablaData" id="products-table">
         <thead>
         <tr>
-            <th>Codigo</th>
+            <th>Código</th>
             <th>Nombre</th>
             <th>Descripción</th>
-            <th colspan="3">Action</th>
+            <th>Stock Total</th>
+            <th colspan="3">Acción</th>
         </tr>
         </thead>
         <tbody>
@@ -15,6 +16,9 @@
                 <td>{{ $product->code }}</td>
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->description }}</td>
+                {{-- <td>{{ $product->warehouses()->exists() ? array_sum($product->warehouses()->select('stock')->get('stock')->toArray()) : 0}}</td> --}}
+                <td>{{ $product->warehouses()->exists() ? $product->warehouses()->get('stock')->toArray() : 0}}</td>
+                {{-- <td>{{$product->warehouses()->exists() ? $product->warehouses()->select('stock')->get()->pluck('stock') : 0}}</td> --}}
                 <td width="120">
                     {!! Form::open(['route' => ['products.destroy', $product->id], 'method' => 'delete']) !!}
                     <div class='btn-group'>

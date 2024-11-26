@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/pruebas', function(){
-    dd(auth()->user()->id_concession);
+    $test = \App\Models\Product_Store::where('id_product', 1)->where('id_store', 2)->first();
+    dd(implode(', ', $test->positions()->select('position')->get()->pluck('position')->toArray()));
+    dd($test->positions()->select('position')->get()->pluck('position')->toArray());
 });
 // REPRESENTANTES
 Route::get('/representative', [App\Http\Controllers\RepresentativeController::class, 'index'])->name('representative.index');
