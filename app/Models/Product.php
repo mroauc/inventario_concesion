@@ -59,8 +59,19 @@ class Product extends Model
         'name' => 'required'
     ];
 
+    public function category(){
+        return $this->belongsTo('App\Models\Category_product', 'id_category');
+    }
+
     public function warehouses(){
-        return $this->belongsToMany('App\Models\Store','product_stores', 'id_store', 'id_product')->withPivot('id', 'stock')->using('App\Models\Product_Store');
+        return $this->belongsToMany('App\Models\Store','product_stores', 'id_product', 'id_store')->withPivot('id', 'stock')->using('App\Models\Product_Store');
+    }
+
+    public function stock_total(){
+        if($this->warehouses){
+            return array_sum($this->warehouses->pluck('pivot.stock')->toArray());
+        }
+        return 0;
     }
     
 }

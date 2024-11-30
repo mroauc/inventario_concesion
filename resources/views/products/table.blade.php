@@ -5,7 +5,7 @@
         <tr>
             <th>Código</th>
             <th>Nombre</th>
-            <th>Descripción</th>
+            <th>Categoría</th>
             <th>Stock Total</th>
             <th colspan="3">Acción</th>
         </tr>
@@ -15,10 +15,8 @@
             <tr>
                 <td>{{ $product->code }}</td>
                 <td>{{ $product->name }}</td>
-                <td>{{ $product->description }}</td>
-                {{-- <td>{{ $product->warehouses()->exists() ? array_sum($product->warehouses()->select('stock')->get('stock')->toArray()) : 0}}</td> --}}
-                <td>{{ $product->warehouses()->exists() ? $product->warehouses()->get('stock')->toArray() : 0}}</td>
-                {{-- <td>{{$product->warehouses()->exists() ? $product->warehouses()->select('stock')->get()->pluck('stock') : 0}}</td> --}}
+                <td>{{ $product->category->name }}</td>
+                <td>{{ $product->stock_total()}}</td>
                 <td width="120">
                     {!! Form::open(['route' => ['products.destroy', $product->id], 'method' => 'delete']) !!}
                     <div class='btn-group'>

@@ -207,6 +207,7 @@ class ProductController extends AppBaseController
         $product->id = $product_store->id_product;
         $product->name = $product_store->product->name;
         $product->description = $product_store->product->description;
+        $product->category = $product_store->product->category->name;
         $product->code = $product_store->product->code;
         $product->stock = $product_store->stock;
         $product->store = $product_store->id_store;

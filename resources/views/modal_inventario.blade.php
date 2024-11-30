@@ -14,9 +14,13 @@
                 <div class="col-6"><span>{{$product->name}}</span></div>
             </div>
             <div class="row">
+                <div class="col-6"><label>Categoría:</label></div>
+                <div class="col-6"><span>{{$product->category}}</span></div>
+            </div>
+            {{-- <div class="row">
                 <div class="col-6"><label>Descripción:</label></div>
                 <div class="col-6"><span>{{$product->description}}</span></div>
-            </div>
+            </div> --}}
             <div class="row">
                 <div class="col-6"><label>Posición:</label></div>
                 <div class="col-6"><span>{{$product->position}}</span></div>

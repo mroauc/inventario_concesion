@@ -30,10 +30,9 @@
                 <table class="table table-sm table-bordered mt-4 tabla_products" id="tabla_products_{{$store->id}}" style="width: 100%; overflow: auto;">
                     <thead>
                         <tr style="background-color: #efefef">
-                            {{-- <th>.</th> --}}
                             <th>Código</th>
                             <th>Producto</th>
-                            {{-- <th>Descripción</th> --}}
+                            <th>Categoría</th>
                             <th>Stock</th>
                             <th>Posición</th>
                         </tr>
@@ -41,13 +40,10 @@
                     <tbody>
                         @foreach ($store->products as $product)
                             <tr class="fila_prod" onclick="openModalInventario({{$product->id}}, {{$store->id}})">
-                                {{-- <td class="td_product"><input type="checkbox" name="products[{{$product->id}}][check]" id="prod{{$product->id}}" {{isset($store) && $store->products()->where('id_product', $product->id)->exists() ? 'checked' : ''}}></td> --}}
                                 <td class="td_product">{{$product->code}}</td>
                                 <td class="td_product">{{$product->name}}</td>
-                                {{-- <td class="td_product">{{$product->description}}</td> --}}
-                                {{-- <td class="td_product" onclick="check_td_product({{$product->id}})"><input type="number" name="products[{{$product->id}}][stock]" value="{{isset($store) && isset($store->products()->where('id_product', $product->id)->first()->pivot) ? $store->products()->where('id_product', $product->id)->first()->pivot->stock : ''}}" id="input_stock_prod{{$product->id}}"></td> --}}
+                                <td class="td_product">{{$product->category->name}}</td>
                                 <td class="td_product">{{$product->pivot->stock}}</td>
-                                {{-- <td class="td_product">{{}}</td> --}}
                                 <td class="td_product">{{ $product->pivot->positions()->pluck('position')->implode(' - ') }}</td>
                             </tr>
                         @endforeach
