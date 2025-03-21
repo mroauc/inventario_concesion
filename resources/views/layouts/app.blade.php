@@ -113,7 +113,7 @@
                     <img
                          class="user-image img-circle elevation-2">
                     {{-- <span class="d-none d-md-inline">{{ Auth::user()->name }}</span> --}}
-                    <span class="d-none d-md-inline">Marcelo Roa</span>
+                    <span class="d-none d-md-inline">{{auth()->user()->name}}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <!-- User image -->

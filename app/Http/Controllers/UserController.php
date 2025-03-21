@@ -59,8 +59,10 @@ class UserController extends AppBaseController
         $input['password'] = Hash::make($input['password']);
         $user = $this->userRepository->create($input);
         foreach ($input['concession'] as $id_concession => $value) {
-            $user->concessions()->attach($id_concession);
+            // $user->concessions()->attach($id_concession);
+            $user->id_concession = $id_concession;
         }
+        $user->save();
 
         Flash::success('User saved successfully.');
 
