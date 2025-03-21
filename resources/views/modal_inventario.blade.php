@@ -23,15 +23,15 @@
             </div> --}}
             <div class="row">
                 <div class="col-6"><label>Posición:</label></div>
-                <div class="col-6"><span>{{$product->position}}</span></div>
+                <div class="col-6"><input type="text" name="position" value="{{$product->position}}"></div>
             </div>
-            <div class="row">
+            <div class="row" style="font-size: 20px;">
                 <div class="col-6"><label>Stock:</label></div>
                 <div class="col-6"><span>{{$product->stock}}</span></div>
             </div>
             <div class="row" style="align-items: center; justify-content: center;">
                 <button type="button" class="btn btn-success" onclick="restarStock()"><i class="fas fa-minus"></i></button>
-                <input type="number" name="stock_product" class="form-control col-6" style="display: inline-block;" value="{{$product->stock}}" id="stock_product_modal">
+                <input type="number" name="stock_product" min="0" max="1000" class="form-control col-6" style="display: inline-block;" value="{{$product->stock}}" id="stock_product_modal">
                 <button type="button" class="btn btn-success"  onclick="sumarStock()"><i class="fas fa-plus"></i></button>
             </div>
             <input type="text" style="display: none;" name="id_store" value="{{$product->store}}">
@@ -66,11 +66,13 @@
 <script>
     function restarStock(){
         var valor_actual = parseInt($("#stock_product_modal").val());
+        if(valor_actual-1 < 0 || valor_actual-1 > 1000) return;
         $("#stock_product_modal").val(valor_actual-1);
     }
 
     function sumarStock(){
         var valor_actual = parseInt($("#stock_product_modal").val());
+        if(valor_actual+1 < 0 || valor_actual+1 > 1000) return;
         $("#stock_product_modal").val(valor_actual+1);
     }
 </script>

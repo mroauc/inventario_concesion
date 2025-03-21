@@ -63,8 +63,8 @@ class StoreController extends AppBaseController
         ]);
         if(isset($input['products'])){
             foreach ($input['products'] as $id_product => $product) {
-                if(isset($product['stock'])){
-                    $store->products()->attach($id_product, ['stock' => $product['stock'], 'id_responsible' => auth()->user()->id]);
+                if(isset($product['check'])){
+                    $store->products()->attach($id_product, ['stock' => $product['stock'] ?? 0, 'id_responsible' => auth()->user()->id]);
                     if(isset($product['positions']) && isset($product['stock'])){
                         $store_product = \App\Models\Product_Store::where('id_product', $id_product)->where('id_store', $store->id)->first();
                         if(isset($store_product)){

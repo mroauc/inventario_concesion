@@ -38,6 +38,8 @@ class ProductController extends AppBaseController
         // $products = $this->productRepository->all();
         $products = \App\Models\Product::where('id_concession', auth()->user()->id_concession)->get();
 
+
+
         return view('products.index')
             ->with('products', $products);
     }
@@ -63,26 +65,31 @@ class ProductController extends AppBaseController
     public function store(CreateProductRequest $request)
     {
         $input = $request->all();
+        try {
+            \DB::beginTransaction();
+            $product = \App\Models\Product::create([
+                'name' => $input['name'],
+                'description' => $input['description'],
+                'code' => $input['code'],
+                // 'stock' => $input['stock'],
+                'id_category' => $input['id_category'],
+                'id_concession' => auth()->user()->id_concession,
+            ]);
 
-        $product = \App\Models\Product::create([
-            'name' => $input['name'],
-            'description' => $input['description'],
-            'code' => $input['code'],
-            // 'stock' => $input['stock'],
-            'id_category' => $input['id_category'],
-            'id_concession' => auth()->user()->id_concession,
-        ]);
-        
-        \App\Models\Log::create([
-            'content' => 'Registro de Producto: '.$product->code.' - '.$product->name, 
-            'activity' => 'Creación', 
-            'id_user' => auth()->user()->id, 
-            'id_concession' => auth()->user()->id_concession
-        ]);
-
-        Flash::success('Product guardado exitosamente.');
-
-        return redirect(route('products.index'));
+            \App\Models\Log::create([
+                'content' => 'Registro de Producto: '.$product->code.' - '.$product->name, 
+                'activity' => 'Creación', 
+                'id_user' => auth()->user()->id, 
+                'id_concession' => auth()->user()->id_concession
+            ]);
+    
+            Flash::success('Product guardado exitosamente.');
+            \DB::commit();
+            return redirect(route('products.index'));
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return $e;
+        }
     }
 
     /**
@@ -220,13 +227,38 @@ class ProductController extends AppBaseController
 
     public function storeModal(Request $request){
         $input = $request->all();
-        $product_store = \App\Models\Product_Store::where('id_product', $input['id_product'])->where('id_store', $input['id_store'])->first();
-        if($product_store->product->id_concession != auth()->user()->id_concession){
-            return 'el producto no pertenece a la concesion del usuario';
+        try {
+            \DB::beginTransaction();
+            $product_store = \App\Models\Product_Store::where('id_product', $input['id_product'])->where('id_store', $input['id_store'])->first();
+            if($product_store->product->id_concession != auth()->user()->id_concession){
+                return response()->json(['mensaje' => 'El producto no pertenece a la concesion del usuario', 'error' => $e->getMessage()], 500);;
+            }
+
+            $product_store->stock = $input['stock_product'];
+
+            if($input['position'] && !str_contains($input['position'], ' ') && !str_contains($input['position'], '-') && !str_contains($input['position'], ',')){
+                $product_store->positions()->delete();
+                \App\Models\Positions_product_store::create([
+                    'id_product_store' => $product_store->id,
+                    'position' => $input['position']
+                ]);
+            }
+            $product_store->save();
+            $log = \App\Models\Log::create([
+                'activity' => 'Edición',
+                'content' => 'Se editó el producto: '.$product_store->product->name.'. STOCK: '.$input['stock_product'].($input['position'] ? ' POSICION: '.$input['position'] : ''),
+                'id_user' => auth()->user()->id,
+                'id_concession' => auth()->user()->id_concession
+            ]);
+
+            \Flash::success('Producto '.$product_store->product->name.' actualizado correctamente, STOCK: '.$product_store->stock.($input['position'] ? ', POSICION: '.$input['position'] : ''));
+            
+            \DB::commit();
+            return redirect(route('home'));
+        } catch (\Exception $e) {
+            DB::rollback(); // Revierte la transacción en caso de error
+            throw $e;
         }
-        $product_store->stock = $input['stock_product'];
-        $product_store->save();
-        return redirect(route('home'));
     }
 
     public function changeStockAjax(Request $request){

@@ -14,6 +14,7 @@
     </style>
 @endpush
 <div class="mt-4">
+    @include('flash::message')
     <div id="messagges"></div>
     {{-- <div id="qr-reader" style="width: 600px"></div> --}}
     {{-- <div id="reader" style="width: 600px;"></div> --}}
