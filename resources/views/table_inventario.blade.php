@@ -90,8 +90,9 @@
         $(document).ready(function(){
             stores.map(store =>{
                 var tabla = $('#tabla_products_'+store.id).DataTable({
-                    ordering: false,
+                    ordering: true,
                     responsive: true,
+                    'order': [1, 'asc'],
                     'language': {
                         "sProcessing":     "Procesando...",
                         "sLengthMenu":     "Mostrar _MENU_ registros",
