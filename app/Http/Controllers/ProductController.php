@@ -167,7 +167,7 @@ class ProductController extends AppBaseController
         $product->name = $input['name'];
         $product->description = $input['description'];
         $product->code = $input['code'];
-        $product->stock = $input['stock'];
+        // $product->stock = $input['stock'];
         $product->id_category = $input['id_category'];
         $product->save();
 
