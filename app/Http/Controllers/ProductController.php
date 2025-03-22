@@ -82,6 +82,17 @@ class ProductController extends AppBaseController
                 'id_user' => auth()->user()->id, 
                 'id_concession' => auth()->user()->id_concession
             ]);
+
+            $stores = \App\Models\Store::where('id_concession', auth()->user()->id_concession)->get();
+            foreach ($stores as $key => $store) {
+                $product_store = \App\Models\Product_Store::create([
+                    'id_product' => $product->id,
+                    'id_store' => $store->id,
+                    'id_responsible' => auth()->user()->id,
+                    'stock' => 0
+                ]);
+            }
+            
     
             Flash::success('Product guardado exitosamente.');
             \DB::commit();
