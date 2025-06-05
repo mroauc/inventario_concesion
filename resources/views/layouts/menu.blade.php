@@ -149,6 +149,13 @@
     </a>
 </li>
 
+<li class="nav-item">
+    <a href="{{ route('logs.index') }}"
+       class="nav-link {{ Request::is('historial') ? 'active' : '' }}">
+        <p>Historial</p>
+    </a>
+</li>
+
 @if (auth()->user()->email == 'marceloroa19@gmail.com')
     <li class="nav-item">
         <a href="{!! route('users.index') !!}" class="nav-link {{ Request::is('users*') ? 'active' : '' }}">

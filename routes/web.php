@@ -49,6 +49,7 @@ Route::post('/product/storeModal', [App\Http\Controllers\ProductController::clas
 Route::get('/product/importar', [App\Http\Controllers\ProductController::class, 'index_importar_product'])->name('products.index_importar');
 Route::post('/product/importar', [App\Http\Controllers\ProductController::class, 'import_products'])->name('products.import');
 
+Route::get('/historial', [App\Http\Controllers\LogsController::class, 'index'])->name('logs.index');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
