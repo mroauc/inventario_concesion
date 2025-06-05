@@ -25,8 +25,8 @@
                         <tr style="background-color: #efefef">
                             <th>Actividad</th>
                             <th>Contenido</th>
-                            <th>Fecha</th>
                             <th>Usuario</th>
+                            <th>Fecha</th>
                         </tr>
                     </thead>
                     <tbody>
