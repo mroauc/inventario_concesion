@@ -27,12 +27,16 @@
             </div>
             <div class="row" style="font-size: 20px;">
                 <div class="col-6"><label>Stock:</label></div>
-                <div class="col-6"><span>{{$product->stock}}</span></div>
+                <div class="col-6"><span id="stockBefore">{{$product->stock}}</span></div>
             </div>
             <div class="row" style="align-items: center; justify-content: center;">
                 <button type="button" class="btn btn-success" onclick="restarStock()"><i class="fas fa-minus"></i></button>
                 <input type="number" name="stock_product" min="0" max="1000" class="form-control col-6" style="display: inline-block;" value="{{$product->stock}}" id="stock_product_modal">
                 <button type="button" class="btn btn-success"  onclick="sumarStock()"><i class="fas fa-plus"></i></button>
+            </div>
+
+            <div style="text-align: center; margin-top: 10px;">
+                <span id="indicadorMovStock"></span>
             </div>
             <input type="text" style="display: none;" name="id_store" value="{{$product->store}}">
             <input type="text" style="display: none;" name="id_product" value="{{$product->id}}">
@@ -68,11 +72,29 @@
         var valor_actual = parseInt($("#stock_product_modal").val());
         if(valor_actual-1 < 0 || valor_actual-1 > 1000) return;
         $("#stock_product_modal").val(valor_actual-1);
+        actualizarIndicadorNProductos();
     }
 
     function sumarStock(){
         var valor_actual = parseInt($("#stock_product_modal").val());
         if(valor_actual+1 < 0 || valor_actual+1 > 1000) return;
         $("#stock_product_modal").val(valor_actual+1);
+        actualizarIndicadorNProductos();
+    }
+
+    function actualizarIndicadorNProductos(){
+        var newStock = $("#stock_product_modal").val();
+        var beforeStock = parseInt($("#stockBefore").text()) ?? 0;
+
+        if(newStock > beforeStock){
+            $("#indicadorMovStock").html('Se ha sumado <span class="text-success">'+ (newStock - beforeStock) + '</span> productos');
+        }
+        else if(newStock < beforeStock){
+            $("#indicadorMovStock").html('Se ha restado <span class="text-danger">'+ (beforeStock - newStock) + '</span> productos');
+        }
+        else{
+            $("#indicadorMovStock").html('');
+        }
+
     }
 </script>
