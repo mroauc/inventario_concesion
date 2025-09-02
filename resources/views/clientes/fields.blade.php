@@ -48,11 +48,14 @@
 <!-- Coordenadas Field -->
 <div class="form-group col-sm-6">
     <label for="coordenadas">Coordenadas:</label>
+    <input type="text" name="coordenadas" id="coordenadas" class="form-control" value="{{ old('coordenadas', $cliente->coordenadas ?? '') }}" placeholder="Ej: -33.4489, -70.6693">
     <div class="input-group">
-        <input type="text" name="coordenadas" id="coordenadas" class="form-control" value="{{ old('coordenadas', $cliente->coordenadas ?? '') }}" placeholder="Ej: -33.4489, -70.6693">
         <div class="input-group-append">
             <button type="button" class="btn btn-outline-secondary" id="btnObtenerUbicacion">
                 <i class="fas fa-map-marker-alt"></i> Obtener ubicación
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="btnLimpiarUbicacion">
+                 Limpiar
             </button>
         </div>
     </div>
@@ -76,8 +79,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const btnLimpiarUbicacion = document.getElementById('btnLimpiarUbicacion');
     const btnObtenerUbicacion = document.getElementById('btnObtenerUbicacion');
     const coordenadasInput = document.getElementById('coordenadas');
+
+    btnLimpiarUbicacion.addEventListener('click', function() {
+        coordenadasInput.value = '';
+    });
 
     btnObtenerUbicacion.addEventListener('click', function() {
         if (navigator.geolocation) {
