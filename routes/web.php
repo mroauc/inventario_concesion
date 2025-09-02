@@ -58,3 +58,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::resource('stores', App\Http\Controllers\StoreController::class);
 
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');
+
+Route::resource('clientes', App\Http\Controllers\ClienteController::class);
+
+Route::resource('servicios', App\Http\Controllers\ServicioController::class);

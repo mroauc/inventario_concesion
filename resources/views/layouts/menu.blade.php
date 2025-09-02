@@ -156,6 +156,20 @@
     </a>
 </li>
 
+<li class="nav-item">
+    <a href="{{ route('clientes.index') }}"
+       class="nav-link {{ Request::is('clientes*') ? 'active' : '' }}">
+        <p>Clientes</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('servicios.index') }}"
+       class="nav-link {{ Request::is('servicios*') ? 'active' : '' }}">
+        <p>Servicios</p>
+    </a>
+</li>
+
 @if (auth()->user()->email == 'marceloroa19@gmail.com')
     <li class="nav-item">
         <a href="{!! route('users.index') !!}" class="nav-link {{ Request::is('users*') ? 'active' : '' }}">
