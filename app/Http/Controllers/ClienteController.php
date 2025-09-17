@@ -38,9 +38,22 @@ class ClienteController extends Controller
         return view('clientes.create');
     }
 
-    public function store(CreateClienteRequest $request)
+    public function store(Request $request)
     {
-        Cliente::create($request->validated());
+        $input = $request->all();
+
+        $cliente = \App\Models\Cliente::create([
+            'nombre' => $input['nombre'],
+            'apellido' => $input['apellido'],
+            'direccion' => $input['direccion'],
+            'coordenadas' => $input['coordenadas'],
+            'numero_contacto' => $input['numero_contacto'],
+            'nota' => $input['nota'],
+            'email' => $input['email'],
+            'tipo_cliente' => $input['tipo_cliente'],
+            'rut' => $input['rut'],
+            'estado' => $input['estado']
+        ]);
 
         return redirect()->route('clientes.index')
                         ->with('success', 'Cliente creado exitosamente.');
@@ -56,9 +69,23 @@ class ClienteController extends Controller
         return view('clientes.edit', compact('cliente'));
     }
 
-    public function update(UpdateClienteRequest $request, Cliente $cliente)
+    public function update(Request $request, Cliente $cliente)
     {
-        $cliente->update($request->validated());
+        $input = $request->all();
+        $cliente = \App\Models\Cliente::find($cliente->id);
+
+
+        $cliente->nombre = $input['nombre'];
+        $cliente->apellido = $input['apellido'];
+        $cliente->direccion = $input['direccion'];
+        $cliente->coordenadas = $input['coordenadas'];
+        $cliente->numero_contacto = $input['numero_contacto'];
+        $cliente->nota = $input['nota'];
+        $cliente->email = $input['email'];
+        $cliente->tipo_cliente = $input['tipo_cliente'];
+        $cliente->rut = $input['rut'];
+        $cliente->estado = $input['estado'];
+        $cliente->save();
 
         return redirect()->route('clientes.index')
                         ->with('success', 'Cliente actualizado exitosamente.');

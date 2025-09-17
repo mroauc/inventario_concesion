@@ -7,10 +7,22 @@
                 <div class="col-sm-6">
                     <h1>Detalles del Cliente</h1>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6 btn-group-md">
                     <a class="btn btn-default float-right" href="{{ route('clientes.index') }}">
                         Volver
                     </a>
+                    @if (isset($cliente->coordenadas))
+                        <a class="btn btn-default float-right mr-1" href="https://waze.com/ul?ll={{$cliente->coordenadas}}&navigate=yes"
+                            target="_blank" 
+                            class="btn btn-primary">
+                            <i class="fab fa-waze"></i> Waze
+                        </a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{$cliente->coordenadas}}" 
+                            target="_blank" 
+                            class="btn btn-success float-right mr-1">
+                                <i class="fas fa-map-marker-alt"></i> Google Maps
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
