@@ -8,8 +8,6 @@ class CreateTecnicosTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -26,15 +24,21 @@ class CreateTecnicosTable extends Migration
             $table->text('nota')->nullable();
             $table->timestamps();
         });
+
+        Schema::table('ordenes_servicio', function (Blueprint $table) {
+            $table->foreign('tecnico_id')->references('id')->on('tecnicos')->nullOnDelete();
+        });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
+        Schema::table('ordenes_servicio', function (Blueprint $table) {
+            $table->dropForeign(['tecnico_id']);
+        });
+
         Schema::dropIfExists('tecnicos');
     }
 }

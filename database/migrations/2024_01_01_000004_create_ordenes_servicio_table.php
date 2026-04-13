@@ -29,7 +29,6 @@ class CreateOrdenesServicioTable extends Migration
 
             $table->foreign('cliente_id')->references('id')->on('clientes');
             $table->foreign('artefacto_id')->references('id')->on('artefactos');
-            $table->foreign('tecnico_id')->references('id')->on('tecnicos');
         });
     }
 
