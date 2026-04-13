@@ -46,4 +46,9 @@ class User extends Authenticatable
     public function concessions(){
         return $this->belongsToMany('App\Models\Concession','user_concession', 'id_user', 'id_concession')->using('App\Models\UserConcession');
     }
+
+    public function tecnico()
+    {
+        return $this->hasOne(Tecnico::class);
+    }
 }

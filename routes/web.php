@@ -62,3 +62,7 @@ Route::resource('users', App\Http\Controllers\UserController::class)->middleware
 Route::resource('clientes', App\Http\Controllers\ClienteController::class);
 
 Route::resource('servicios', App\Http\Controllers\ServicioController::class);
+
+Route::resource('tecnicos', App\Http\Controllers\TecnicoController::class);
+
+Route::resource('ordenes_servicio', App\Http\Controllers\OrdenServicioController::class);

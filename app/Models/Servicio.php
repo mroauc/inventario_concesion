@@ -32,4 +32,9 @@ class Servicio extends Model
         'estado' => 'boolean',
         'requiere_repuestos' => 'boolean'
     ];
+
+    public function ordenServicioDetalles()
+    {
+        return $this->hasMany(OrdenServicioDetalle::class);
+    }
 }

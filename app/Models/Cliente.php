@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cliente extends Model
 {
     use HasFactory;
+    public $table = 'clientes';
 
     protected $fillable = [
         'nombre',
@@ -36,4 +37,9 @@ class Cliente extends Model
         'rut' => 'nullable|string|max:255',
         'estado' => 'boolean'
     ];
+
+    public function ordenesServicio()
+    {
+        return $this->hasMany(OrdenServicio::class);
+    }
 }
