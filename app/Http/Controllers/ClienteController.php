@@ -98,4 +98,27 @@ class ClienteController extends Controller
         return redirect()->route('clientes.index')
                         ->with('success', 'Cliente eliminado exitosamente.');
     }
+
+    public function updateCoordenadas(Request $request, Cliente $cliente)
+    {
+        $request->validate([
+            'coordenadas' => 'required|string|max:255',
+        ]);
+
+        $cliente->coordenadas = $request->coordenadas;
+        $cliente->save();
+
+        \App\Models\Log::create([
+            'content' => "Coordenadas actualizadas para cliente {$cliente->nombre} {$cliente->apellido}: {$request->coordenadas}",
+            'activity' => 'Edición',
+            'id_user' => auth()->user()->id,
+            'id_concession' => auth()->user()->id_concession
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ubicación asociada correctamente.',
+            'coordenadas' => $cliente->coordenadas,
+        ]);
+    }
 }

@@ -59,6 +59,7 @@ Route::resource('stores', App\Http\Controllers\StoreController::class);
 
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');
 
+Route::post('clientes/{cliente}/coordenadas', [App\Http\Controllers\ClienteController::class, 'updateCoordenadas'])->name('clientes.updateCoordenadas');
 Route::resource('clientes', App\Http\Controllers\ClienteController::class);
 
 Route::resource('servicios', App\Http\Controllers\ServicioController::class);
