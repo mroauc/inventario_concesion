@@ -30,7 +30,8 @@ class Concession extends Model
     public $fillable = [
         'name',
         'address',
-        'id_representative'
+        'id_representative',
+        'numero_orden_siguiente'
     ];
 
     /**

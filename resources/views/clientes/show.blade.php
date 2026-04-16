@@ -78,10 +78,17 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-12">
+                    <div class="col-sm-8">
                         <div class="form-group">
                             <label>Dirección:</label>
                             <p>{{ $cliente->direccion }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Ciudad:</label>
+                            <p>{{ $cliente->ciudad ?? 'No especificada' }}</p>
                         </div>
                     </div>
 

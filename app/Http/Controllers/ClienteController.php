@@ -46,6 +46,7 @@ class ClienteController extends Controller
             'nombre' => $input['nombre'],
             'apellido' => $input['apellido'],
             'direccion' => $input['direccion'],
+            'ciudad' => $input['ciudad'] ?? null,
             'coordenadas' => $input['coordenadas'],
             'numero_contacto' => $input['numero_contacto'],
             'nota' => $input['nota'],
@@ -78,6 +79,7 @@ class ClienteController extends Controller
         $cliente->nombre = $input['nombre'];
         $cliente->apellido = $input['apellido'];
         $cliente->direccion = $input['direccion'];
+        $cliente->ciudad = $input['ciudad'] ?? null;
         $cliente->coordenadas = $input['coordenadas'];
         $cliente->numero_contacto = $input['numero_contacto'];
         $cliente->nota = $input['nota'];

@@ -26,8 +26,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="numero">Número de Orden *</label>
-                                <input type="text" class="form-control" name="numero" value="{{ old('numero', $orden->numero) }}" required>
+                                <label for="numero">Número de Orden</label>
+                                <input type="text" class="form-control" value="#{{ $orden->numero }}" readonly disabled>
+                                <small class="form-text text-muted">El número de orden no puede modificarse.</small>
                             </div>
                         </div>
                         <div class="col-md-6">

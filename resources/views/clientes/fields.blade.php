@@ -36,13 +36,20 @@
 <!-- RUT Field -->
 <div class="form-group col-sm-6">
     <label for="rut">RUT:</label>
-    <input type="text" name="rut" id="rut" class="form-control" value="{{ old('rut', $cliente->rut ?? '') }}">
+    <input type="text" name="rut" id="rut" class="form-control" value="{{ old('rut', $cliente->rut ?? '') }}" autocomplete="off">
+    <small id="rut-feedback" class="form-text" style="display:none;"></small>
 </div>
 
 <!-- Direccion Field -->
-<div class="form-group col-sm-12 required">
+<div class="form-group col-sm-8 required">
     <label for="direccion">Dirección:</label>
     <input type="text" name="direccion" id="direccion" class="form-control" value="{{ old('direccion', $cliente->direccion ?? '') }}" required>
+</div>
+
+<!-- Ciudad Field -->
+<div class="form-group col-sm-4">
+    <label for="ciudad">Ciudad:</label>
+    <input type="text" name="ciudad" id="ciudad" class="form-control" value="{{ old('ciudad', $cliente->ciudad ?? '') }}">
 </div>
 
 <!-- Coordenadas Field -->
@@ -79,6 +86,76 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const rutInput = document.getElementById('rut');
+    const rutFeedback = document.getElementById('rut-feedback');
+
+    function formatearRut(valor) {
+        let limpio = valor.replace(/[^0-9kK]/g, '').toUpperCase();
+        if (limpio.length === 0) return '';
+        let cuerpo = limpio.slice(0, -1);
+        let dv = limpio.slice(-1);
+        if (cuerpo.length === 0) return dv;
+        return cuerpo + '-' + dv;
+    }
+
+    function validarRut(rut) {
+        // Esperar al menos cuerpo + guion + dv (ej: "1-9")
+        if (!rut || rut.length < 3) return null;
+        let limpio = rut.replace(/[^0-9kK]/g, '').toUpperCase();
+        if (limpio.length < 2) return null;
+        let cuerpo = limpio.slice(0, -1);
+        let dvIngresado = limpio.slice(-1);
+        if (!/^\d+$/.test(cuerpo)) return false;
+        let suma = 0;
+        let multiplo = 2;
+        for (let i = cuerpo.length - 1; i >= 0; i--) {
+            suma += parseInt(cuerpo[i]) * multiplo;
+            multiplo = multiplo === 7 ? 2 : multiplo + 1;
+        }
+        let dvEsperado = 11 - (suma % 11);
+        let dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : String(dvEsperado);
+        return dvIngresado === dvCalculado;
+    }
+
+    function actualizarEstadoRut() {
+        const valor = rutInput.value;
+        if (valor === '') {
+            rutInput.classList.remove('is-valid', 'is-invalid');
+            rutFeedback.style.display = 'none';
+            return;
+        }
+        const resultado = validarRut(valor);
+        if (resultado === null) {
+            rutInput.classList.remove('is-valid', 'is-invalid');
+            rutFeedback.style.display = 'none';
+        } else if (resultado === true) {
+            rutInput.classList.remove('is-invalid');
+            rutInput.classList.add('is-valid');
+            rutFeedback.style.display = 'none';
+        } else {
+            rutInput.classList.remove('is-valid');
+            rutInput.classList.add('is-invalid');
+            rutFeedback.style.display = 'block';
+            rutFeedback.style.color = '#dc3545';
+            rutFeedback.textContent = 'RUT inválido';
+        }
+    }
+
+    rutInput.addEventListener('input', function() {
+        const pos = this.selectionStart;
+        const valorAntes = this.value;
+        this.value = formatearRut(this.value);
+        const diff = this.value.length - valorAntes.length;
+        this.setSelectionRange(pos + diff, pos + diff);
+        actualizarEstadoRut();
+    });
+
+    // Formatear y validar el valor inicial si viene precargado (edición)
+    if (rutInput.value !== '') {
+        rutInput.value = formatearRut(rutInput.value);
+    }
+    actualizarEstadoRut();
+
     const btnLimpiarUbicacion = document.getElementById('btnLimpiarUbicacion');
     const btnObtenerUbicacion = document.getElementById('btnObtenerUbicacion');
     const coordenadasInput = document.getElementById('coordenadas');

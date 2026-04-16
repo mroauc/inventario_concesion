@@ -26,8 +26,11 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="numero">Número de Orden *</label>
-                                        <input type="text" class="form-control" name="numero" value="{{ old('numero') }}" required>
+                                        <label for="numero">Número de Orden</label>
+                                        <input type="text" class="form-control"
+                                               value="#{{ $proximoNumero }}"
+                                               readonly disabled>
+                                        <small class="form-text text-muted">Asignado automáticamente al guardar.</small>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

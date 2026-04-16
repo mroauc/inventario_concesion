@@ -17,7 +17,7 @@ class OrdenServicioController extends Controller
 {
     public function index()
     {
-        $ordenes = OrdenServicio::with(['cliente', 'tecnico'])->get();
+        $ordenes = OrdenServicio::where('id_concession', auth()->user()->id_concession)->with(['cliente', 'tecnico'])->get();
         return view('ordenes_servicio.index', compact('ordenes'));
     }
 
@@ -28,14 +28,15 @@ class OrdenServicioController extends Controller
         $tecnicos = Tecnico::all();
         $productos = Product::all();
         $servicios = Servicio::where('estado', true)->get();
-        
-        return view('ordenes_servicio.create', compact('clientes', 'artefactos', 'tecnicos', 'productos', 'servicios'));
+
+        $proximoNumero = $this->proximoNumeroOrden(auth()->user()->id_concession);
+
+        return view('ordenes_servicio.create', compact('clientes', 'artefactos', 'tecnicos', 'productos', 'servicios', 'proximoNumero'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'numero' => 'required|string|unique:ordenes_servicio',
             'tipo_servicio' => 'required|in:mantenimiento,reparacion,instalacion,garantia',
             'cliente_id' => 'required|exists:clientes,id',
             'descripcion_falla' => 'required|string',
@@ -50,8 +51,20 @@ class OrdenServicioController extends Controller
         try {
             DB::beginTransaction();
 
+            // Bloqueo pesimista sobre la concesión para serializar accesos concurrentes
+            $concesion = \App\Models\Concession::where('id', auth()->user()->id_concession)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Máximo numero existente para esta concesión; si no hay órdenes usa numero_orden_siguiente como base
+            $maxNumero = OrdenServicio::where('id_concession', $concesion->id)->max('numero');
+            $numeroOrden = $maxNumero !== null
+                ? $maxNumero + 1
+                : $concesion->numero_orden_siguiente;
+
             $orden = new OrdenServicio();
-            $orden->numero = $request->numero;
+            $orden->numero = $numeroOrden;
+            $orden->id_concession = auth()->user()->id_concession;
             $orden->folio_garantia = $request->folio_garantia;
             $orden->tipo_servicio = $request->tipo_servicio;
             $orden->fecha_orden = now();
@@ -120,7 +133,6 @@ class OrdenServicioController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'numero' => 'required|string|unique:ordenes_servicio,numero,' . $id,
             'tipo_servicio' => 'required|in:mantenimiento,reparacion,instalacion,garantia',
             'cliente_id' => 'required|exists:clientes,id',
             'descripcion_falla' => 'required|string',
@@ -132,7 +144,7 @@ class OrdenServicioController extends Controller
             DB::beginTransaction();
 
             $orden = OrdenServicio::findOrFail($id);
-            $orden->numero = $request->numero;
+            // numero no se modifica: es correlativo asignado al crear
             $orden->folio_garantia = $request->folio_garantia;
             $orden->tipo_servicio = $request->tipo_servicio;
             $orden->fecha_visita = $request->fecha_visita;
@@ -162,7 +174,7 @@ class OrdenServicioController extends Controller
         try {
             $orden = OrdenServicio::findOrFail($id);
             $orden->delete();
-            
+
             Flash::success('Orden de servicio eliminada exitosamente.');
             return redirect()->route('ordenes_servicio.index');
         } catch (\Exception $e) {
@@ -171,5 +183,20 @@ class OrdenServicioController extends Controller
         }
     }
 
+    /**
+     * Calcula el próximo número de orden para una concesión.
+     * Usa el máximo número existente en ordenes_servicio para esa concesión.
+     * Si no existen órdenes, toma numero_orden_siguiente de la tabla concessions.
+     */
+    private function proximoNumeroOrden(int $idConcession): int|string
+    {
+        $concesion = \App\Models\Concession::find($idConcession);
+        if (!$concesion) {
+            return '—';
+        }
 
+        $maxNumero = OrdenServicio::where('id_concession', $idConcession)->max('numero');
+
+        return $maxNumero !== null ? $maxNumero + 1 : $concesion->numero_orden_siguiente;
+    }
 }
