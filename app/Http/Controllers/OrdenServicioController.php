@@ -37,7 +37,6 @@ class OrdenServicioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_servicio' => 'required|in:mantenimiento,reparacion,instalacion,garantia',
             'cliente_id' => 'required|exists:clientes,id',
             'descripcion_falla' => 'required|string',
             'tipo_atencion' => 'required|in:taller,terreno',
@@ -133,7 +132,6 @@ class OrdenServicioController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'tipo_servicio' => 'required|in:mantenimiento,reparacion,instalacion,garantia',
             'cliente_id' => 'required|exists:clientes,id',
             'descripcion_falla' => 'required|string',
             'tipo_atencion' => 'required|in:taller,terreno',

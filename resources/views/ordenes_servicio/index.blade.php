@@ -39,7 +39,12 @@
                             @foreach($ordenes as $orden)
                                 <tr>
                                     <td>{{ $orden->numero }}</td>
-                                    <td>{{ $orden->cliente->nombre }} {{ $orden->cliente->apellido }}</td>
+                                    <td>
+                                        @if($orden->cliente->rut)
+                                            <small class="text-muted d-block">{{ $orden->cliente->rut }}</small>
+                                        @endif
+                                        {{ $orden->cliente->nombre }} {{ $orden->cliente->apellido }}
+                                    </td>
                                     <td>
                                         <span class="badge badge-info">{{ ucfirst($orden->tipo_servicio) }}</span>
                                     </td>

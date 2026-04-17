@@ -40,18 +40,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="tipo_servicio">Tipo de Servicio *</label>
-                                <select class="form-control" name="tipo_servicio" required>
-                                    <option value="mantenimiento" {{ $orden->tipo_servicio == 'mantenimiento' ? 'selected' : '' }}>Mantenimiento</option>
-                                    <option value="reparacion" {{ $orden->tipo_servicio == 'reparacion' ? 'selected' : '' }}>Reparación</option>
-                                    <option value="instalacion" {{ $orden->tipo_servicio == 'instalacion' ? 'selected' : '' }}>Instalación</option>
-                                    <option value="garantia" {{ $orden->tipo_servicio == 'garantia' ? 'selected' : '' }}>Garantía</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="tipo_atencion">Tipo de Atención *</label>
                                 <select class="form-control" name="tipo_atencion" required>
@@ -60,7 +49,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="estado">Estado *</label>
                                 <select class="form-control" name="estado" required>
@@ -80,7 +69,7 @@
                                 <select class="form-control" name="cliente_id" required>
                                     @foreach($clientes as $cliente)
                                         <option value="{{ $cliente->id }}" {{ $orden->cliente_id == $cliente->id ? 'selected' : '' }}>
-                                            {{ $cliente->nombre }} {{ $cliente->apellido }}
+                                            {{ $cliente->rut ? $cliente->rut . ' - ' : '' }}{{ $cliente->nombre }} {{ $cliente->apellido }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -115,18 +104,18 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div id="fecha-visita-container" class="col-md-6" style="{{ $orden->tipo_atencion == 'terreno' ? '' : 'display:none' }}">
                             <div class="form-group">
                                 <label for="fecha_visita">Fecha de Visita</label>
-                                <input type="datetime-local" class="form-control" name="fecha_visita" 
+                                <input type="datetime-local" class="form-control" name="fecha_visita"
                                        value="{{ old('fecha_visita', $orden->fecha_visita ? $orden->fecha_visita->format('Y-m-d\TH:i') : '') }}">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div id="valor-visita-container" class="col-md-6" style="{{ $orden->tipo_atencion == 'terreno' ? '' : 'display:none' }}">
                             <div class="form-group">
                                 <label for="valor_visita">Valor de Visita</label>
-                                <input type="number" class="form-control" name="valor_visita" step="0.01" min="0" 
-                                       value="{{ old('valor_visita', $orden->valor_visita) }}">
+                                <input type="number" class="form-control" name="valor_visita" step="0.01" min="0"
+                                       value="{{ old('valor_visita', $orden->valor_visita) }}" placeholder="0">
                             </div>
                         </div>
                     </div>
@@ -206,4 +195,21 @@
             </div>
         </form>
     </div>
+@push('page_scripts')
+<script>
+$(document).ready(function() {
+    $('select[name="tipo_atencion"]').on('change', function() {
+        if ($(this).val() === 'terreno') {
+            $('#fecha-visita-container').show();
+            $('#valor-visita-container').show();
+        } else {
+            $('#fecha-visita-container').hide();
+            $('input[name="fecha_visita"]').val('');
+            $('#valor-visita-container').hide();
+            $('input[name="valor_visita"]').val('0');
+        }
+    });
+});
+</script>
+@endpush
 @endsection

@@ -64,6 +64,9 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h5>Cliente</h5>
+                                @if($orden->cliente->rut)
+                                    <small class="text-muted">{{ $orden->cliente->rut }}</small><br>
+                                @endif
                                 <strong>{{ $orden->cliente->nombre }} {{ $orden->cliente->apellido }}</strong><br>
                                 {{ $orden->cliente->direccion }}<br>
                                 {{ $orden->cliente->numero_contacto }}<br>

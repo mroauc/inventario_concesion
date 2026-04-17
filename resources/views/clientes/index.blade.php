@@ -42,8 +42,8 @@
                     <table class="table table-striped" id="clientes-table">
                         <thead>
                             <tr>
+                                <th>RUT</th>
                                 <th>Nombre</th>
-                                <th>Apellido</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
                                 <th>Tipo Cliente</th>
@@ -54,8 +54,8 @@
                         <tbody>
                         @foreach($clientes as $cliente)
                             <tr>
-                                <td>{{ $cliente->nombre }}</td>
-                                <td>{{ $cliente->apellido }}</td>
+                                <td>{{ $cliente->rut ?? '-' }}</td>
+                                <td>{{ $cliente->nombre }} {{ $cliente->apellido }}</td>
                                 <td>{{ $cliente->email }}</td>
                                 <td>{{ $cliente->numero_contacto }}</td>
                                 <td>

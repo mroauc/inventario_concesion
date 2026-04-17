@@ -44,18 +44,6 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="tipo_servicio">Tipo de Servicio *</label>
-                                        <select class="form-control" name="tipo_servicio" required>
-                                            <option value="">Seleccionar...</option>
-                                            <option value="mantenimiento">Mantenimiento</option>
-                                            <option value="reparacion">Reparación</option>
-                                            <option value="instalacion">Instalación</option>
-                                            <option value="garantia">Garantía</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
                                         <label for="tipo_atencion">Tipo de Atención *</label>
                                         <select class="form-control" name="tipo_atencion" required>
                                             <option value="">Seleccionar...</option>
@@ -73,7 +61,7 @@
                                         <select class="form-control" name="cliente_id" id="cliente_id" required>
                                             <option value="">Seleccionar cliente...</option>
                                             @foreach($clientes as $cliente)
-                                                <option value="{{ $cliente->id }}">{{ $cliente->nombre }} {{ $cliente->apellido }}</option>
+                                                <option value="{{ $cliente->id }}">{{ $cliente->rut ? $cliente->rut . ' - ' : '' }}{{ $cliente->nombre }} {{ $cliente->apellido }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -92,7 +80,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6">
+                                <div id="fecha-visita-container" class="col-md-6" style="display:none">
                                     <div class="form-group">
                                         <label for="fecha_visita">Fecha de Visita</label>
                                         <input type="datetime-local" class="form-control" name="fecha_visita" value="{{ old('fecha_visita') }}">
@@ -121,10 +109,6 @@
                                 <textarea class="form-control" name="observaciones" rows="2">{{ old('observaciones') }}</textarea>
                             </div>
 
-                            <div class="form-group">
-                                <label for="valor_visita">Valor de Visita</label>
-                                <input type="number" class="form-control" name="valor_visita" step="0.01" min="0" value="{{ old('valor_visita') }}">
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,6 +119,13 @@
                             <h3 class="card-title">Servicios y Productos</h3>
                         </div>
                         <div class="card-body">
+                            <div id="valor-visita-container" style="display:none">
+                                <div class="form-group">
+                                    <label for="valor_visita">Valor de Visita</label>
+                                    <input type="number" class="form-control" name="valor_visita" step="0.01" min="0" value="{{ old('valor_visita') }}" placeholder="0">
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label>Agregar Item</label>
                                 <div class="input-group">
@@ -196,6 +187,19 @@ $(document).ready(function() {
     $('#item-select').select2();
 
 
+
+    $('select[name="tipo_atencion"]').on('change', function() {
+        if ($(this).val() === 'terreno') {
+            $('#fecha-visita-container').show();
+            $('#valor-visita-container').show();
+        } else {
+            $('#fecha-visita-container').hide();
+            $('input[name="fecha_visita"]').val('');
+            $('#valor-visita-container').hide();
+            $('input[name="valor_visita"]').val('0');
+            updateTotal();
+        }
+    });
 
     $('#add-item').click(function() {
         const selected = $('#item-select');

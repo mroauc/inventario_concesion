@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Detalles del Cliente</h1>
+                    <h1>{{ $cliente->rut ? $cliente->rut . ' - ' : '' }}{{ $cliente->nombre }} {{ $cliente->apellido }}</h1>
                 </div>
                 <div class="col-sm-6 btn-group-md">
                     <a class="btn btn-default float-right" href="{{ route('clientes.index') }}">
