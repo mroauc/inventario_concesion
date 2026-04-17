@@ -23,7 +23,8 @@ class Representative extends Model
         'phone',
         'city',
         'address',
-        'email'
+        'email',
+        'id_concession'
     ];
 
 

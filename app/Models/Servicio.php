@@ -15,7 +15,8 @@ class Servicio extends Model
         'descripcion',
         'duracion_estimada',
         'estado',
-        'requiere_repuestos'
+        'requiere_repuestos',
+        'id_concession'
     ];
 
     protected $casts = [

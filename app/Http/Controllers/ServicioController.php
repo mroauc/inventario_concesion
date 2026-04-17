@@ -16,7 +16,7 @@ class ServicioController extends Controller
 
     public function index(Request $request)
     {
-        $servicios = Servicio::query();
+        $servicios = Servicio::where('id_concession', auth()->user()->id_concession);
 
         if ($request->filled('search')) {
             $search = $request->get('search');
@@ -38,7 +38,9 @@ class ServicioController extends Controller
 
     public function store(CreateServicioRequest $request)
     {
-        Servicio::create($request->validated());
+        $data = $request->validated();
+        $data['id_concession'] = auth()->user()->id_concession;
+        Servicio::create($data);
 
         return redirect()->route('servicios.index')
                         ->with('success', 'Servicio creado exitosamente.');
@@ -46,16 +48,19 @@ class ServicioController extends Controller
 
     public function show(Servicio $servicio)
     {
+        abort_if($servicio->id_concession !== auth()->user()->id_concession, 403);
         return view('servicios.show', compact('servicio'));
     }
 
     public function edit(Servicio $servicio)
     {
+        abort_if($servicio->id_concession !== auth()->user()->id_concession, 403);
         return view('servicios.edit', compact('servicio'));
     }
 
     public function update(UpdateServicioRequest $request, Servicio $servicio)
     {
+        abort_if($servicio->id_concession !== auth()->user()->id_concession, 403);
         $servicio->update($request->validated());
 
         return redirect()->route('servicios.index')
@@ -64,6 +69,7 @@ class ServicioController extends Controller
 
     public function destroy(Servicio $servicio)
     {
+        abort_if($servicio->id_concession !== auth()->user()->id_concession, 403);
         $servicio->delete();
 
         return redirect()->route('servicios.index')

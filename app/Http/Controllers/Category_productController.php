@@ -30,7 +30,7 @@ class Category_productController extends AppBaseController
     public function index(Request $request)
     {
         // $categoryProducts = $this->categoryProductRepository->all();
-        $categoryProducts = \App\Models\Category_product::all();
+        $categoryProducts = \App\Models\Category_product::where('id_concession', auth()->user()->id_concession)->get();
 
         return view('category_products.index')
             ->with('categoryProducts', $categoryProducts);
@@ -61,7 +61,7 @@ class Category_productController extends AppBaseController
         // $categoryProduct = $this->categoryProductRepository->create($input);
         $categoryProduct = \App\Models\Category_product::create([
             'name' => $input['name'],
-            'id_concession' => 1
+            'id_concession' => auth()->user()->id_concession
         ]);
 
         Flash::success('Category Product saved successfully.');
@@ -130,10 +130,8 @@ class Category_productController extends AppBaseController
         }
 
         // $categoryProduct = $this->categoryProductRepository->update($request->all(), $id);
-        $categoryProduct = \App\Models\Category_product::create([
-            'name' => $input['name'],
-            'id_concession' => 1
-        ]);
+        $categoryProduct->name = $input['name'];
+        $categoryProduct->save();
 
         Flash::success('Category Product updated successfully.');
 

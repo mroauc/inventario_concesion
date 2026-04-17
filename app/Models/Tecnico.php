@@ -18,7 +18,8 @@ class Tecnico extends Model
         'zona_cobertura',
         'certificaciones',
         'disponibilidad',
-        'nota'
+        'nota',
+        'id_concession'
     ];
 
     protected $casts = [

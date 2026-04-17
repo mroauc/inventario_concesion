@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 
 class RepresentativeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request){
-        $input = $request->all();
-        $representatives = \App\Models\Representative::all();
+        $representatives = \App\Models\Representative::where('id_concession', auth()->user()->id_concession)->get();
         return view('representative.index')->with('representatives', $representatives);
     }
 
@@ -17,32 +21,29 @@ class RepresentativeController extends Controller
     }
 
     public function store(Request $request){
-        $input = $request->all(); 
+        $input = $request->all();
         $representative = \App\Models\Representative::create([
             'name' => $input['name'],
             'rut' => $input['rut'],
             'phone' => $input['phone'],
             'city' => $input['city'],
             'address' => $input['address'],
-            'email' => $input['email']
+            'email' => $input['email'],
+            'id_concession' => auth()->user()->id_concession
         ]);
         return redirect(route('representative.index'));
     }
 
     public function edit(Request $request, $id){
         $representative = \App\Models\Representative::findOrFail($id);
-        if(!$representative){
-            return 'NO EXISTE EL REPRESENTANTE';
-        }
+        abort_if($representative->id_concession !== auth()->user()->id_concession, 403);
         return view('representative.edit')->with('representative', $representative);
     }
 
     public function update(Request $request, $id){
         $representative = \App\Models\Representative::findOrFail($id);
+        abort_if($representative->id_concession !== auth()->user()->id_concession, 403);
         $input = $request->all();
-        if(!$representative){
-            return 'NO EXISTE EL REPRESENTANTE';
-        }
 
         $representative->name = $input['name'];
         $representative->rut = $input['rut'];

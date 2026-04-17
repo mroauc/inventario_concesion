@@ -23,11 +23,11 @@ class OrdenServicioController extends Controller
 
     public function create()
     {
-        $clientes = Cliente::where('estado', true)->get();
-        $artefactos = Artefacto::where('estado', true)->get();
-        $tecnicos = Tecnico::all();
-        $productos = Product::all();
-        $servicios = Servicio::where('estado', true)->get();
+        $clientes = Cliente::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
+        $artefactos = Artefacto::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
+        $tecnicos = Tecnico::where('id_concession', auth()->user()->id_concession)->get();
+        $productos = Product::where('id_concession', auth()->user()->id_concession)->get();
+        $servicios = Servicio::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
 
         $proximoNumero = $this->proximoNumeroOrden(auth()->user()->id_concession);
 

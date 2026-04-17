@@ -21,7 +21,8 @@ class Cliente extends Model
         'email',
         'tipo_cliente',
         'rut',
-        'estado'
+        'estado',
+        'id_concession'
     ];
 
     protected $casts = [

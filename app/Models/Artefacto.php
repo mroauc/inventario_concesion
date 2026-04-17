@@ -14,7 +14,8 @@ class Artefacto extends Model
         'marca',
         'modelo',
         'descripcion',
-        'estado'
+        'estado',
+        'id_concession'
     ];
 
     protected $casts = [

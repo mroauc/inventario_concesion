@@ -26,7 +26,8 @@ class OrdenServicio extends Model
         'valor_visita',
         'costo_total',
         'tecnico_id',
-        'estado'
+        'estado',
+        'id_concession'
     ];
 
     protected $casts = [

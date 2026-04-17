@@ -16,7 +16,7 @@ class ClienteController extends Controller
 
     public function index(Request $request)
     {
-        $clientes = Cliente::query();
+        $clientes = Cliente::where('id_concession', auth()->user()->id_concession);
 
         if ($request->filled('search')) {
             $search = $request->get('search');
@@ -53,7 +53,8 @@ class ClienteController extends Controller
             'email' => $input['email'],
             'tipo_cliente' => $input['tipo_cliente'],
             'rut' => $input['rut'],
-            'estado' => $input['estado']
+            'estado' => $input['estado'],
+            'id_concession' => auth()->user()->id_concession
         ]);
 
         return redirect()->route('clientes.index')
@@ -62,16 +63,19 @@ class ClienteController extends Controller
 
     public function show(Cliente $cliente)
     {
+        abort_if($cliente->id_concession !== auth()->user()->id_concession, 403);
         return view('clientes.show', compact('cliente'));
     }
 
     public function edit(Cliente $cliente)
     {
+        abort_if($cliente->id_concession !== auth()->user()->id_concession, 403);
         return view('clientes.edit', compact('cliente'));
     }
 
     public function update(Request $request, Cliente $cliente)
     {
+        abort_if($cliente->id_concession !== auth()->user()->id_concession, 403);
         $input = $request->all();
         $cliente = \App\Models\Cliente::find($cliente->id);
 
@@ -95,6 +99,7 @@ class ClienteController extends Controller
 
     public function destroy(Cliente $cliente)
     {
+        abort_if($cliente->id_concession !== auth()->user()->id_concession, 403);
         $cliente->delete();
 
         return redirect()->route('clientes.index')
@@ -103,6 +108,7 @@ class ClienteController extends Controller
 
     public function updateCoordenadas(Request $request, Cliente $cliente)
     {
+        abort_if($cliente->id_concession !== auth()->user()->id_concession, 403);
         $request->validate([
             'coordenadas' => 'required|string|max:255',
         ]);

@@ -11,7 +11,7 @@ class TecnicoController extends Controller
 {
     public function index()
     {
-        $tecnicos = Tecnico::with('user')->paginate(10);
+        $tecnicos = Tecnico::where('id_concession', auth()->user()->id_concession)->with('user')->paginate(10);
         return view('tecnicos.index', compact('tecnicos'));
     }
 
@@ -55,6 +55,7 @@ class TecnicoController extends Controller
         $tecnico->certificaciones = $validatedData['certificaciones'] ?? null;
         $tecnico->disponibilidad = $validatedData['disponibilidad'];
         $tecnico->nota = $validatedData['nota'] ?? null;
+        $tecnico->id_concession = auth()->user()->id_concession;
 
         $tecnico->save();
 
@@ -63,24 +64,28 @@ class TecnicoController extends Controller
 
     public function show(Tecnico $tecnico)
     {
+        abort_if($tecnico->id_concession !== auth()->user()->id_concession, 403);
         $tecnico->load('user');
         return view('tecnicos.show', compact('tecnico'));
     }
 
     public function edit(Tecnico $tecnico)
     {
+        abort_if($tecnico->id_concession !== auth()->user()->id_concession, 403);
         $users = User::whereDoesntHave('tecnico')->orWhere('id', $tecnico->user_id)->get();
         return view('tecnicos.edit', compact('tecnico', 'users'));
     }
 
     public function update(TecnicoRequest $request, Tecnico $tecnico)
     {
+        abort_if($tecnico->id_concession !== auth()->user()->id_concession, 403);
         $tecnico->update($request->validated());
         return redirect()->route('tecnicos.index')->with('success', 'Técnico actualizado exitosamente.');
     }
 
     public function destroy(Tecnico $tecnico)
     {
+        abort_if($tecnico->id_concession !== auth()->user()->id_concession, 403);
         $tecnico->delete();
         return redirect()->route('tecnicos.index')->with('success', 'Técnico eliminado exitosamente.');
     }
