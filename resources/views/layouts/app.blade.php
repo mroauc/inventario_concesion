@@ -88,9 +88,45 @@
             color: red;
             font-weight: bold;
 	    }
-        
+
         [class*=sidebar-dark-]{
             background-color: #132a56;
+        }
+
+        /* Borde superior corporativo — agregar a cualquier card cuando se desee */
+        .card-brand-top {
+            border-top: 3px solid #132a56 !important;
+        }
+
+        /* Color corporativo en iconos SVG y texto */
+        .text-brand {
+            color: #132a56 !important;
+            fill: #132a56 !important;
+        }
+
+        /* Botón corporativo relleno */
+        .btn-brand {
+            background-color: #132a56;
+            color: #ffffff;
+            border-color: #132a56;
+        }
+        .btn-brand:hover,
+        .btn-brand:focus {
+            background-color: #1a3a72;
+            color: #ffffff;
+            border-color: #1a3a72;
+        }
+
+        /* Botón corporativo outline */
+        .btn-outline-brand {
+            background-color: transparent;
+            color: #132a56;
+            border-color: #132a56;
+        }
+        .btn-outline-brand:hover,
+        .btn-outline-brand:focus {
+            background-color: #132a56;
+            color: #ffffff;
         }
 
     </style>

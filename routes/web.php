@@ -66,4 +66,5 @@ Route::resource('servicios', App\Http\Controllers\ServicioController::class);
 
 Route::resource('tecnicos', App\Http\Controllers\TecnicoController::class);
 
+Route::get('clientes/{cliente}/datos', [App\Http\Controllers\OrdenServicioController::class, 'clienteDatos'])->name('clientes.datos');
 Route::resource('ordenes_servicio', App\Http\Controllers\OrdenServicioController::class);

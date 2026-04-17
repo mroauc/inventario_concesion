@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Orden de Servicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-7xl mx-auto p-6">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Crear Orden de Servicio</h1>
+        <div class="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-semibold">
+            Folio: OS-000123
+        </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-6">
+
+        <!-- IZQUIERDA -->
+        <div class="col-span-2 space-y-6">
+
+            <!-- CLIENTE -->
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h2 class="text-lg font-semibold mb-4 text-gray-700">Cliente</h2>
+
+                <select class="w-full border rounded-lg p-2 mb-4">
+                    <option>Buscar cliente...</option>
+                </select>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Nombre" class="input">
+                    <input type="text" placeholder="RUT" class="input">
+                    <input type="text" placeholder="Teléfono" class="input">
+                    <input type="text" placeholder="Dirección" class="input">
+                </div>
+            </div>
+
+            <!-- ORDEN -->
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h2 class="text-lg font-semibold mb-4 text-gray-700">Detalle de la Orden</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <select class="input">
+                        <option>Tipo de atención</option>
+                    </select>
+
+                    <select class="input">
+                        <option>Artefacto</option>
+                    </select>
+
+                    <input type="datetime-local" class="input">
+                    
+                    <select class="input">
+                        <option>Técnico</option>
+                    </select>
+                </div>
+
+                <textarea placeholder="Descripción de la falla..." class="input h-24 mb-4"></textarea>
+
+                <textarea placeholder="Observaciones..." class="input h-20"></textarea>
+            </div>
+
+        </div>
+
+        <!-- DERECHA -->
+        <div class="space-y-6">
+
+            <!-- PRODUCTOS -->
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos / Servicios</h2>
+
+                <div class="flex gap-2 mb-4">
+                    <select class="flex-1 input">
+                        <option>Seleccionar producto</option>
+                    </select>
+                    <button class="bg-blue-600 text-white px-4 rounded-lg">
+                        +
+                    </button>
+                </div>
+
+                <!-- TABLA -->
+                <table class="w-full text-sm">
+                    <thead class="text-gray-500 border-b">
+                        <tr>
+                            <th class="text-left py-2">Item</th>
+                            <th>Cant</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="py-2">Producto A</td>
+                            <td class="text-center">1</td>
+                            <td class="text-right">$10.000</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-right mt-4 font-bold text-lg">
+                    Total: $10.000
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <button class="w-full bg-green-600 text-white py-3 rounded-lg mb-2">
+                    Guardar Orden
+                </button>
+                <button class="w-full bg-gray-200 py-3 rounded-lg">
+                    Cancelar
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<style>
+.input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    padding: 8px 10px;
+    border-radius: 8px;
+    outline: none;
+}
+.input:focus {
+    border-color: #3b82f6;
+}
+</style>
+
+</body>
+</html>

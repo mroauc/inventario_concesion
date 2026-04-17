@@ -182,11 +182,26 @@ class OrdenServicioController extends Controller
     }
 
     /**
+     * Retorna los datos de un cliente en JSON para el selector AJAX.
+     */
+    public function clienteDatos(Cliente $cliente)
+    {
+        return response()->json([
+            'rut'             => $cliente->rut,
+            'nombre'          => $cliente->nombre . ' ' . $cliente->apellido,
+            'direccion'       => $cliente->direccion,
+            'ciudad'          => $cliente->ciudad,
+            'numero_contacto' => $cliente->numero_contacto,
+            'email'           => $cliente->email,
+        ]);
+    }
+
+    /**
      * Calcula el próximo número de orden para una concesión.
      * Usa el máximo número existente en ordenes_servicio para esa concesión.
      * Si no existen órdenes, toma numero_orden_siguiente de la tabla concessions.
      */
-    private function proximoNumeroOrden(int $idConcession): int|string
+    private function proximoNumeroOrden(int $idConcession)
     {
         $concesion = \App\Models\Concession::find($idConcession);
         if (!$concesion) {
