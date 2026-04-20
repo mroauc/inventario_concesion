@@ -156,6 +156,7 @@ class OrdenServicioController extends Controller
             $orden->numero = $numeroOrden;
             $orden->id_concession = auth()->user()->id_concession;
             $orden->folio_garantia = $request->folio_garantia;
+            $orden->tipo_asistencia = $request->tipo_asistencia;
             $orden->tipo_servicio = $request->tipo_servicio;
             $orden->fecha_orden = now();
             $orden->fecha_visita = $request->fecha_visita;
@@ -216,7 +217,7 @@ class OrdenServicioController extends Controller
             ->where('estado', true)
             ->with('tipoArtefacto')
             ->orderBy('tipo_artefacto_id')
-            ->orderBy('nombre')
+            ->orderBy('marca')
             ->get();
         $tecnicos = Tecnico::where('id_concession', auth()->user()->id_concession)->get();
         $productos = Product::where('id_concession', auth()->user()->id_concession)->get();
@@ -240,6 +241,7 @@ class OrdenServicioController extends Controller
             $orden = OrdenServicio::findOrFail($id);
             // numero no se modifica: es correlativo asignado al crear
             $orden->folio_garantia = $request->folio_garantia;
+            $orden->tipo_asistencia = $request->tipo_asistencia;
             $orden->tipo_servicio = $request->tipo_servicio;
             $orden->fecha_visita = $request->fecha_visita;
             $orden->cliente_id = $request->cliente_id;

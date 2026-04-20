@@ -128,6 +128,23 @@
                             </div>
                             <div class="col-6">
                                 <div class="form-group">
+                                    <label class="font-weight-medium">Tipo de Asistencia</label>
+                                    <select class="form-control" name="tipo_asistencia" id="tipo_asistencia">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="garantia_extendida" {{ old('tipo_asistencia', $orden->tipo_asistencia) == 'garantia_extendida' ? 'selected' : '' }}>Asistencia garantía extendida</option>
+                                        <option value="garantia_fabrica"   {{ old('tipo_asistencia', $orden->tipo_asistencia) == 'garantia_fabrica'   ? 'selected' : '' }}>Asistencia garantía fábrica</option>
+                                        <option value="garantia_trabajo"   {{ old('tipo_asistencia', $orden->tipo_asistencia) == 'garantia_trabajo'   ? 'selected' : '' }}>Asistencia garantía de trabajo</option>
+                                        <option value="fuera_garantia"     {{ old('tipo_asistencia', $orden->tipo_asistencia) == 'fuera_garantia'     ? 'selected' : '' }}>Asistencia fuera garantía</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        @php
+                            $mostrarFolio = in_array(old('tipo_asistencia', $orden->tipo_asistencia), ['garantia_extendida', 'garantia_fabrica']);
+                        @endphp
+                        <div class="row" id="folio-garantia-row" style="{{ $mostrarFolio ? '' : 'display:none;' }}">
+                            <div class="col-12">
+                                <div class="form-group">
                                     <label class="font-weight-medium">Folio Garantía</label>
                                     <input type="text" class="form-control" name="folio_garantia"
                                            value="{{ old('folio_garantia', $orden->folio_garantia) }}" placeholder="Opcional">
@@ -298,6 +315,15 @@ $(document).ready(function () {
 
     // ── Select2 ──────────────────────────────────────────────────────────────
     $('select[name="cliente_id"], select[name="artefacto_id"], select[name="tecnico_id"]').select2({ width: '100%' });
+
+    // ── Tipo asistencia → folio garantía ─────────────────────────────────────
+    function toggleFolioGarantia() {
+        const val = $('#tipo_asistencia').val();
+        const mostrar = val === 'garantia_extendida' || val === 'garantia_fabrica';
+        $('#folio-garantia-row').toggle(mostrar);
+        if (!mostrar) $('input[name="folio_garantia"]').val('');
+    }
+    $('#tipo_asistencia').on('change', toggleFolioGarantia);
 
     // ── Datos cliente AJAX ────────────────────────────────────────────────────
     function cargarDatosCliente(clienteId) {
