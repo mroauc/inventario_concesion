@@ -65,6 +65,8 @@ class ConcessionController extends AppBaseController
             'id_representative' => $input['id_representative']
         ]);
 
+        \App\Models\TipoArtefacto::cargarPredeterminados($concession->id);
+
         Flash::success('Concession saved successfully.');
 
         return redirect(route('concessions.index'));

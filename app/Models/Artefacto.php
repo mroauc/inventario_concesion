@@ -10,17 +10,22 @@ class Artefacto extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre',
         'marca',
         'modelo',
         'descripcion',
         'estado',
-        'id_concession'
+        'id_concession',
+        'tipo_artefacto_id',
     ];
 
     protected $casts = [
         'estado' => 'boolean'
     ];
+
+    public function tipoArtefacto()
+    {
+        return $this->belongsTo(TipoArtefacto::class);
+    }
 
     public function ordenesServicio()
     {

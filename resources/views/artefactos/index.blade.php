@@ -5,11 +5,11 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Órdenes de Servicio</h1>
+                    <h1>Artefactos</h1>
                 </div>
                 <div class="col-sm-6">
-                    <a class="btn btn-primary float-right" href="{{ route('ordenes_servicio.create') }}">
-                        Crear Nueva Orden
+                    <a class="btn btn-brand float-right" href="{{ route('artefactos.create') }}">
+                        <i class="fas fa-plus mr-1"></i> Agregar Nuevo
                     </a>
                 </div>
             </div>
@@ -19,19 +19,17 @@
     <div class="content px-3">
         @include('flash-message')
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped" id="ordenes-table">
+        <div class="card card-outline card-primary card-brand-top shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive p-3">
+                    <table class="table table-striped" id="artefactos-table">
                         <thead>
                             <tr>
-                                <th>Número</th>
-                                <th>Cliente</th>
-                                <th>Tipo Servicio</th>
-                                <th>Fecha Orden</th>
+                                <th>Tipo</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Descripción</th>
                                 <th>Estado</th>
-                                <th>Técnico</th>
-                                <th>Costo Total</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -44,24 +42,23 @@
 @push('page_scripts')
     <script>
         $(document).ready(function () {
-            $('#ordenes-table').DataTable({
+            $('#artefactos-table').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
-                    url: '{{ route('ordenes_servicio.datatables') }}',
+                    url: '{{ route('artefactos.datatables') }}',
                     type: 'GET'
                 },
                 columns: [
                     { data: 0, orderable: true },
-                    { data: 1, orderable: false },
+                    { data: 1, orderable: true },
                     { data: 2, orderable: true },
                     { data: 3, orderable: true },
                     { data: 4, orderable: true },
-                    { data: 5, orderable: false },
-                    { data: 6, orderable: true },
-                    { data: 7, orderable: false }
+                    { data: 5, orderable: false }
                 ],
-                order: [[3, 'desc']],
+                order: [[0, 'asc']],
+                pageLength: 15,
                 language: {
                     "sProcessing":   "Procesando...",
                     "sLengthMenu":   "Mostrar _MENU_ registros",

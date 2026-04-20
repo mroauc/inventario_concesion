@@ -14,23 +14,74 @@ class ClienteController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $clientes = Cliente::where('id_concession', auth()->user()->id_concession);
+        return view('clientes.index');
+    }
 
-        if ($request->filled('search')) {
-            $search = $request->get('search');
-            $clientes->where(function($query) use ($search) {
-                $query->where('nombre', 'like', "%{$search}%")
-                      ->orWhere('apellido', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('rut', 'like', "%{$search}%");
+    public function datatables(Request $request)
+    {
+        $draw   = $request->input('draw', 1);
+        $start  = $request->input('start', 0);
+        $length = $request->input('length', 15);
+        $search = $request->input('search.value', '');
+
+        $query = Cliente::where('id_concession', auth()->user()->id_concession);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                  ->orWhere('apellido', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('rut', 'like', "%{$search}%")
+                  ->orWhere('numero_contacto', 'like', "%{$search}%");
             });
         }
 
-        $clientes = $clientes->paginate(15);
+        $total    = Cliente::where('id_concession', auth()->user()->id_concession)->count();
+        $filtered = $query->count();
 
-        return view('clientes.index', compact('clientes'));
+        $orderCol  = $request->input('order.0.column', 1);
+        $orderDir  = $request->input('order.0.dir', 'asc') === 'asc' ? 'asc' : 'desc';
+        $columnMap = [0 => 'rut', 1 => 'nombre', 2 => 'email', 3 => 'numero_contacto', 4 => 'tipo_cliente', 5 => 'estado'];
+        $sortColumn = $columnMap[$orderCol] ?? 'nombre';
+        $query->orderBy($sortColumn, $orderDir);
+
+        $clientes = $query->skip($start)->take($length)->get();
+
+        $data = $clientes->map(function ($cliente) {
+            $tipoBadgeClass = $cliente->tipo_cliente === 'empresa' ? 'primary' : ($cliente->tipo_cliente === 'concesion' ? 'success' : 'secondary');
+            $tipoCliente    = '<span class="badge badge-' . $tipoBadgeClass . '">' . ucfirst(e($cliente->tipo_cliente)) . '</span>';
+            $estadoBadge    = '<span class="badge badge-' . ($cliente->estado ? 'success' : 'danger') . '">' . ($cliente->estado ? 'Activo' : 'Inactivo') . '</span>';
+
+            $acciones = '
+                <div class="btn-group">
+                    <a href="' . route('clientes.show', $cliente->id) . '" class="btn btn-default btn-xs"><i class="far fa-eye"></i></a>
+                    <a href="' . route('clientes.edit', $cliente->id) . '" class="btn btn-default btn-xs"><i class="far fa-edit"></i></a>
+                    <form method="POST" action="' . route('clientes.destroy', $cliente->id) . '" style="display:inline">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm(\'¿Está seguro?\')"><i class="far fa-trash-alt"></i></button>
+                    </form>
+                </div>';
+
+            return [
+                e($cliente->rut ?? '-'),
+                e($cliente->nombre) . ' ' . e($cliente->apellido),
+                e($cliente->email ?? '-'),
+                e($cliente->numero_contacto ?? '-'),
+                $tipoCliente,
+                $estadoBadge,
+                $acciones,
+            ];
+        });
+
+        return response()->json([
+            'draw'            => (int) $draw,
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $filtered,
+            'data'            => $data,
+        ]);
     }
 
     public function create()

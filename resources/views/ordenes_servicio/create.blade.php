@@ -79,12 +79,30 @@
                         <hr class="mt-2 mb-2">
                         <div class="form-group mb-0">
                             <label class="font-weight-medium">Artefacto</label>
+                            @php
+                                $artefactosPorTipo = $artefactos->groupBy(fn($a) =>
+                                    $a->tipoArtefacto ? $a->tipoArtefacto->nombre : 'Sin tipo'
+                                );
+                            @endphp
                             <select class="form-control select2" name="artefacto_id" id="artefacto_id">
                                 <option value="">Seleccionar artefacto...</option>
-                                @foreach($artefactos as $artefacto)
-                                    <option value="{{ $artefacto->id }}">
-                                        {{ $artefacto->nombre }} – {{ $artefacto->marca }} {{ $artefacto->modelo }}
-                                    </option>
+                                @foreach($artefactosPorTipo as $tipoNombre => $grupo)
+                                    <optgroup label="{{ $tipoNombre }}">
+                                        @foreach($grupo as $artefacto)
+                                            <option value="{{ $artefacto->id }}"
+                                                {{ old('artefacto_id') == $artefacto->id ? 'selected' : '' }}>
+                                                @if($artefacto->marca && $artefacto->modelo)
+                                                    {{ $artefacto->marca }} {{ $artefacto->modelo }}
+                                                @elseif($artefacto->modelo)
+                                                    {{ $artefacto->modelo }}
+                                                @elseif($artefacto->marca)
+                                                    {{ $artefacto->marca }}{{ $artefacto->descripcion ? ' – '.$artefacto->descripcion : '' }}
+                                                @else
+                                                    {{ $artefacto->descripcion ?? 'Sin identificar' }}
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
                             </select>
                         </div>

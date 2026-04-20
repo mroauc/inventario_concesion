@@ -23,22 +23,7 @@
 
         <div class="card">
             <div class="card-body p-0">
-                <div class="row p-3">
-                    <div class="col-md-6">
-                        <form method="GET" action="{{ route('clientes.index') }}">
-                            <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Buscar clientes..." value="{{ request('search') }}">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="submit">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
+                <div class="table-responsive p-3">
                     <table class="table table-striped" id="clientes-table">
                         <thead>
                             <tr>
@@ -51,52 +36,52 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        @foreach($clientes as $cliente)
-                            <tr>
-                                <td>{{ $cliente->rut ?? '-' }}</td>
-                                <td>{{ $cliente->nombre }} {{ $cliente->apellido }}</td>
-                                <td>{{ $cliente->email }}</td>
-                                <td>{{ $cliente->numero_contacto }}</td>
-                                <td>
-                                    <span class="badge badge-{{ $cliente->tipo_cliente == 'empresa' ? 'primary' : ($cliente->tipo_cliente == 'concesion' ? 'success' : 'secondary') }}">
-                                        {{ ucfirst($cliente->tipo_cliente) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-{{ $cliente->estado ? 'success' : 'danger' }}">
-                                        {{ $cliente->estado ? 'Activo' : 'Inactivo' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class='btn-group'>
-                                        <a href="{{ route('clientes.show', [$cliente->id]) }}" class='btn btn-default btn-xs'>
-                                            <i class="far fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('clientes.edit', [$cliente->id]) }}" class='btn btn-default btn-xs'>
-                                            <i class="far fa-edit"></i>
-                                        </a>
-                                        <form method="POST" action="{{ route('clientes.destroy', [$cliente->id]) }}" style="display: inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class='btn btn-danger btn-xs' onclick="return confirm('¿Está seguro?')">
-                                                <i class="far fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
                     </table>
-                </div>
-
-                <div class="card-footer clearfix">
-                    <div class="float-right">
-                        {{ $clientes->appends(request()->query())->links() }}
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+@push('page_scripts')
+    <script>
+        $(document).ready(function () {
+            $('#clientes-table').DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: '{{ route('clientes.datatables') }}',
+                    type: 'GET'
+                },
+                columns: [
+                    { data: 0, orderable: true },
+                    { data: 1, orderable: true },
+                    { data: 2, orderable: true },
+                    { data: 3, orderable: false },
+                    { data: 4, orderable: true },
+                    { data: 5, orderable: true },
+                    { data: 6, orderable: false }
+                ],
+                order: [[1, 'asc']],
+                pageLength: 15,
+                language: {
+                    "sProcessing":   "Procesando...",
+                    "sLengthMenu":   "Mostrar _MENU_ registros",
+                    "sZeroRecords":  "No se encontraron resultados",
+                    "sEmptyTable":   "Ningún dato disponible en esta tabla",
+                    "sInfo":         "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty":    "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sSearch":       "Buscar:",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":     "Último",
+                        "sNext":     "Siguiente",
+                        "sPrevious": "Anterior"
+                    }
+                }
+            });
+        });
+    </script>
+@endpush
 @endsection

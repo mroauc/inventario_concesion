@@ -17,14 +17,105 @@ class OrdenServicioController extends Controller
 {
     public function index()
     {
-        $ordenes = OrdenServicio::where('id_concession', auth()->user()->id_concession)->with(['cliente', 'tecnico'])->get();
-        return view('ordenes_servicio.index', compact('ordenes'));
+        return view('ordenes_servicio.index');
+    }
+
+    public function datatables(Request $request)
+    {
+        $draw   = $request->input('draw', 1);
+        $start  = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        $search = $request->input('search.value', '');
+
+        $query = OrdenServicio::where('id_concession', auth()->user()->id_concession)
+            ->with(['cliente', 'tecnico']);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('numero', 'like', "%{$search}%")
+                  ->orWhere('tipo_servicio', 'like', "%{$search}%")
+                  ->orWhere('estado', 'like', "%{$search}%")
+                  ->orWhereHas('cliente', function ($q2) use ($search) {
+                      $q2->where('nombre', 'like', "%{$search}%")
+                         ->orWhere('apellido', 'like', "%{$search}%")
+                         ->orWhere('rut', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('tecnico', function ($q2) use ($search) {
+                      $q2->where('nombre', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $total    = OrdenServicio::where('id_concession', auth()->user()->id_concession)->count();
+        $filtered = $query->count();
+
+        // Columnas ordenables: 0=numero, 1=cliente, 2=tipo_servicio, 3=fecha_orden, 4=estado, 5=tecnico, 6=costo_total
+        $orderCol   = $request->input('order.0.column', 3);
+        $orderDir   = $request->input('order.0.dir', 'desc') === 'asc' ? 'asc' : 'desc';
+        $columnMap  = [0 => 'numero', 2 => 'tipo_servicio', 3 => 'fecha_orden', 4 => 'estado', 6 => 'costo_total'];
+        $sortColumn = $columnMap[$orderCol] ?? 'fecha_orden';
+        $query->orderBy($sortColumn, $orderDir);
+
+        $ordenes = $query->skip($start)->take($length)->get();
+
+        $data = $ordenes->map(function ($orden) {
+            $cliente = $orden->cliente
+                ? (($orden->cliente->rut ? '<small class="text-muted d-block">' . $orden->cliente->rut . '</small>' : '')
+                    . e($orden->cliente->nombre) . ' ' . e($orden->cliente->apellido))
+                : '-';
+
+            $tipoServicio = '<span class="badge badge-info">' . ucfirst(e($orden->tipo_servicio)) . '</span>';
+
+            $estadoBadge = [
+                'pendiente'   => '<span class="badge badge-warning">Pendiente</span>',
+                'en_progreso' => '<span class="badge badge-primary">En Progreso</span>',
+                'finalizada'  => '<span class="badge badge-success">Finalizada</span>',
+                'cancelada'   => '<span class="badge badge-danger">Cancelada</span>',
+            ];
+            $estado = $estadoBadge[$orden->estado] ?? e($orden->estado);
+
+            $tecnico = $orden->tecnico ? e($orden->tecnico->nombre) : 'Sin asignar';
+
+            $acciones = '
+                <div class="btn-group">
+                    <a href="' . route('ordenes_servicio.show', $orden->id) . '" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                    <a href="' . route('ordenes_servicio.edit', $orden->id) . '" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                    <form method="POST" action="' . route('ordenes_servicio.destroy', $orden->id) . '" style="display:inline">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'¿Está seguro?\')"><i class="fas fa-trash"></i></button>
+                    </form>
+                </div>';
+
+            return [
+                e($orden->numero),
+                $cliente,
+                $tipoServicio,
+                $orden->fecha_orden ? $orden->fecha_orden->format('d/m/Y H:i') : '-',
+                $estado,
+                $tecnico,
+                '$' . number_format($orden->costo_total, 0, ',', '.'),
+                $acciones,
+            ];
+        });
+
+        return response()->json([
+            'draw'            => (int) $draw,
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $filtered,
+            'data'            => $data,
+        ]);
     }
 
     public function create()
     {
         $clientes = Cliente::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
-        $artefactos = Artefacto::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
+        $artefactos = Artefacto::where('id_concession', auth()->user()->id_concession)
+            ->where('estado', true)
+            ->with('tipoArtefacto')
+            ->orderBy('tipo_artefacto_id')
+            ->orderBy('marca')
+            ->get();
         $tecnicos = Tecnico::where('id_concession', auth()->user()->id_concession)->get();
         $productos = Product::where('id_concession', auth()->user()->id_concession)->get();
         $servicios = Servicio::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
@@ -120,11 +211,16 @@ class OrdenServicioController extends Controller
     public function edit($id)
     {
         $orden = OrdenServicio::with('detalles')->findOrFail($id);
-        $clientes = Cliente::where('estado', true)->get();
-        $artefactos = Artefacto::where('estado', true)->get();
-        $tecnicos = Tecnico::all();
-        $productos = Product::all();
-        $servicios = Servicio::where('estado', true)->get();
+        $clientes = Cliente::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
+        $artefactos = Artefacto::where('id_concession', auth()->user()->id_concession)
+            ->where('estado', true)
+            ->with('tipoArtefacto')
+            ->orderBy('tipo_artefacto_id')
+            ->orderBy('nombre')
+            ->get();
+        $tecnicos = Tecnico::where('id_concession', auth()->user()->id_concession)->get();
+        $productos = Product::where('id_concession', auth()->user()->id_concession)->get();
+        $servicios = Servicio::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
         
         return view('ordenes_servicio.edit', compact('orden', 'clientes', 'artefactos', 'tecnicos', 'productos', 'servicios'));
     }

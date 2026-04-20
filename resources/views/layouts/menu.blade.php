@@ -59,7 +59,7 @@
      SERVICIO TÉCNICO (Submenu)
      ============================================= --}}
 @php
-    $servicioActivo = Request::is('ordenes_servicio*') || Request::is('tecnicos*') || Request::is('clientes*') || Request::is('servicios*');
+    $servicioActivo = Request::is('ordenes_servicio*') || Request::is('tecnicos*') || Request::is('clientes*') || Request::is('servicios*') || Request::is('artefactos*') || Request::is('tipo_artefactos*');
 @endphp
 <li class="nav-item has-treeview {{ $servicioActivo ? 'menu-open' : '' }}">
     <a href="#" class="nav-link {{ $servicioActivo ? 'active' : '' }}">
@@ -96,6 +96,20 @@
                class="nav-link {{ Request::is('servicios*') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Servicios</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('artefactos.index') }}"
+               class="nav-link {{ Request::is('artefactos*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Artefactos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('tipo_artefactos.index') }}"
+               class="nav-link {{ Request::is('tipo_artefactos*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Tipos de Artefacto</p>
             </a>
         </li>
     </ul>

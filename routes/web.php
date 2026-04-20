@@ -50,6 +50,7 @@ Route::get('/product/importar', [App\Http\Controllers\ProductController::class, 
 Route::post('/product/importar', [App\Http\Controllers\ProductController::class, 'import_products'])->name('products.import');
 
 Route::get('/historial', [App\Http\Controllers\LogsController::class, 'index'])->name('logs.index');
+Route::get('/historial/datatables', [App\Http\Controllers\LogsController::class, 'datatables'])->name('logs.datatables')->middleware('auth');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -60,6 +61,7 @@ Route::resource('stores', App\Http\Controllers\StoreController::class);
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');
 
 Route::post('clientes/{cliente}/coordenadas', [App\Http\Controllers\ClienteController::class, 'updateCoordenadas'])->name('clientes.updateCoordenadas');
+Route::get('clientes-datatables', [App\Http\Controllers\ClienteController::class, 'datatables'])->name('clientes.datatables');
 Route::resource('clientes', App\Http\Controllers\ClienteController::class);
 
 Route::resource('servicios', App\Http\Controllers\ServicioController::class);
@@ -67,4 +69,9 @@ Route::resource('servicios', App\Http\Controllers\ServicioController::class);
 Route::resource('tecnicos', App\Http\Controllers\TecnicoController::class);
 
 Route::get('clientes/{cliente}/datos', [App\Http\Controllers\OrdenServicioController::class, 'clienteDatos'])->name('clientes.datos');
+Route::get('ordenes-datatables', [App\Http\Controllers\OrdenServicioController::class, 'datatables'])->name('ordenes_servicio.datatables')->middleware('auth');
 Route::resource('ordenes_servicio', App\Http\Controllers\OrdenServicioController::class);
+
+Route::resource('tipo_artefactos', App\Http\Controllers\TipoArtefactoController::class)->except(['show']);
+Route::get('artefactos-datatables', [App\Http\Controllers\ArtefactoController::class, 'datatables'])->name('artefactos.datatables')->middleware('auth');
+Route::resource('artefactos', App\Http\Controllers\ArtefactoController::class);
