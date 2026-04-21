@@ -28,7 +28,7 @@
     <label for="marca">Marca:</label>
     <input type="text" name="marca" id="marca" class="form-control"
            value="{{ old('marca', $artefacto->marca ?? '') }}"
-           placeholder="Ej: Samsung">
+           placeholder="Ej: Electrolux">
 </div>
 
 <!-- Modelo Field -->
@@ -36,12 +36,12 @@
     <label for="modelo">Modelo:</label>
     <input type="text" name="modelo" id="modelo" class="form-control"
            value="{{ old('modelo', $artefacto->modelo ?? '') }}"
-           placeholder="Ej: WF16T6500GW">
+           placeholder="Ej: Premium Care 16ZS">
 </div>
 
 <!-- Descripcion Field -->
 <div class="form-group col-sm-12">
     <label for="descripcion">Descripción:</label>
     <textarea name="descripcion" id="descripcion" class="form-control"
-              rows="3" placeholder="Ej: Carga frontal 10 kg, clase energética A+++">{{ old('descripcion', $artefacto->descripcion ?? '') }}</textarea>
+              rows="3" placeholder="Ej: Superior 16 Kg">{{ old('descripcion', $artefacto->descripcion ?? '') }}</textarea>
 </div>
