@@ -60,6 +60,7 @@
      ============================================= --}}
 @php
     $servicioActivo = Request::is('ordenes_servicio*') || Request::is('tecnicos*') || Request::is('clientes*') || Request::is('servicios*') || Request::is('artefactos*') || Request::is('tipo_artefactos*');
+    $artefactosActivo = Request::is('artefactos*') || Request::is('tipo_artefactos*');
 @endphp
 <li class="nav-item has-treeview {{ $servicioActivo ? 'menu-open' : '' }}">
     <a href="#" class="nav-link {{ $servicioActivo ? 'active' : '' }}">
@@ -100,9 +101,23 @@
         </li>
         <li class="nav-item">
             <a href="{{ route('artefactos.index') }}"
-               class="nav-link {{ Request::is('artefactos*') ? 'active' : '' }}">
+               class="nav-link {{ Request::is('artefactos') || Request::is('artefactos/create') || Request::is('artefactos/*/edit') || Request::is('artefactos/*') && !Request::is('artefactos/importar') && !Request::is('artefactos/historial-importacion') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Artefactos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('artefactos.index_importar') }}"
+               class="nav-link {{ Request::is('artefactos/importar') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Importar Artefactos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('artefactos.historial') }}"
+               class="nav-link {{ Request::is('artefactos/historial-importacion') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Historial Importación</p>
             </a>
         </li>
         <li class="nav-item">

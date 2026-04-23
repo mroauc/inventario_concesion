@@ -74,4 +74,7 @@ Route::resource('ordenes_servicio', App\Http\Controllers\OrdenServicioController
 
 Route::resource('tipo_artefactos', App\Http\Controllers\TipoArtefactoController::class)->except(['show']);
 Route::get('artefactos-datatables', [App\Http\Controllers\ArtefactoController::class, 'datatables'])->name('artefactos.datatables')->middleware('auth');
+Route::get('artefactos/importar', [App\Http\Controllers\ArtefactoController::class, 'index_importar'])->name('artefactos.index_importar')->middleware('auth');
+Route::post('artefactos/importar', [App\Http\Controllers\ArtefactoController::class, 'importar'])->name('artefactos.importar')->middleware('auth');
+Route::get('artefactos/historial-importacion', [App\Http\Controllers\ArtefactoController::class, 'historial'])->name('artefactos.historial')->middleware('auth');
 Route::resource('artefactos', App\Http\Controllers\ArtefactoController::class);

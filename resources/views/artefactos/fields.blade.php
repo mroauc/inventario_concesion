@@ -34,9 +34,15 @@
 <!-- Marca Field -->
 <div class="form-group col-sm-6">
     <label for="marca">Marca:</label>
-    <input type="text" name="marca" id="marca" class="form-control"
-           value="{{ old('marca', $artefacto->marca ?? '') }}"
-           placeholder="Ej: Electrolux">
+    <select name="marca" id="marca" class="form-control select2">
+        <option value="">Sin marca asignada</option>
+        @foreach(['Electrolux', 'Fensa', 'Mademsa', 'Somela'] as $marca)
+            <option value="{{ $marca }}"
+                {{ old('marca', $artefacto->marca ?? '') == $marca ? 'selected' : '' }}>
+                {{ $marca }}
+            </option>
+        @endforeach
+    </select>
 </div>
 
 <!-- Modelo Field -->
