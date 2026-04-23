@@ -117,25 +117,22 @@ class OrdenServicioController extends Controller
             ->orderBy('marca')
             ->get();
         $tecnicos = Tecnico::where('id_concession', auth()->user()->id_concession)->get();
-        $productos = Product::where('id_concession', auth()->user()->id_concession)->get();
-        $servicios = Servicio::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
 
         $proximoNumero = $this->proximoNumeroOrden(auth()->user()->id_concession);
 
-        return view('ordenes_servicio.create', compact('clientes', 'artefactos', 'tecnicos', 'productos', 'servicios', 'proximoNumero'));
+        return view('ordenes_servicio.create', compact('clientes', 'artefactos', 'tecnicos', 'proximoNumero'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'cliente_id' => 'required|exists:clientes,id',
-            'descripcion_falla' => 'required|string',
-            'tipo_atencion' => 'required|in:taller,terreno',
-            'detalles' => 'required|array|min:1',
-            'detalles.*.tipo' => 'required|in:producto,servicio',
-            'detalles.*.id' => 'required|integer',
-            'detalles.*.cantidad' => 'required|integer|min:1',
-            'detalles.*.precio' => 'required|numeric|min:0'
+            'cliente_id'           => 'required|exists:clientes,id',
+            'descripcion_falla'    => 'required|string',
+            'tipo_atencion'        => 'required|in:taller,terreno',
+            'detalles.*.tipo'      => 'in:producto,servicio',
+            'detalles.*.id'        => 'integer',
+            'detalles.*.cantidad'  => 'integer|min:1',
+            'detalles.*.precio'    => 'numeric|min:0',
         ]);
 
         try {
@@ -171,7 +168,7 @@ class OrdenServicioController extends Controller
             $orden->save();
 
             $costoTotal = 0;
-            foreach ($request->detalles as $detalle) {
+            foreach ($request->input('detalles', []) as $detalle) {
                 $ordenDetalle = new OrdenServicioDetalle();
                 $ordenDetalle->orden_servicio_id = $orden->id;
                 $ordenDetalle->cantidad = $detalle['cantidad'];
@@ -211,7 +208,7 @@ class OrdenServicioController extends Controller
 
     public function edit($id)
     {
-        $orden = OrdenServicio::with('detalles')->findOrFail($id);
+        $orden = OrdenServicio::with(['detalles.producto', 'detalles.servicio'])->findOrFail($id);
         $clientes = Cliente::where('id_concession', auth()->user()->id_concession)->where('estado', true)->get();
         $artefactos = Artefacto::where('id_concession', auth()->user()->id_concession)
             ->where('estado', true)
@@ -229,29 +226,53 @@ class OrdenServicioController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'cliente_id' => 'required|exists:clientes,id',
-            'descripcion_falla' => 'required|string',
-            'tipo_atencion' => 'required|in:taller,terreno',
-            'estado' => 'required|in:pendiente,en_progreso,finalizada,cancelada'
+            'cliente_id'           => 'required|exists:clientes,id',
+            'descripcion_falla'    => 'required|string',
+            'tipo_atencion'        => 'required|in:taller,terreno',
+            'estado'               => 'required|in:pendiente,en_progreso,finalizada,cancelada',
+            'detalles.*.tipo'      => 'in:producto,servicio',
+            'detalles.*.id'        => 'integer',
+            'detalles.*.cantidad'  => 'integer|min:1',
+            'detalles.*.precio'    => 'numeric|min:0',
         ]);
 
         try {
             DB::beginTransaction();
 
             $orden = OrdenServicio::findOrFail($id);
-            // numero no se modifica: es correlativo asignado al crear
-            $orden->folio_garantia = $request->folio_garantia;
-            $orden->tipo_asistencia = $request->tipo_asistencia;
-            $orden->tipo_servicio = $request->tipo_servicio;
-            $orden->fecha_visita = $request->fecha_visita;
-            $orden->cliente_id = $request->cliente_id;
-            $orden->artefacto_id = $request->artefacto_id;
+            $orden->folio_garantia    = $request->folio_garantia;
+            $orden->tipo_asistencia   = $request->tipo_asistencia;
+            $orden->tipo_servicio     = $request->tipo_servicio;
+            $orden->fecha_visita      = $request->fecha_visita;
+            $orden->cliente_id        = $request->cliente_id;
+            $orden->artefacto_id      = $request->artefacto_id;
             $orden->descripcion_falla = $request->descripcion_falla;
-            $orden->observaciones = $request->observaciones;
-            $orden->tipo_atencion = $request->tipo_atencion;
-            $orden->valor_visita = $request->valor_visita;
-            $orden->tecnico_id = $request->tecnico_id;
-            $orden->estado = $request->estado;
+            $orden->observaciones     = $request->observaciones;
+            $orden->tipo_atencion     = $request->tipo_atencion;
+            $orden->valor_visita      = $request->valor_visita;
+            $orden->tecnico_id        = $request->tecnico_id;
+            $orden->estado            = $request->estado;
+
+            // Reemplazar detalles por los enviados en el formulario
+            $orden->detalles()->delete();
+            $costoTotal = 0;
+            foreach ($request->input('detalles', []) as $detalle) {
+                $d = new OrdenServicioDetalle();
+                $d->orden_servicio_id = $orden->id;
+                $d->cantidad          = $detalle['cantidad'];
+                $d->precio_unitario   = $detalle['precio'];
+                $d->subtotal          = $detalle['cantidad'] * $detalle['precio'];
+                $d->nota              = $detalle['nota'] ?? null;
+                if ($detalle['tipo'] === 'producto') {
+                    $d->producto_id = $detalle['id'];
+                } else {
+                    $d->servicio_id = $detalle['id'];
+                }
+                $d->save();
+                $costoTotal += $d->subtotal;
+            }
+
+            $orden->costo_total = $costoTotal + ($orden->valor_visita ?? 0);
             $orden->save();
 
             DB::commit();

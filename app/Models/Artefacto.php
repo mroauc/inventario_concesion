@@ -10,12 +10,13 @@ class Artefacto extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tipo_artefacto_id',
+        'codigo',
         'marca',
         'modelo',
         'descripcion',
         'estado',
         'id_concession',
-        'tipo_artefacto_id',
     ];
 
     protected $casts = [

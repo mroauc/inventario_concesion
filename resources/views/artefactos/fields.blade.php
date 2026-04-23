@@ -23,6 +23,14 @@
     </div>
 </div>
 
+<!-- Codigo Field -->
+<div class="form-group col-sm-6">
+    <label for="codigo">Código:</label>
+    <input type="text" name="codigo" id="codigo" class="form-control"
+           value="{{ old('codigo', $artefacto->codigo ?? '') }}"
+           placeholder="Ej: ELX-PC16ZS">
+</div>
+
 <!-- Marca Field -->
 <div class="form-group col-sm-6">
     <label for="marca">Marca:</label>

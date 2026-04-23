@@ -32,6 +32,7 @@ class ArtefactoController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('marca',        'like', "%{$search}%")
                   ->orWhere('modelo',      'like', "%{$search}%")
+                  ->orWhere('codigo',      'like', "%{$search}%")
                   ->orWhere('descripcion', 'like', "%{$search}%")
                   ->orWhereHas('tipoArtefacto', function ($q2) use ($search) {
                       $q2->where('nombre', 'like', "%{$search}%");
@@ -44,7 +45,7 @@ class ArtefactoController extends Controller
 
         $orderCol  = $request->input('order.0.column', 0);
         $orderDir  = $request->input('order.0.dir', 'asc') === 'asc' ? 'asc' : 'desc';
-        $columnMap = [1 => 'marca', 2 => 'modelo', 3 => 'descripcion', 4 => 'estado'];
+        $columnMap = [1 => 'codigo', 2 => 'marca', 3 => 'modelo', 4 => 'descripcion', 5 => 'estado'];
         if (isset($columnMap[$orderCol])) {
             $query->orderBy($columnMap[$orderCol], $orderDir);
         } else {
@@ -71,6 +72,7 @@ class ArtefactoController extends Controller
 
             return [
                 e($artefacto->tipoArtefacto->nombre ?? '—'),
+                e($artefacto->codigo ?? '—'),
                 e($artefacto->marca ?? '—'),
                 e($artefacto->modelo ?? '—'),
                 e(\Str::limit($artefacto->descripcion ?? '', 50) ?: '—'),
@@ -98,6 +100,7 @@ class ArtefactoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'codigo'            => 'nullable|string|max:255',
             'marca'             => 'nullable|string|max:255',
             'modelo'            => 'nullable|string|max:255',
             'descripcion'       => 'nullable|string',
@@ -105,6 +108,7 @@ class ArtefactoController extends Controller
         ]);
 
         Artefacto::create([
+            'codigo'            => $request->codigo,
             'marca'             => $request->marca,
             'modelo'            => $request->modelo,
             'descripcion'       => $request->descripcion,
@@ -138,6 +142,7 @@ class ArtefactoController extends Controller
         abort_if($artefacto->id_concession != auth()->user()->id_concession, 403);
 
         $request->validate([
+            'codigo'            => 'nullable|string|max:255',
             'marca'             => 'nullable|string|max:255',
             'modelo'            => 'nullable|string|max:255',
             'descripcion'       => 'nullable|string',
@@ -145,6 +150,7 @@ class ArtefactoController extends Controller
         ]);
 
         $artefacto->update([
+            'codigo'            => $request->codigo,
             'marca'             => $request->marca,
             'modelo'            => $request->modelo,
             'descripcion'       => $request->descripcion,

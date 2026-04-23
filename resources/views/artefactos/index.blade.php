@@ -26,6 +26,7 @@
                         <thead>
                             <tr>
                                 <th>Tipo</th>
+                                <th>Código</th>
                                 <th>Marca</th>
                                 <th>Modelo</th>
                                 <th>Descripción</th>
@@ -55,7 +56,8 @@
                     { data: 2, orderable: true },
                     { data: 3, orderable: true },
                     { data: 4, orderable: true },
-                    { data: 5, orderable: false }
+                    { data: 5, orderable: true },
+                    { data: 6, orderable: false }
                 ],
                 order: [[0, 'asc']],
                 pageLength: 15,

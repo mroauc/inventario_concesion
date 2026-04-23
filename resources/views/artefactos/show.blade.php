@@ -33,6 +33,10 @@
                         </p>
                     </div>
                     <div class="col-sm-6">
+                        <strong>Código:</strong>
+                        <p>{{ $artefacto->codigo ?? '—' }}</p>
+                    </div>
+                    <div class="col-sm-6">
                         <strong>Marca:</strong>
                         <p>{{ $artefacto->marca ?? '—' }}</p>
                     </div>

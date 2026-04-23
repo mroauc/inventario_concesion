@@ -57,17 +57,20 @@
                                 @foreach($artefactosPorTipo as $tipoNombre => $grupo)
                                     <optgroup label="{{ $tipoNombre }}">
                                         @foreach($grupo as $artefacto)
+                                            @php
+                                                if ($artefacto->marca && $artefacto->modelo)
+                                                    $label = $artefacto->marca . ' ' . $artefacto->modelo;
+                                                elseif ($artefacto->modelo)
+                                                    $label = $artefacto->modelo;
+                                                elseif ($artefacto->marca)
+                                                    $label = $artefacto->marca . ($artefacto->descripcion ? ' – ' . $artefacto->descripcion : '');
+                                                else
+                                                    $label = $artefacto->descripcion ?? 'Sin identificar';
+                                            @endphp
                                             <option value="{{ $artefacto->id }}"
+                                                data-codigo="{{ $artefacto->codigo ?? '' }}"
                                                 {{ (old('artefacto_id', $orden->artefacto_id) == $artefacto->id) ? 'selected' : '' }}>
-                                                @if($artefacto->marca && $artefacto->modelo)
-                                                    {{ $artefacto->marca }} {{ $artefacto->modelo }}
-                                                @elseif($artefacto->modelo)
-                                                    {{ $artefacto->modelo }}
-                                                @elseif($artefacto->marca)
-                                                    {{ $artefacto->marca }}{{ $artefacto->descripcion ? ' – '.$artefacto->descripcion : '' }}
-                                                @else
-                                                    {{ $artefacto->descripcion ?? 'Sin identificar' }}
-                                                @endif
+                                                {{ $label }}{{ $artefacto->codigo ? ' ('.$artefacto->codigo.')' : '' }}
                                             </option>
                                         @endforeach
                                     </optgroup>
@@ -226,71 +229,114 @@
 
         </div>{{-- /fila 1 --}}
 
-        {{-- FILA 2: Productos a ancho completo --}}
+        {{-- FILA 2: Detalles del servicio (editable) --}}
         <div class="row">
             <div class="col-12">
                 <div class="card card-outline card-warning card-brand-top shadow-sm mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title font-weight-semibold">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h3 class="card-title font-weight-semibold mb-0">
                             <i class="fas fa-list-ul mr-2 text-brand"></i>Detalles del Servicio
                         </h3>
+                        <div class="d-flex align-items-center">
+                            <select id="tipo-item" class="form-control form-control-sm mr-2" style="width:120px;">
+                                <option value="producto">Producto</option>
+                                <option value="servicio">Servicio</option>
+                            </select>
+                            <select id="item-select" class="form-control form-control-sm select2-item mr-2" style="min-width:220px;">
+                                <option value="">Seleccionar...</option>
+                                @foreach($productos as $p)
+                                    <option value="{{ $p->id }}" data-tipo="producto" data-nombre="{{ $p->name }}" data-precio="{{ $p->price ?? 0 }}">
+                                        {{ $p->name }}
+                                    </option>
+                                @endforeach
+                                @foreach($servicios as $s)
+                                    <option value="{{ $s->id }}" data-tipo="servicio" data-nombre="{{ $s->nombre_servicio }}" data-precio="{{ $s->precio ?? 0 }}" style="display:none;">
+                                        {{ $s->nombre_servicio }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="button" id="btn-agregar-item" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus mr-1"></i>Agregar
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0" id="tabla-detalles">
                                 <thead class="thead-light">
                                     <tr>
                                         <th class="pl-3">Item</th>
-                                        <th>Tipo</th>
-                                        <th class="text-center" style="width:80px;">Cant.</th>
-                                        <th class="text-right" style="width:130px;">Precio Unit.</th>
-                                        <th class="text-right" style="width:120px;">Subtotal</th>
+                                        <th style="width:100px;">Tipo</th>
+                                        <th class="text-center" style="width:90px;">Cant.</th>
+                                        <th class="text-right" style="width:150px;">Precio Unit.</th>
+                                        <th class="text-right" style="width:130px;">Subtotal</th>
                                         <th>Nota</th>
+                                        <th style="width:50px;"></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($orden->detalles as $detalle)
-                                    <tr>
+                                <tbody id="detalles-tbody">
+                                    @forelse($orden->detalles as $i => $detalle)
+                                    @php
+                                        $tipo = $detalle->producto ? 'producto' : 'servicio';
+                                        $itemId = $detalle->producto_id ?? $detalle->servicio_id;
+                                        $nombre = $detalle->producto ? $detalle->producto->name : ($detalle->servicio ? $detalle->servicio->nombre_servicio : '—');
+                                    @endphp
+                                    <tr data-idx="{{ $i }}">
                                         <td class="pl-3 font-weight-medium">
-                                            @if($detalle->producto)
-                                                {{ $detalle->producto->name }}
-                                            @elseif($detalle->servicio)
-                                                {{ $detalle->servicio->nombre_servicio }}
-                                            @endif
+                                            {{ $nombre }}
+                                            <input type="hidden" name="detalles[{{ $i }}][tipo]" value="{{ $tipo }}">
+                                            <input type="hidden" name="detalles[{{ $i }}][id]" value="{{ $itemId }}">
                                         </td>
                                         <td>
-                                            @if($detalle->producto)
-                                                <span class="badge badge-info">Producto</span>
-                                            @else
-                                                <span class="badge badge-success">Servicio</span>
-                                            @endif
+                                            <span class="badge {{ $tipo === 'producto' ? 'badge-info' : 'badge-success' }}">
+                                                {{ $tipo === 'producto' ? 'Producto' : 'Servicio' }}
+                                            </span>
                                         </td>
-                                        <td class="text-center">{{ $detalle->cantidad }}</td>
-                                        <td class="text-right">${{ number_format($detalle->precio_unitario, 0, ',', '.') }}</td>
-                                        <td class="text-right font-weight-medium">${{ number_format($detalle->subtotal, 0, ',', '.') }}</td>
-                                        <td class="text-muted small">{{ $detalle->nota }}</td>
+                                        <td class="text-center">
+                                            <input type="number" name="detalles[{{ $i }}][cantidad]"
+                                                   class="form-control form-control-sm text-center input-cantidad"
+                                                   value="{{ $detalle->cantidad }}" min="1" style="width:70px;">
+                                        </td>
+                                        <td class="text-right">
+                                            <div class="input-group input-group-sm justify-content-end">
+                                                <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                                <input type="number" name="detalles[{{ $i }}][precio]"
+                                                       class="form-control form-control-sm text-right input-precio"
+                                                       value="{{ $detalle->precio_unitario }}" min="0" style="width:100px;">
+                                            </div>
+                                        </td>
+                                        <td class="text-right font-weight-medium subtotal-cell">
+                                            ${{ number_format($detalle->subtotal, 0, ',', '.') }}
+                                        </td>
+                                        <td>
+                                            <input type="text" name="detalles[{{ $i }}][nota]"
+                                                   class="form-control form-control-sm"
+                                                   value="{{ $detalle->nota }}" placeholder="Nota opcional">
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted py-4">
+                                    <tr id="fila-vacia">
+                                        <td colspan="7" class="text-center text-muted py-4">
                                             <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                            Esta orden no tiene detalles registrados.
+                                            Sin detalles. Agregue productos o servicios arriba.
                                         </td>
                                     </tr>
                                     @endforelse
                                 </tbody>
-                                @if($orden->detalles->count() > 0)
                                 <tfoot class="thead-light">
                                     <tr>
-                                        <td colspan="3"></td>
-                                        <td class="text-right font-weight-bold">Total:</td>
-                                        <td class="text-right font-weight-bold text-success" style="font-size:1.05rem;">
+                                        <td colspan="4" class="text-right font-weight-bold">Total:</td>
+                                        <td class="text-right font-weight-bold text-success" style="font-size:1.05rem;" id="total-general">
                                             ${{ number_format($orden->costo_total, 0, ',', '.') }}
                                         </td>
-                                        <td></td>
+                                        <td colspan="2"></td>
                                     </tr>
                                 </tfoot>
-                                @endif
                             </table>
                         </div>
                     </div>
@@ -314,7 +360,27 @@
 $(document).ready(function () {
 
     // ── Select2 ──────────────────────────────────────────────────────────────
-    $('select[name="cliente_id"], select[name="artefacto_id"], select[name="tecnico_id"]').select2({ width: '100%' });
+    $('select[name="cliente_id"], select[name="tecnico_id"]').select2({ width: '100%' });
+
+    $('select[name="artefacto_id"]').select2({
+        width: '100%',
+        templateResult: function (option) {
+            if (!option.id) return option.text;
+            var codigo = $(option.element).data('codigo');
+            if (codigo) {
+                return $('<span>' + $('<span>').text(option.text.replace(' (' + codigo + ')', '')).text() + ' <small class="text-muted">(' + $('<span>').text(codigo).text() + ')</small></span>');
+            }
+            return option.text;
+        },
+        templateSelection: function (option) {
+            if (!option.id) return option.text;
+            var codigo = $(option.element).data('codigo');
+            if (codigo) {
+                return $('<span>' + $('<span>').text(option.text.replace(' (' + codigo + ')', '')).text() + ' <small class="text-muted">(' + $('<span>').text(codigo).text() + ')</small></span>');
+            }
+            return option.text;
+        }
+    });
 
     // ── Tipo asistencia → folio garantía ─────────────────────────────────────
     function toggleFolioGarantia() {
@@ -348,6 +414,118 @@ $(document).ready(function () {
             $('input[name="valor_visita"]').val('0');
         }
     });
+
+    // ── Detalles: filtrar select por tipo ─────────────────────────────────────
+    $('#tipo-item').on('change', function () {
+        const tipo = $(this).val();
+        $('#item-select option[data-tipo]').each(function () {
+            $(this).toggle($(this).data('tipo') === tipo);
+        });
+        $('#item-select').val('').trigger('change.select2');
+    });
+    // Inicializar mostrando solo productos
+    $('#item-select option[data-tipo="servicio"]').hide();
+
+    $('#item-select').select2({ width: '100%', dropdownParent: $('body') });
+
+    // ── Detalles: índice para nombres de campo ────────────────────────────────
+    function nextIndex() {
+        return $('#detalles-tbody tr[data-idx]').length > 0
+            ? Math.max(...$('#detalles-tbody tr[data-idx]').map(function () { return parseInt($(this).data('idx')); }).get()) + 1
+            : $('#detalles-tbody tr').length;
+    }
+
+    // ── Detalles: agregar fila ────────────────────────────────────────────────
+    $('#btn-agregar-item').on('click', function () {
+        const tipo   = $('#tipo-item').val();
+        const opt    = $('#item-select option:selected');
+        const itemId = opt.val();
+        if (!itemId) { alert('Seleccione un item antes de agregar.'); return; }
+
+        const nombre  = opt.data('nombre') || opt.text();
+        const precio  = parseFloat(opt.data('precio')) || 0;
+        const idx     = nextIndex();
+        const badge   = tipo === 'producto'
+            ? '<span class="badge badge-info">Producto</span>'
+            : '<span class="badge badge-success">Servicio</span>';
+
+        $('#fila-vacia').remove();
+
+        const fila = `
+        <tr data-idx="${idx}">
+            <td class="pl-3 font-weight-medium">
+                ${$('<span>').text(nombre).html()}
+                <input type="hidden" name="detalles[${idx}][tipo]" value="${tipo}">
+                <input type="hidden" name="detalles[${idx}][id]"   value="${itemId}">
+            </td>
+            <td>${badge}</td>
+            <td class="text-center">
+                <input type="number" name="detalles[${idx}][cantidad]"
+                       class="form-control form-control-sm text-center input-cantidad"
+                       value="1" min="1" style="width:70px;">
+            </td>
+            <td class="text-right">
+                <div class="input-group input-group-sm justify-content-end">
+                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                    <input type="number" name="detalles[${idx}][precio]"
+                           class="form-control form-control-sm text-right input-precio"
+                           value="${precio}" min="0" style="width:100px;">
+                </div>
+            </td>
+            <td class="text-right font-weight-medium subtotal-cell">$${formatNum(precio)}</td>
+            <td>
+                <input type="text" name="detalles[${idx}][nota]"
+                       class="form-control form-control-sm" placeholder="Nota opcional">
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+        $('#detalles-tbody').append(fila);
+        recalcularTotal();
+        $('#item-select').val('').trigger('change.select2');
+    });
+
+    // ── Detalles: eliminar fila ───────────────────────────────────────────────
+    $(document).on('click', '.btn-eliminar-detalle', function () {
+        $(this).closest('tr').remove();
+        if ($('#detalles-tbody tr').length === 0) {
+            $('#detalles-tbody').append(`
+                <tr id="fila-vacia">
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                        Sin detalles. Agregue productos o servicios arriba.
+                    </td>
+                </tr>`);
+        }
+        recalcularTotal();
+    });
+
+    // ── Detalles: recalcular subtotales y total ───────────────────────────────
+    function formatNum(n) {
+        return Math.round(n).toLocaleString('es-CL');
+    }
+
+    function recalcularTotal() {
+        let total = 0;
+        $('#detalles-tbody tr[data-idx]').each(function () {
+            const qty   = parseFloat($(this).find('.input-cantidad').val()) || 0;
+            const price = parseFloat($(this).find('.input-precio').val())   || 0;
+            const sub   = qty * price;
+            $(this).find('.subtotal-cell').text('$' + formatNum(sub));
+            total += sub;
+        });
+        const visita = parseFloat($('input[name="valor_visita"]').val()) || 0;
+        $('#total-general').text('$' + formatNum(total + visita));
+    }
+
+    $(document).on('input', '.input-cantidad, .input-precio', recalcularTotal);
+    $('input[name="valor_visita"]').on('input', recalcularTotal);
+
+    recalcularTotal();
 });
 </script>
 @endpush
