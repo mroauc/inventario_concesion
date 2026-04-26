@@ -22,15 +22,23 @@
     <form method="POST" action="{{ route('ordenes_servicio.store') }}" id="form-orden">
         @csrf
 
-        {{-- FILA 1: Cliente | Orden --}}
+        {{-- ══════════════════════════════════════════════════════════════════
+             FILA 1 · dos columnas
+             IZQ : (1) Cliente & Artefacto   +   (3) Diagnóstico inicial
+             DER : (2) Clasificación del servicio
+             Flujo mental del recepcionista: quién → qué trae → cómo lo
+             atendemos → qué falla → cargos (fila 2)
+             ══════════════════════════════════════════════════════════════════ --}}
         <div class="row">
 
-            {{-- CARD: CLIENTE --}}
+            {{-- ═════════ COLUMNA IZQUIERDA ═════════ --}}
             <div class="col-md-6">
+
+                {{-- ── (1) CLIENTE & ARTEFACTO ── --}}
                 <div class="card card-outline card-primary card-brand-top shadow-sm mb-4">
                     <div class="card-header">
                         <h3 class="card-title font-weight-semibold">
-                            <i class="fas fa-user mr-2 text-brand"></i>Cliente
+                            <i class="fas fa-user mr-2 text-brand"></i>Cliente & Artefacto
                         </h3>
                     </div>
                     <div class="card-body">
@@ -45,7 +53,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        {{-- Panel datos cliente --}}
+
+                        {{-- Panel datos cliente (aparece al elegir cliente) --}}
                         <div id="cliente-info" class="mt-3" style="display:none;">
                             <hr class="mt-2 mb-2">
                             <div class="row text-sm">
@@ -76,7 +85,9 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="mt-2 mb-2">
+
+                        <hr class="mt-3 mb-2">
+
                         <div class="form-group mb-0">
                             <label class="font-weight-medium">Artefacto</label>
                             @php
@@ -112,6 +123,7 @@
                                     </optgroup>
                                 @endforeach
                             </select>
+                            <small class="text-muted">Listado de artefactos registrados al cliente.</small>
                         </div>
 
                         {{-- Panel detalle artefacto --}}
@@ -147,17 +159,44 @@
 
                     </div>
                 </div>
-            </div>
 
-            {{-- CARD: DETALLE DE ORDEN --}}
-            <div class="col-md-6">
-                <div class="card card-outline card-info card-brand-top shadow-sm mb-4">
+                {{-- ── (3) DIAGNÓSTICO INICIAL ── --}}
+                <div class="card card-outline card-primary card-brand-top shadow-sm mb-4">
                     <div class="card-header">
                         <h3 class="card-title font-weight-semibold">
-                            <i class="fas fa-clipboard-list mr-2 text-brand"></i>Detalle de la Orden
+                            <i class="fas fa-clipboard-check mr-2 text-brand"></i>Diagnóstico inicial
                         </h3>
                     </div>
                     <div class="card-body">
+                        <div class="form-group">
+                            <label class="font-weight-medium">Descripción de la Falla <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="descripcion_falla" rows="3" required
+                                      placeholder="Describa el problema reportado por el cliente...">{{ old('descripcion_falla') }}</textarea>
+                            <small class="text-muted">Síntomas concretos — esto lo leerá el técnico.</small>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="font-weight-medium">Observaciones</label>
+                            <textarea class="form-control" name="observaciones" rows="2"
+                                      placeholder="Notas internas opcionales...">{{ old('observaciones') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>{{-- /col-md-6 IZQ --}}
+
+            {{-- ═════════ COLUMNA DERECHA ═════════ --}}
+            <div class="col-md-6">
+
+                {{-- ── (2) CLASIFICACIÓN DEL SERVICIO ── --}}
+                <div class="card card-outline card-info card-brand-top shadow-sm mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title font-weight-semibold">
+                            <i class="fas fa-clipboard-list mr-2 text-brand"></i>Clasificación del servicio
+                        </h3>
+                    </div>
+                    <div class="card-body">
+
+                        {{-- Folio readonly + Tipo de Asistencia --}}
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
@@ -173,11 +212,13 @@
                                         <option value="garantia_extendida" {{ old('tipo_asistencia') == 'garantia_extendida' ? 'selected' : '' }}>Asistencia garantía extendida</option>
                                         <option value="garantia_fabrica"   {{ old('tipo_asistencia') == 'garantia_fabrica'   ? 'selected' : '' }}>Asistencia garantía fábrica</option>
                                         <option value="garantia_trabajo"   {{ old('tipo_asistencia') == 'garantia_trabajo'   ? 'selected' : '' }}>Asistencia garantía de trabajo</option>
-                                        <option value="fuera_garantia"     {{ old('tipo_asistencia') == 'fuera_garantia'     ? 'selected' : '' }}>Asistencia fuera garantía</option>
+                                        <option value="fuera_garantia"     {{ old('tipo_asistencia') == 'fuera_garantia'     ? 'selected' : '' }}>Asistencia técnica general</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Folio garantía (condicional) --}}
                         <div class="row" id="folio-garantia-row" style="display:none;">
                             <div class="col-12">
                                 <div class="form-group">
@@ -186,6 +227,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Tipo de Atención + Técnico --}}
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
@@ -210,16 +253,16 @@
                             </div>
                         </div>
 
-                        {{-- Campos terreno --}}
+                        {{-- Campos terreno (condicional) --}}
                         <div class="row" id="terreno-fields" style="display:none;">
                             <div class="col-6">
-                                <div class="form-group">
+                                <div class="form-group mb-0">
                                     <label class="font-weight-medium">Fecha de Visita</label>
                                     <input type="datetime-local" class="form-control" name="fecha_visita" value="{{ old('fecha_visita') }}">
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="form-group">
+                                <div class="form-group mb-0">
                                     <label class="font-weight-medium">Valor Visita</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><span class="input-group-text">$</span></div>
@@ -230,32 +273,101 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="font-weight-medium">Descripción de la Falla <span class="text-danger">*</span></label>
-                            <textarea class="form-control" name="descripcion_falla" rows="2" required
-                                      placeholder="Describa el problema reportado...">{{ old('descripcion_falla') }}</textarea>
-                        </div>
-                        <div class="form-group mb-0">
-                            <label class="font-weight-medium">Observaciones</label>
-                            <textarea class="form-control" name="observaciones" rows="2"
-                                      placeholder="Notas internas opcionales...">{{ old('observaciones') }}</textarea>
-                        </div>
                     </div>
                 </div>
-            </div>
+
+            </div>{{-- /col-md-6 DER --}}
 
         </div>{{-- /fila 1 --}}
 
+        {{-- ══════════════════════════════════════════════════════════════════
+             FILA 2 · Productos / Servicios (ancho completo)
+             Se mantiene idéntico al original — suele llenarse tras el diagnóstico.
+             ══════════════════════════════════════════════════════════════════ --}}
         <div class="row">
-            <div class="col-12 d-flex justify-content-end mb-4">
-                <a href="{{ route('ordenes_servicio.index') }}" class="btn btn-secondary mr-2">
-                    <i class="fas fa-times mr-1"></i>Cancelar
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save mr-1"></i>Guardar Orden
-                </button>
+            <div class="col-12">
+                <div class="card card-outline card-success card-brand-top shadow-sm mb-4">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h3 class="card-title font-weight-semibold mb-0">
+                            <i class="fas fa-box mr-2 text-brand"></i>Productos / Servicios
+                            <small class="text-muted ml-2" style="font-size:.8rem;">opcional · se puede agregar después</small>
+                        </h3>
+                        <div class="input-group" style="max-width:420px;">
+                            <select class="form-control select2" id="item-select">
+                                <option value="">Seleccionar item para agregar...</option>
+                                <optgroup label="Servicios">
+                                    @foreach($servicios as $servicio)
+                                        <option value="servicio-{{ $servicio->id }}" data-precio="{{ $servicio->precio }}">
+                                            {{ $servicio->nombre_servicio }} – ${{ number_format($servicio->precio, 0, ',', '.') }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Productos">
+                                    @foreach($productos as $producto)
+                                        <option value="producto-{{ $producto->id }}" data-precio="0">
+                                            {{ $producto->name }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-brand" id="add-item">
+                                    <i class="fas fa-plus mr-1"></i>Agregar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="items-table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="pl-3">Item</th>
+                                        <th>Nota</th>
+                                        <th class="text-center" style="width:90px;">Cant.</th>
+                                        <th class="text-right" style="width:130px;">Precio Unit.</th>
+                                        <th class="text-right" style="width:120px;">Total</th>
+                                        <th style="width:44px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-tbody">
+                                    <tr id="items-empty-row">
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                            Ningún item agregado. Selecciona un servicio o producto arriba.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot id="items-tfoot" class="thead-light" style="display:none;">
+                                    <tr>
+                                        <td colspan="3" class="text-right pr-3">
+                                            <span id="fila-visita-label" style="display:none;" class="text-muted mr-4">
+                                                Valor visita: $<span id="resumen-visita">0</span>
+                                            </span>
+                                        </td>
+                                        <td class="text-right font-weight-bold">Total:</td>
+                                        <td class="text-right font-weight-bold text-success" style="font-size:1.05rem;">
+                                            $<span id="total-amount">0</span>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                        <a href="{{ route('ordenes_servicio.index') }}" class="btn btn-secondary mr-2">
+                            <i class="fas fa-times mr-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-1"></i>Guardar Orden
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+        </div>{{-- /fila 2 --}}
 
     </form>
 </div>
@@ -265,7 +377,7 @@
 $(document).ready(function () {
 
     // ── Select2 ──────────────────────────────────────────────────────────────
-    $('#cliente_id, select[name="tecnico_id"]').select2({ width: '100%' });
+    $('#cliente_id, #item-select, select[name="tecnico_id"]').select2({ width: '100%' });
 
     $('#artefacto_id').select2({
         width: '100%',
@@ -302,7 +414,10 @@ $(document).ready(function () {
 
     // ── Datos cliente AJAX ────────────────────────────────────────────────────
     function cargarDatosCliente(clienteId) {
-        if (!clienteId) { $('#cliente-info').hide(); return; }
+        if (!clienteId) {
+            $('#cliente-info').hide();
+            return;
+        }
         $.getJSON("{{url('/clientes')}}/" + clienteId + '/datos', function (data) {
             $('#ci-rut').text(data.rut || '—');
             $('#ci-nombre').text(data.nombre || '—');
@@ -329,10 +444,108 @@ $(document).ready(function () {
     function toggleTerrenoFields() {
         const isTerreno = $('#tipo_atencion').val() === 'terreno';
         $('#terreno-fields').toggle(isTerreno);
-        if (!isTerreno) $('input[name="fecha_visita"]').val('');
+        $('#fila-visita-label').toggle(isTerreno);
+        if (!isTerreno) {
+            $('input[name="fecha_visita"]').val('');
+            $('#valor_visita').val('0');
+            updateTotal();
+        }
     }
     $('#tipo_atencion').on('change', toggleTerrenoFields);
     toggleTerrenoFields();
+
+    // ── Agregar item ──────────────────────────────────────────────────────────
+    let itemCounter = 0;
+
+    $('#add-item').on('click', function () {
+        const $sel  = $('#item-select');
+        const value = $sel.val();
+        if (!value) return;
+
+        const text   = $sel.find('option:selected').text().split(' – ')[0].trim();
+        const precio = parseFloat($sel.find('option:selected').data('precio')) || 0;
+        const [tipo, id] = value.split('-');
+        const idx = itemCounter++;
+
+        const $row = $(`
+            <tr class="item-row">
+                <td class="pl-3 align-middle font-weight-medium">
+                    <input type="hidden" name="detalles[${idx}][tipo]" value="${tipo}">
+                    <input type="hidden" name="detalles[${idx}][id]"   value="${id}">
+                    ${text}
+                </td>
+                <td class="align-middle">
+                    <input type="text" class="form-control form-control-sm"
+                           name="detalles[${idx}][nota]" placeholder="Nota opcional">
+                </td>
+                <td class="text-center align-middle">
+                    <input type="number" class="form-control form-control-sm text-center item-cant"
+                           name="detalles[${idx}][cantidad]" value="1" min="1">
+                </td>
+                <td class="text-right align-middle">
+                    <input type="number" class="form-control form-control-sm text-right item-precio"
+                           name="detalles[${idx}][precio]" value="${precio}" step="0.01" min="0">
+                </td>
+                <td class="text-right align-middle font-weight-medium item-subtotal">
+                    $${formatCLP(precio)}
+                </td>
+                <td class="text-center align-middle">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-item" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        `);
+
+        $('#items-empty-row').hide();
+        $('#items-tbody').append($row);
+        $('#items-tfoot').show();
+        updateTotal();
+        $sel.val('').trigger('change');
+    });
+
+    // ── Eliminar item ─────────────────────────────────────────────────────────
+    $(document).on('click', '.remove-item', function () {
+        $(this).closest('.item-row').remove();
+        if ($('.item-row').length === 0) {
+            $('#items-empty-row').show();
+            $('#items-tfoot').hide();
+        }
+        updateTotal();
+    });
+
+    // ── Recalcular subtotal por fila ──────────────────────────────────────────
+    $(document).on('input', '.item-cant, .item-precio', function () {
+        const $row   = $(this).closest('.item-row');
+        const cant   = parseFloat($row.find('.item-cant').val())   || 0;
+        const precio = parseFloat($row.find('.item-precio').val()) || 0;
+        $row.find('.item-subtotal').text('$' + formatCLP(cant * precio));
+        updateTotal();
+    });
+
+    // ── Valor visita ──────────────────────────────────────────────────────────
+    $('#valor_visita').on('input', function () {
+        $('#resumen-visita').text(formatCLP(parseFloat($(this).val()) || 0));
+        updateTotal();
+    });
+
+    // ── Total general ─────────────────────────────────────────────────────────
+    function updateTotal() {
+        let subtotal = 0;
+        $('.item-row').each(function () {
+            const cant   = parseFloat($(this).find('.item-cant').val())   || 0;
+            const precio = parseFloat($(this).find('.item-precio').val()) || 0;
+            subtotal += cant * precio;
+        });
+        const visita = parseFloat($('#valor_visita').val()) || 0;
+        $('#total-amount').text(formatCLP(subtotal + visita));
+        $('#resumen-visita').text(formatCLP(visita));
+    }
+
+    // ── Formato CLP ───────────────────────────────────────────────────────────
+    function formatCLP(n) {
+        return Math.round(n).toLocaleString('es-CL');
+    }
 });
 </script>
 @endpush

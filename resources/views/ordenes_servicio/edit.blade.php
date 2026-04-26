@@ -45,39 +45,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group mb-0">
-                            <label class="font-weight-medium">Artefacto</label>
-                            @php
-                                $artefactosPorTipo = $artefactos->groupBy(fn($a) =>
-                                    $a->tipoArtefacto ? $a->tipoArtefacto->nombre : 'Sin tipo'
-                                );
-                            @endphp
-                            <select class="form-control select2" name="artefacto_id">
-                                <option value="">Seleccionar artefacto...</option>
-                                @foreach($artefactosPorTipo as $tipoNombre => $grupo)
-                                    <optgroup label="{{ $tipoNombre }}">
-                                        @foreach($grupo as $artefacto)
-                                            @php
-                                                if ($artefacto->marca && $artefacto->modelo)
-                                                    $label = $artefacto->marca . ' ' . $artefacto->modelo;
-                                                elseif ($artefacto->modelo)
-                                                    $label = $artefacto->modelo;
-                                                elseif ($artefacto->marca)
-                                                    $label = $artefacto->marca . ($artefacto->descripcion ? ' – ' . $artefacto->descripcion : '');
-                                                else
-                                                    $label = $artefacto->descripcion ?? 'Sin identificar';
-                                            @endphp
-                                            <option value="{{ $artefacto->id }}"
-                                                data-codigo="{{ $artefacto->codigo ?? '' }}"
-                                                {{ (old('artefacto_id', $orden->artefacto_id) == $artefacto->id) ? 'selected' : '' }}>
-                                                {{ $label }}{{ $artefacto->codigo ? ' ('.$artefacto->codigo.')' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
-                        </div>
-
                         {{-- Panel datos cliente --}}
                         <div id="cliente-info" class="mt-3">
                             <hr class="mt-2 mb-2">
@@ -109,6 +76,78 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="mt-2 mb-2">
+                        <div class="form-group mb-0">
+                            <label class="font-weight-medium">Artefacto</label>
+                            @php
+                                $artefactosPorTipo = $artefactos->groupBy(fn($a) =>
+                                    $a->tipoArtefacto ? $a->tipoArtefacto->nombre : 'Sin tipo'
+                                );
+                            @endphp
+                            <select class="form-control select2" name="artefacto_id">
+                                <option value="">Seleccionar artefacto...</option>
+                                @foreach($artefactosPorTipo as $tipoNombre => $grupo)
+                                    <optgroup label="{{ $tipoNombre }}">
+                                        @foreach($grupo as $artefacto)
+                                            @php
+                                                if ($artefacto->marca && $artefacto->modelo)
+                                                    $label = $artefacto->marca . ' ' . $artefacto->modelo;
+                                                elseif ($artefacto->modelo)
+                                                    $label = $artefacto->modelo;
+                                                elseif ($artefacto->marca)
+                                                    $label = $artefacto->marca . ($artefacto->descripcion ? ' – ' . $artefacto->descripcion : '');
+                                                else
+                                                    $label = $artefacto->descripcion ?? 'Sin identificar';
+                                            @endphp
+                                            <option value="{{ $artefacto->id }}"
+                                                data-codigo="{{ $artefacto->codigo ?? '' }}"
+                                                data-marca="{{ $artefacto->marca ?? '' }}"
+                                                data-modelo="{{ $artefacto->modelo ?? '' }}"
+                                                data-descripcion="{{ $artefacto->descripcion ?? '' }}"
+                                                data-tipo="{{ $artefacto->tipoArtefacto ? $artefacto->tipoArtefacto->nombre : '' }}"
+                                                {{ (old('artefacto_id', $orden->artefacto_id) == $artefacto->id) ? 'selected' : '' }}>
+                                                {{ $label }}{{ $artefacto->codigo ? ' ('.$artefacto->codigo.')' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Panel detalle artefacto --}}
+                        @php
+                            $a = $orden->artefacto;
+                        @endphp
+                        <div id="artefacto-info" class="mt-3" style="{{ $a ? '' : 'display:none;' }}">
+                            <hr class="mt-2 mb-2">
+                            <div class="row text-sm">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Código</small>
+                                    <span id="ai-codigo" class="font-weight-medium">{{ $a->codigo ?? '—' }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Tipo</small>
+                                    <span id="ai-tipo" class="font-weight-medium">{{ $a && $a->tipoArtefacto ? $a->tipoArtefacto->nombre : '—' }}</span>
+                                </div>
+                            </div>
+                            <div class="row text-sm mt-2">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Marca</small>
+                                    <span id="ai-marca" class="font-weight-medium">{{ $a->marca ?? '—' }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Modelo</small>
+                                    <span id="ai-modelo" class="font-weight-medium">{{ $a->modelo ?? '—' }}</span>
+                                </div>
+                            </div>
+                            <div class="row text-sm mt-2">
+                                <div class="col-12">
+                                    <small class="text-muted d-block">Descripción</small>
+                                    <span id="ai-descripcion" class="font-weight-medium">{{ $a->descripcion ?? '—' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -233,31 +272,39 @@
         <div class="row">
             <div class="col-12">
                 <div class="card card-outline card-warning card-brand-top shadow-sm mb-4">
-                    <div class="card-header d-flex align-items-center justify-content-between">
+                    <div class="card-header">
                         <h3 class="card-title font-weight-semibold mb-0">
                             <i class="fas fa-list-ul mr-2 text-brand"></i>Detalles del Servicio
                         </h3>
-                        <div class="d-flex align-items-center">
-                            <select id="tipo-item" class="form-control form-control-sm mr-2" style="width:120px;">
-                                <option value="producto">Producto</option>
-                                <option value="servicio">Servicio</option>
-                            </select>
-                            <select id="item-select" class="form-control form-control-sm select2-item mr-2" style="min-width:220px;">
-                                <option value="">Seleccionar...</option>
-                                @foreach($productos as $p)
-                                    <option value="{{ $p->id }}" data-tipo="producto" data-nombre="{{ $p->name }}" data-precio="{{ $p->price ?? 0 }}">
-                                        {{ $p->name }}
-                                    </option>
-                                @endforeach
-                                @foreach($servicios as $s)
-                                    <option value="{{ $s->id }}" data-tipo="servicio" data-nombre="{{ $s->nombre_servicio }}" data-precio="{{ $s->precio ?? 0 }}" style="display:none;">
-                                        {{ $s->nombre_servicio }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <button type="button" id="btn-agregar-item" class="btn btn-success btn-sm">
-                                <i class="fas fa-plus mr-1"></i>Agregar
-                            </button>
+                    </div>
+                    <div class="card-body border-bottom pb-3">
+                        <div class="d-flex align-items-end gap-2">
+                            <div>
+                                <label class="font-weight-medium mb-1 d-block" style="font-size:.85rem;">Producto / Servicio</label>
+                                <select id="item-select" class="form-control select2-item" style="width:600px;">
+                                    <option value="">Seleccionar...</option>
+                                    <optgroup label="Servicios">
+                                        @foreach($servicios as $s)
+                                            <option value="{{ $s->id }}" data-tipo="servicio" data-nombre="{{ $s->nombre_servicio }}" data-precio="{{ $s->precio ?? 0 }}">
+                                                {{ $s->nombre_servicio }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Productos">
+                                        @foreach($productos as $p)
+                                            <option value="{{ $p->id }}" data-tipo="producto" data-nombre="{{ $p->name }}" data-precio="{{ $p->price ?? 0 }}">
+                                                {{ $p->code ? '[' . $p->code . '] ' : '' }}{{ $p->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="d-block mb-1" style="font-size:.85rem;">&nbsp;</label>
+                                <button type="button" id="btn-agregar-item" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus mr-1"></i>Agregar
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -382,6 +429,20 @@ $(document).ready(function () {
         }
     });
 
+    // ── Panel detalle artefacto ───────────────────────────────────────────────
+    function actualizarPanelArtefacto() {
+        const opt = $('select[name="artefacto_id"] option:selected');
+        const id  = opt.val();
+        if (!id) { $('#artefacto-info').hide(); return; }
+        $('#ai-codigo').text(opt.data('codigo') || '—');
+        $('#ai-tipo').text(opt.data('tipo') || '—');
+        $('#ai-marca').text(opt.data('marca') || '—');
+        $('#ai-modelo').text(opt.data('modelo') || '—');
+        $('#ai-descripcion').text(opt.data('descripcion') || '—');
+        $('#artefacto-info').show();
+    }
+    $('select[name="artefacto_id"]').on('change', actualizarPanelArtefacto);
+
     // ── Tipo asistencia → folio garantía ─────────────────────────────────────
     function toggleFolioGarantia() {
         const val = $('#tipo_asistencia').val();
@@ -415,18 +476,7 @@ $(document).ready(function () {
         }
     });
 
-    // ── Detalles: filtrar select por tipo ─────────────────────────────────────
-    $('#tipo-item').on('change', function () {
-        const tipo = $(this).val();
-        $('#item-select option[data-tipo]').each(function () {
-            $(this).toggle($(this).data('tipo') === tipo);
-        });
-        $('#item-select').val('').trigger('change.select2');
-    });
-    // Inicializar mostrando solo productos
-    $('#item-select option[data-tipo="servicio"]').hide();
-
-    $('#item-select').select2({ width: '100%', dropdownParent: $('body') });
+    $('#item-select').select2({ width: '600px' });
 
     // ── Detalles: índice para nombres de campo ────────────────────────────────
     function nextIndex() {
@@ -437,8 +487,8 @@ $(document).ready(function () {
 
     // ── Detalles: agregar fila ────────────────────────────────────────────────
     $('#btn-agregar-item').on('click', function () {
-        const tipo   = $('#tipo-item').val();
         const opt    = $('#item-select option:selected');
+        const tipo   = opt.data('tipo') || 'producto';
         const itemId = opt.val();
         if (!itemId) { alert('Seleccione un item antes de agregar.'); return; }
 

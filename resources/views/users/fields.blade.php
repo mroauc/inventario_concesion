@@ -13,40 +13,49 @@
 <!-- Password Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('password', 'Contraseña') !!}
-    {!! Form::password('password', ['class' => 'form-control']) !!}
+    {!! Form::password('password', ['class' => 'form-control', 'autocomplete' => 'new-password']) !!}
+    @isset($user)
+        <small class="text-muted">Dejar en blanco para mantener la contraseña actual.</small>
+    @endisset
 </div>
 
 <!-- Confirmation Password Field -->
 <div class="form-group col-sm-6">
-      {!! Form::label('password', 'Confirmar Contraseña') !!}
+    {!! Form::label('password_confirmation', 'Confirmar Contraseña') !!}
     {!! Form::password('password_confirmation', ['class' => 'form-control']) !!}
 </div>
 
+<!-- Rol Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('Concesiones', 'Concesiones') !!}
-    @foreach ($concessions as $concession)
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="concession[{{$concession->id}}]" id="checkbox{{$concession->id}}">
-            <label class="form-check-label" for="concession[{{$concession->id}}]">{{$concession->name}}</label>
-        </div>    
-    @endforeach
-    
-    {{-- <div class="form-check">
-        <input class="form-check-input" type="checkbox" name="checkbox2" id="checkbox2">
-        <label class="form-check-label" for="checkbox2">
-        Opción 2
-        </label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" name="checkbox3" id="checkbox3">
-        <label class="form-check-label" for="checkbox3">
-            Opción 3
-        </label>
-    </div> --}}
+    {!! Form::label('role', 'Rol') !!}
+    <select name="role" class="form-control">
+        @foreach($roles as $role)
+            @php
+                $label = match($role) {
+                    'super_admin'      => 'Super Admin',
+                    'administrador'    => 'Administrador',
+                    'operador_servicio'=> 'Operador de Servicio',
+                    default            => $role,
+                };
+                $selected = isset($user) && $user->hasRole($role) ? 'selected' : '';
+            @endphp
+            <option value="{{ $role }}" {{ $selected }}>{{ $label }}</option>
+        @endforeach
+    </select>
 </div>
 
-{{-- <!-- Submit Field -->
-<div class="form-group col-sm-12">
-    {!! Form::submit('Guardar', ['class' => 'btn btn-primary']) !!}
-    <a href="{!! route('users.index') !!}" class="btn btn-default">Cancelar</a>
-</div> --}}
+<!-- Concesiones Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('concesion', 'Concesión') !!}
+    @foreach ($concessions as $concession)
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox"
+                   name="concession[{{ $concession->id }}]"
+                   id="checkbox{{ $concession->id }}"
+                   {{ isset($user) && $user->id_concession == $concession->id ? 'checked' : '' }}>
+            <label class="form-check-label" for="checkbox{{ $concession->id }}">
+                {{ $concession->name }}
+            </label>
+        </div>
+    @endforeach
+</div>

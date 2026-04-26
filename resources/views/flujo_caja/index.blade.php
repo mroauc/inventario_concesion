@@ -477,13 +477,17 @@
     {{-- BOTONES CERRAR / REABRIR --}}
     <div class="mb-4 d-flex justify-content-end">
         @if($caja->isAbierta())
-        <button class="btn btn-brand btn-lg" id="btn-cerrar-caja">
-            <i class="fas fa-lock mr-1"></i> Cerrar caja del día
-        </button>
+            @can('flujo_caja.reabrir')
+            <button class="btn btn-brand btn-lg" id="btn-cerrar-caja">
+                <i class="fas fa-lock mr-1"></i> Cerrar caja del día
+            </button>
+            @endcan
         @else
-        <button class="btn btn-outline-brand btn-lg" id="btn-reabrir-caja">
-            <i class="fas fa-lock-open mr-1"></i> Reabrir caja
-        </button>
+            @can('flujo_caja.reabrir')
+            <button class="btn btn-outline-brand btn-lg" id="btn-reabrir-caja">
+                <i class="fas fa-lock-open mr-1"></i> Reabrir caja
+            </button>
+            @endcan
         @endif
     </div>
 

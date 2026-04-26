@@ -12,6 +12,7 @@
 {{-- =============================================
      INVENTARIO (Submenu)
      ============================================= --}}
+@canany(['productos.ver', 'bodegas.ver', 'categorias.ver'])
 @php
     $inventarioActivo = Request::is('products*') || Request::is('stores*') || Request::is('categoryProducts*') || Request::is('product/importar*');
 @endphp
@@ -24,6 +25,7 @@
         </p>
     </a>
     <ul class="nav nav-treeview">
+        @can('productos.ver')
         <li class="nav-item">
             <a href="{{ route('products.index') }}"
                class="nav-link {{ Request::is('products*') ? 'active' : '' }}">
@@ -31,6 +33,8 @@
                 <p>Productos</p>
             </a>
         </li>
+        @endcan
+        @can('bodegas.ver')
         <li class="nav-item">
             <a href="{{ route('stores.index') }}"
                class="nav-link {{ Request::is('stores*') ? 'active' : '' }}">
@@ -38,6 +42,8 @@
                 <p>Bodegas</p>
             </a>
         </li>
+        @endcan
+        @can('categorias.ver')
         <li class="nav-item">
             <a href="{{ route('categoryProducts.index') }}"
                class="nav-link {{ Request::is('categoryProducts*') ? 'active' : '' }}">
@@ -45,6 +51,8 @@
                 <p>Categorías</p>
             </a>
         </li>
+        @endcan
+        @can('productos.importar')
         <li class="nav-item">
             <a href="{{ route('products.index_importar') }}"
                class="nav-link {{ Request::is('product/importar*') ? 'active' : '' }}">
@@ -52,15 +60,17 @@
                 <p>Importar Productos</p>
             </a>
         </li>
+        @endcan
     </ul>
 </li>
+@endcanany
 
 {{-- =============================================
      SERVICIO TÉCNICO (Submenu)
      ============================================= --}}
+@canany(['ordenes.ver', 'clientes.ver', 'tecnicos.ver', 'servicios.ver', 'artefactos.ver', 'tipo_artefactos.ver'])
 @php
     $servicioActivo = Request::is('ordenes_servicio*') || Request::is('tecnicos*') || Request::is('clientes*') || Request::is('servicios*') || Request::is('artefactos*') || Request::is('tipo_artefactos*');
-    $artefactosActivo = Request::is('artefactos*') || Request::is('tipo_artefactos*');
 @endphp
 <li class="nav-item has-treeview {{ $servicioActivo ? 'menu-open' : '' }}">
     <a href="#" class="nav-link {{ $servicioActivo ? 'active' : '' }}">
@@ -71,6 +81,7 @@
         </p>
     </a>
     <ul class="nav nav-treeview">
+        @can('ordenes.ver')
         <li class="nav-item">
             <a href="{{ route('ordenes_servicio.index') }}"
                class="nav-link {{ Request::is('ordenes_servicio*') ? 'active' : '' }}">
@@ -78,6 +89,8 @@
                 <p>Órdenes de Servicio</p>
             </a>
         </li>
+        @endcan
+        @can('clientes.ver')
         <li class="nav-item">
             <a href="{{ route('clientes.index') }}"
                class="nav-link {{ Request::is('clientes*') ? 'active' : '' }}">
@@ -85,6 +98,8 @@
                 <p>Clientes</p>
             </a>
         </li>
+        @endcan
+        @can('tecnicos.ver')
         <li class="nav-item">
             <a href="{{ route('tecnicos.index') }}"
                class="nav-link {{ Request::is('tecnicos*') ? 'active' : '' }}">
@@ -92,6 +107,8 @@
                 <p>Técnicos</p>
             </a>
         </li>
+        @endcan
+        @can('servicios.ver')
         <li class="nav-item">
             <a href="{{ route('servicios.index') }}"
                class="nav-link {{ Request::is('servicios*') ? 'active' : '' }}">
@@ -99,13 +116,17 @@
                 <p>Servicios</p>
             </a>
         </li>
+        @endcan
+        @can('artefactos.ver')
         <li class="nav-item">
             <a href="{{ route('artefactos.index') }}"
-               class="nav-link {{ Request::is('artefactos') || Request::is('artefactos/create') || Request::is('artefactos/*/edit') || Request::is('artefactos/*') && !Request::is('artefactos/importar') && !Request::is('artefactos/historial-importacion') ? 'active' : '' }}">
+               class="nav-link {{ Request::is('artefactos') || Request::is('artefactos/create') || Request::is('artefactos/*/edit') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Artefactos</p>
             </a>
         </li>
+        @endcan
+        @can('artefactos.importar')
         <li class="nav-item">
             <a href="{{ route('artefactos.index_importar') }}"
                class="nav-link {{ Request::is('artefactos/importar') ? 'active' : '' }}">
@@ -120,6 +141,8 @@
                 <p>Historial Importación</p>
             </a>
         </li>
+        @endcan
+        @can('tipo_artefactos.ver')
         <li class="nav-item">
             <a href="{{ route('tipo_artefactos.index') }}"
                class="nav-link {{ Request::is('tipo_artefactos*') ? 'active' : '' }}">
@@ -127,12 +150,15 @@
                 <p>Tipos de Artefacto</p>
             </a>
         </li>
+        @endcan
     </ul>
 </li>
+@endcanany
 
 {{-- =============================================
      FLUJO DE CAJA
      ============================================= --}}
+@can('flujo_caja.ver')
 <li class="nav-item">
     <a href="{{ route('flujo_caja.index') }}"
        class="nav-link {{ Request::is('flujo-caja*') ? 'active' : '' }}">
@@ -140,10 +166,12 @@
         <p>Flujo de Caja</p>
     </a>
 </li>
+@endcan
 
 {{-- =============================================
      ADMINISTRACIÓN (Submenu)
      ============================================= --}}
+@canany(['concesiones.ver', 'representantes.ver', 'historial.ver'])
 @php
     $adminActivo = Request::is('concessions*') || Request::is('representative*') || Request::is('historial*');
 @endphp
@@ -156,6 +184,7 @@
         </p>
     </a>
     <ul class="nav nav-treeview">
+        @can('concesiones.ver')
         <li class="nav-item">
             <a href="{{ route('concessions.index') }}"
                class="nav-link {{ Request::is('concessions*') ? 'active' : '' }}">
@@ -163,6 +192,8 @@
                 <p>Concesiones</p>
             </a>
         </li>
+        @endcan
+        @can('representantes.ver')
         <li class="nav-item">
             <a href="{{ route('representative.index') }}"
                class="nav-link {{ Request::is('representative*') ? 'active' : '' }}">
@@ -170,6 +201,8 @@
                 <p>Representantes</p>
             </a>
         </li>
+        @endcan
+        @can('historial.ver')
         <li class="nav-item">
             <a href="{{ route('logs.index') }}"
                class="nav-link {{ Request::is('historial*') ? 'active' : '' }}">
@@ -177,18 +210,33 @@
                 <p>Historial</p>
             </a>
         </li>
+        @endcan
     </ul>
 </li>
+@endcanany
 
 {{-- =============================================
-     USUARIOS (solo admin)
+     ROLES Y PERMISOS (solo super_admin)
      ============================================= --}}
-@if (auth()->user()->email == 'marceloroa19@gmail.com')
-    <li class="nav-item">
-        <a href="{!! route('users.index') !!}"
-           class="nav-link {{ Request::is('users*') ? 'active' : '' }}">
-            <i class="nav-icon fas fa-users-cog"></i>
-            <p>Usuarios</p>
-        </a>
-    </li>
-@endif
+@role('super_admin')
+<li class="nav-item">
+    <a href="{{ route('roles.index') }}"
+       class="nav-link {{ Request::is('roles*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-shield-alt"></i>
+        <p>Roles y Permisos</p>
+    </a>
+</li>
+@endrole
+
+{{-- =============================================
+     USUARIOS
+     ============================================= --}}
+@can('usuarios.ver')
+<li class="nav-item">
+    <a href="{!! route('users.index') !!}"
+       class="nav-link {{ Request::is('users*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-users-cog"></i>
+        <p>Usuarios</p>
+    </a>
+</li>
+@endcan

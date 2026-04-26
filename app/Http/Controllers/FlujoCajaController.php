@@ -293,6 +293,10 @@ class FlujoCajaController extends Controller
      */
     public function reabrirCaja(Request $request, CajaDiaria $caja)
     {
+        if (!auth()->user()->can('flujo_caja.reabrir')) {
+            abort(403, 'No tienes permiso para reabrir una caja cerrada.');
+        }
+
         if ($caja->id_concession !== auth()->user()->id_concession) {
             abort(403);
         }
