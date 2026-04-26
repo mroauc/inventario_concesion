@@ -131,6 +131,17 @@
 </li>
 
 {{-- =============================================
+     FLUJO DE CAJA
+     ============================================= --}}
+<li class="nav-item">
+    <a href="{{ route('flujo_caja.index') }}"
+       class="nav-link {{ Request::is('flujo-caja*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-cash-register"></i>
+        <p>Flujo de Caja</p>
+    </a>
+</li>
+
+{{-- =============================================
      ADMINISTRACIÓN (Submenu)
      ============================================= --}}
 @php

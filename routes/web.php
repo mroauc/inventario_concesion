@@ -78,3 +78,14 @@ Route::get('artefactos/importar', [App\Http\Controllers\ArtefactoController::cla
 Route::post('artefactos/importar', [App\Http\Controllers\ArtefactoController::class, 'importar'])->name('artefactos.importar')->middleware('auth');
 Route::get('artefactos/historial-importacion', [App\Http\Controllers\ArtefactoController::class, 'historial'])->name('artefactos.historial')->middleware('auth');
 Route::resource('artefactos', App\Http\Controllers\ArtefactoController::class);
+
+// FLUJO DE CAJA
+Route::middleware('auth')->prefix('flujo-caja')->name('flujo_caja.')->group(function () {
+    Route::get('/',                                       [App\Http\Controllers\FlujoCajaController::class, 'index'])->name('index');
+    Route::get('/dia',                                    [App\Http\Controllers\FlujoCajaController::class, 'cargarDia'])->name('dia');
+    Route::post('/movimiento',                            [App\Http\Controllers\FlujoCajaController::class, 'registrarMovimiento'])->name('movimiento');
+    Route::post('/movimiento/{movimiento}/anular',        [App\Http\Controllers\FlujoCajaController::class, 'anularMovimiento'])->name('anular');
+    Route::patch('/{caja}/apertura',                      [App\Http\Controllers\FlujoCajaController::class, 'actualizarAperturas'])->name('apertura');
+    Route::post('/{caja}/cerrar',                         [App\Http\Controllers\FlujoCajaController::class, 'cerrarCaja'])->name('cerrar');
+    Route::post('/{caja}/reabrir',                        [App\Http\Controllers\FlujoCajaController::class, 'reabrirCaja'])->name('reabrir');
+});
