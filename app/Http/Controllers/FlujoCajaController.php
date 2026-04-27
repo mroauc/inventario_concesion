@@ -66,7 +66,7 @@ class FlujoCajaController extends Controller
         $request->validate([
             'caja_id'        => 'required|exists:cajas_diarias,id',
             'tipo_movimiento' => 'required|in:ingreso,egreso',
-            'medio'          => 'required|in:efectivo,credito_debito,transferencia,tecnoelectro,deposito_banco,deposito_banco_tecnoelectro',
+            'medio'          => 'required|in:efectivo,credito_debito,transferencia,efectivo_tecno,credito_debito_tecno,deposito_banco,deposito_banco_tecnoelectro',
             'monto'          => 'required|numeric|min:0.01',
             'detalle'        => 'required|string|max:255',
         ]);
@@ -387,8 +387,10 @@ class FlujoCajaController extends Controller
             'egreso_credito_debito'  => $sumar('egreso', 'credito_debito'),
             'ingreso_transferencia'  => $sumar('ingreso', 'transferencia'),
             'egreso_transferencia'   => $sumar('egreso', 'transferencia'),
-            'ingreso_tecnoelectro'   => $sumar('ingreso', 'tecnoelectro'),
-            'egreso_tecnoelectro'    => $sumar('egreso', 'tecnoelectro'),
+            'ingreso_efectivo_tecno'      => $sumar('ingreso', 'efectivo_tecno'),
+            'egreso_efectivo_tecno'       => $sumar('egreso', 'efectivo_tecno'),
+            'ingreso_credito_debito_tecno' => $sumar('ingreso', 'credito_debito_tecno'),
+            'egreso_credito_debito_tecno'  => $sumar('egreso', 'credito_debito_tecno'),
             'deposito_banco'              => (float) $movimientos->where('medio', 'deposito_banco')->sum('monto'),
             'deposito_banco_tecnoelectro' => (float) $movimientos->where('medio', 'deposito_banco_tecnoelectro')->sum('monto'),
 
@@ -401,10 +403,16 @@ class FlujoCajaController extends Controller
 
             // Totales Tecnoelectro
             'total_ingresos_tecno' => (float) $movimientos->where('tipo_movimiento', 'ingreso')
-                ->where('medio', 'tecnoelectro')->sum('monto'),
+                ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno'])->sum('monto'),
             'total_egresos_tecno'  => (float) $movimientos->where('tipo_movimiento', 'egreso')
-                ->where('medio', 'tecnoelectro')->sum('monto')
+                ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno'])->sum('monto')
                 + (float) $movimientos->where('medio', 'deposito_banco_tecnoelectro')->sum('monto'),
+
+            // Neto crédito/débito Tecnoelectro (para cierre Tecnoelectro, si se necesitara)
+            'ingreso_tecnoelectro' => (float) $movimientos->where('tipo_movimiento', 'ingreso')
+                ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno'])->sum('monto'),
+            'egreso_tecnoelectro'  => (float) $movimientos->where('tipo_movimiento', 'egreso')
+                ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno'])->sum('monto'),
 
             // Neto crédito/débito (no está físicamente en caja)
             'neto_credito_debito' => $caja->netoCredito(),

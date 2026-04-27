@@ -50,6 +50,7 @@ class CajaDiaria extends Model
     }
 
     private const MEDIOS_CAJA_CHICA = ['efectivo', 'credito_debito', 'transferencia'];
+    private const MEDIOS_TECNOELECTRO = ['efectivo_tecno', 'credito_debito_tecno'];
 
     // Suma de ingresos en efectivo no anulados
     public function totalIngresoEfectivo(): float
@@ -109,12 +110,12 @@ class CajaDiaria extends Model
             ->sum('monto');
     }
 
-    // Suma de ingresos Tecnoelectro no anulados
+    // Suma de ingresos Tecnoelectro (efectivo_tecno + credito_debito_tecno) no anulados
     public function totalIngresoTecnoelectro(): float
     {
         return (float) $this->movimientos()
             ->where('tipo_movimiento', 'ingreso')
-            ->where('medio', 'tecnoelectro')
+            ->whereIn('medio', self::MEDIOS_TECNOELECTRO)
             ->where('anulado', false)
             ->sum('monto');
     }
@@ -124,7 +125,17 @@ class CajaDiaria extends Model
     {
         return (float) $this->movimientos()
             ->where('tipo_movimiento', 'egreso')
-            ->where('medio', 'tecnoelectro')
+            ->whereIn('medio', self::MEDIOS_TECNOELECTRO)
+            ->where('anulado', false)
+            ->sum('monto');
+    }
+
+    // Ingresos/egresos por medio Tecnoelectro específico
+    public function totalPorMedioTecno(string $tipo, string $medio): float
+    {
+        return (float) $this->movimientos()
+            ->where('tipo_movimiento', $tipo)
+            ->where('medio', $medio)
             ->where('anulado', false)
             ->sum('monto');
     }

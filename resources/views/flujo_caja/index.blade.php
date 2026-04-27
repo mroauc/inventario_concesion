@@ -128,7 +128,8 @@
                                 <option value="deposito_banco">Depósito Banco</option>
                             </optgroup>
                             <optgroup label="Tecnoelectro">
-                                <option value="tecnoelectro">Tecnoelectro</option>
+                                <option value="efectivo_tecno">Efectivo Tecnoelectro</option>
+                                <option value="credito_debito_tecno">Créd./Déb. Tecnoelectro</option>
                                 <option value="deposito_banco_tecnoelectro">Depósito Banco Tecnoelectro</option>
                             </optgroup>
                         </select>
@@ -380,10 +381,16 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Tecnoelectro</td>
-                                <td class="text-right text-success" id="res-ing-tecno">+${{ number_format($totales['ingreso_tecnoelectro'], 0, ',', '.') }}</td>
-                                <td class="text-right text-danger" id="res-egr-tecno">-${{ number_format($totales['egreso_tecnoelectro'], 0, ',', '.') }}</td>
-                                <td class="text-right font-weight-bold" id="res-net-tecno">${{ number_format($totales['ingreso_tecnoelectro'] - $totales['egreso_tecnoelectro'], 0, ',', '.') }}</td>
+                                <td>Efectivo Tecnoelectro</td>
+                                <td class="text-right text-success" id="res-ing-efectivo-tecno">${{ number_format($totales['ingreso_efectivo_tecno'], 0, ',', '.') }}</td>
+                                <td class="text-right text-danger" id="res-egr-efectivo-tecno">-${{ number_format($totales['egreso_efectivo_tecno'], 0, ',', '.') }}</td>
+                                <td class="text-right font-weight-bold" id="res-net-efectivo-tecno">${{ number_format($totales['ingreso_efectivo_tecno'] - $totales['egreso_efectivo_tecno'], 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td>Créd./Déb. Tecnoelectro</td>
+                                <td class="text-right text-success" id="res-ing-credito-tecno">${{ number_format($totales['ingreso_credito_debito_tecno'], 0, ',', '.') }}</td>
+                                <td class="text-right text-danger" id="res-egr-credito-tecno">-${{ number_format($totales['egreso_credito_debito_tecno'], 0, ',', '.') }}</td>
+                                <td class="text-right font-weight-bold" id="res-net-credito-tecno">${{ number_format($totales['ingreso_credito_debito_tecno'] - $totales['egreso_credito_debito_tecno'], 0, ',', '.') }}</td>
                             </tr>
                             <tr class="table-light font-weight-bold">
                                 <td>Depósito Banco Tecnoelectro</td>
@@ -481,11 +488,9 @@
     {{-- BOTONES CERRAR / REABRIR --}}
     <div class="mb-4 d-flex justify-content-end">
         @if($caja->isAbierta())
-            @can('flujo_caja.reabrir')
             <button class="btn btn-brand btn-lg" id="btn-cerrar-caja">
                 <i class="fas fa-lock mr-1"></i> Cerrar caja del día
             </button>
-            @endcan
         @else
             @can('flujo_caja.reabrir')
             <button class="btn btn-outline-brand btn-lg" id="btn-reabrir-caja">
@@ -561,9 +566,14 @@ $(document).ready(function () {
         $('#res-total-net').text(fmt(t.total_ingresos - t.total_egresos));
 
         // Resumen Tecnoelectro
-        $('#res-ing-tecno').text('+' + fmt(t.ingreso_tecnoelectro));
-        $('#res-egr-tecno').text('-' + fmt(t.egreso_tecnoelectro));
-        $('#res-net-tecno').text(fmt(t.ingreso_tecnoelectro - t.egreso_tecnoelectro));
+        $('#res-ing-efectivo-tecno').text(fmt(t.ingreso_efectivo_tecno));
+        $('#res-egr-efectivo-tecno').text('-' + fmt(t.egreso_efectivo_tecno));
+        $('#res-net-efectivo-tecno').text(fmt(t.ingreso_efectivo_tecno - t.egreso_efectivo_tecno));
+
+        $('#res-ing-credito-tecno').text(fmt(t.ingreso_credito_debito_tecno));
+        $('#res-egr-credito-tecno').text('-' + fmt(t.egreso_credito_debito_tecno));
+        $('#res-net-credito-tecno').text(fmt(t.ingreso_credito_debito_tecno - t.egreso_credito_debito_tecno));
+
         $('#res-deposito-banco-tecno').text('-' + fmt(t.deposito_banco_tecnoelectro));
         $('#res-total-ing-tecno').text('+' + fmt(t.total_ingresos_tecno));
         $('#res-total-egr-tecno').text('-' + fmt(t.total_egresos_tecno));
