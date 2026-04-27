@@ -103,6 +103,8 @@ Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->
     Route::patch('/{caja}/apertura',                   [App\Http\Controllers\FlujoCajaController::class, 'actualizarAperturas'])->name('apertura');
     Route::post('/{caja}/cerrar',                      [App\Http\Controllers\FlujoCajaController::class, 'cerrarCaja'])->name('cerrar');
     Route::post('/{caja}/reabrir',                     [App\Http\Controllers\FlujoCajaController::class, 'reabrirCaja'])->name('reabrir');
+    Route::get('/logs',                                [App\Http\Controllers\LogFlujoCajaController::class, 'index'])->name('logs.index');
+    Route::get('/logs/datatables',                     [App\Http\Controllers\LogFlujoCajaController::class, 'datatables'])->name('logs.datatables');
 });
 
 // ─── PRUEBAS (solo desarrollo) ────────────────────────────────────────────────

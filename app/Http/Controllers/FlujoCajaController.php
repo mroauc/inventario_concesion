@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CajaDiaria;
 use App\Models\MovimientoCaja;
+use App\Models\LogFlujoCaja;
 use Carbon\Carbon;
 use Flash;
 use DB;
@@ -99,7 +100,7 @@ class FlujoCajaController extends Controller
             // Actualizar deposito_dia y deposito_tecnoelectro en cajas_diarias
             $this->sincronizarDepositos($caja);
 
-            \App\Models\Log::create([
+            LogFlujoCaja::create([
                 'content'      => "Movimiento de caja registrado: {$movimiento->getTipoLabel()} / {$movimiento->getMedioLabel()} / $" . number_format($movimiento->monto, 2),
                 'activity'     => 'Creación',
                 'id_user'      => auth()->id(),
@@ -145,7 +146,7 @@ class FlujoCajaController extends Controller
 
             $this->sincronizarDepositos($caja);
 
-            \App\Models\Log::create([
+            LogFlujoCaja::create([
                 'content'      => "Movimiento de caja anulado (ID #{$movimiento->id}): {$movimiento->getTipoLabel()} / {$movimiento->getMedioLabel()} / $" . number_format($movimiento->monto, 2),
                 'activity'     => 'Eliminación',
                 'id_user'      => auth()->id(),
@@ -196,7 +197,7 @@ class FlujoCajaController extends Controller
             if (!empty($cambios)) {
                 $caja->update($cambios);
 
-                \App\Models\Log::create([
+                LogFlujoCaja::create([
                     'content'      => 'Apertura de caja actualizada para el día ' . $caja->fecha->format('d/m/Y'),
                     'activity'     => 'Edición',
                     'id_user'      => auth()->id(),
@@ -268,8 +269,8 @@ class FlujoCajaController extends Controller
                 ]);
             }
 
-            \App\Models\Log::create([
-                'content'      => 'Caja cerrada para el día ' . $caja->fecha->format('d/m/Y') . '. Cierre: $' . number_format($cierreCaja, 2),
+            LogFlujoCaja::create([
+                'content'      => 'Caja cerrada para el día ' . $caja->fecha->format('d/m/Y') . '. Cierre: $' . number_format($cierreCaja, 2).' Cierre Tecnoelectro: $'. number_format($cierreTecnoelectro, 2),
                 'activity'     => 'Edición',
                 'id_user'      => auth()->id(),
                 'id_concession' => auth()->user()->id_concession,
@@ -310,7 +311,7 @@ class FlujoCajaController extends Controller
 
             $caja->update(['estado' => 'abierta']);
 
-            \App\Models\Log::create([
+            LogFlujoCaja::create([
                 'content'      => 'Caja reabierta para el día ' . $caja->fecha->format('d/m/Y'),
                 'activity'     => 'Edición',
                 'id_user'      => auth()->id(),
