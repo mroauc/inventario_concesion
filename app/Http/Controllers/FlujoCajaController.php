@@ -406,6 +406,9 @@ class FlujoCajaController extends Controller
                 ->where('medio', 'tecnoelectro')->sum('monto')
                 + (float) $movimientos->where('medio', 'deposito_banco_tecnoelectro')->sum('monto'),
 
+            // Neto crédito/débito (no está físicamente en caja)
+            'neto_credito_debito' => $caja->netoCredito(),
+
             // Cierres calculados en tiempo real
             'cierre_caja'         => $caja->calcularCierreCaja(),
             'cierre_tecnoelectro' => $caja->calcularCierreTecnoelectro(),

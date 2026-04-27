@@ -429,6 +429,10 @@
                             <td class="text-muted">- Depósito banco</td>
                             <td class="text-right text-danger" id="cierre-deposito">-${{ number_format($totales['deposito_banco'], 0, ',', '.') }}</td>
                         </tr>
+                        <tr>
+                            <td class="text-muted">- Neto Créd./Déb. <small class="text-muted">(no físico)</small></td>
+                            <td class="text-right text-danger" id="cierre-neto-credito">-${{ number_format($totales['neto_credito_debito'], 0, ',', '.') }}</td>
+                        </tr>
                         <tr class="border-top font-weight-bold">
                             <td>= Cierre caja</td>
                             <td class="text-right font-weight-bold" id="cierre-caja-valor" style="font-size:1.1rem">
@@ -570,6 +574,7 @@ $(document).ready(function () {
         $('#cierre-ing-caja').text('+' + fmt(t.total_ingresos));
         $('#cierre-egr-caja').text('-' + fmt(t.total_egresos - t.deposito_banco));
         $('#cierre-deposito').text('-' + fmt(t.deposito_banco));
+        $('#cierre-neto-credito').text('-' + fmt(t.neto_credito_debito));
         $('#cierre-caja-valor').text(fmt(t.cierre_caja));
 
         // Cierre Tecnoelectro

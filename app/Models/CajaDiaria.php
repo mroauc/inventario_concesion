@@ -130,12 +130,21 @@ class CajaDiaria extends Model
     }
 
     // Cierre caja chica calculado en tiempo real
+    // Neto de crédito/débito (ingresos - egresos): no está físicamente en caja
+    public function netoCredito(): float
+    {
+        $ing = (float) $this->movimientos()->where('tipo_movimiento', 'ingreso')->where('medio', 'credito_debito')->where('anulado', false)->sum('monto');
+        $egr = (float) $this->movimientos()->where('tipo_movimiento', 'egreso')->where('medio', 'credito_debito')->where('anulado', false)->sum('monto');
+        return $ing - $egr;
+    }
+
     public function calcularCierreCaja(): float
     {
         return (float) $this->apertura_caja
             + $this->totalIngresoCajaChica()
             - $this->totalEgresoCajaChica()
-            - $this->totalDepositoBanco();
+            - $this->totalDepositoBanco()
+            - $this->netoCredito();
     }
 
     // Cierre Tecnoelectro calculado en tiempo real
