@@ -58,6 +58,7 @@ class MovimientoCaja extends Model
             'transferencia'               => 'Transferencia',
             'efectivo_tecno'              => 'Efectivo Tecnoelectro',
             'credito_debito_tecno'        => 'Créd./Déb. Tecnoelectro',
+            'devolucion_abono'            => 'Devolución Abono',
             'deposito_banco'              => 'Depósito Banco',
             'deposito_banco_tecnoelectro' => 'Depósito Banco Tecnoelectro',
             default                       => $this->medio,
@@ -66,6 +67,6 @@ class MovimientoCaja extends Model
 
     public function esTecnoelectro(): bool
     {
-        return in_array($this->medio, ['efectivo_tecno', 'credito_debito_tecno', 'deposito_banco_tecnoelectro']);
+        return in_array($this->medio, ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono', 'deposito_banco_tecnoelectro']);
     }
 }

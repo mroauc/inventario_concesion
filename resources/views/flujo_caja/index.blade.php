@@ -133,6 +133,7 @@
                             <optgroup label="Tecnoelectro">
                                 <option value="efectivo_tecno">Efectivo Tecnoelectro</option>
                                 <option value="credito_debito_tecno">Créd./Déb. Tecnoelectro</option>
+                                <option value="devolucion_abono">Devolución Abono</option>
                                 <option value="deposito_banco_tecnoelectro">Depósito Banco Tecnoelectro</option>
                             </optgroup>
                         </select>
@@ -395,6 +396,12 @@
                                 <td class="text-right text-danger" id="res-egr-credito-tecno">-${{ number_format($totales['egreso_credito_debito_tecno'], 0, ',', '.') }}</td>
                                 <td class="text-right font-weight-bold" id="res-net-credito-tecno">${{ number_format($totales['ingreso_credito_debito_tecno'] - $totales['egreso_credito_debito_tecno'], 0, ',', '.') }}</td>
                             </tr>
+                            <tr>
+                                <td>Devolución Abono</td>
+                                <td class="text-right text-success" id="res-ing-devolucion-abono">${{ number_format($totales['ingreso_devolucion_abono'], 0, ',', '.') }}</td>
+                                <td class="text-right text-danger" id="res-egr-devolucion-abono">-${{ number_format($totales['egreso_devolucion_abono'], 0, ',', '.') }}</td>
+                                <td class="text-right font-weight-bold" id="res-net-devolucion-abono">${{ number_format($totales['ingreso_devolucion_abono'] - $totales['egreso_devolucion_abono'], 0, ',', '.') }}</td>
+                            </tr>
                             <tr class="table-light font-weight-bold">
                                 <td>Depósito Banco Tecnoelectro</td>
                                 <td class="text-right text-danger" colspan="2" id="res-deposito-banco-tecno">-${{ number_format($totales['deposito_banco_tecnoelectro'], 0, ',', '.') }}</td>
@@ -475,6 +482,10 @@
                         <tr>
                             <td class="text-muted">- Depósito Banco Tecnoelectro</td>
                             <td class="text-right text-danger" id="cierre-deposito-tecno">-${{ number_format($totales['deposito_banco_tecnoelectro'], 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">- Neto Créd./Déb. Tecno. <small class="text-muted">(no físico)</small></td>
+                            <td class="text-right text-danger" id="cierre-neto-credito-tecno">-${{ number_format($totales['neto_credito_debito_tecno'], 0, ',', '.') }}</td>
                         </tr>
                         <tr class="border-top font-weight-bold">
                             <td>= Cierre Tecnoelectro</td>
@@ -577,6 +588,10 @@ $(document).ready(function () {
         $('#res-egr-credito-tecno').text('-' + fmt(t.egreso_credito_debito_tecno));
         $('#res-net-credito-tecno').text(fmt(t.ingreso_credito_debito_tecno - t.egreso_credito_debito_tecno));
 
+        $('#res-ing-devolucion-abono').text(fmt(t.ingreso_devolucion_abono));
+        $('#res-egr-devolucion-abono').text('-' + fmt(t.egreso_devolucion_abono));
+        $('#res-net-devolucion-abono').text(fmt(t.ingreso_devolucion_abono - t.egreso_devolucion_abono));
+
         $('#res-deposito-banco-tecno').text('-' + fmt(t.deposito_banco_tecnoelectro));
         $('#res-total-ing-tecno').text('+' + fmt(t.total_ingresos_tecno));
         $('#res-total-egr-tecno').text('-' + fmt(t.total_egresos_tecno));
@@ -595,10 +610,11 @@ $(document).ready(function () {
         $('#cierre-ing-tecno').text('+' + fmt(t.ingreso_tecnoelectro));
         $('#cierre-egr-tecno').text('-' + fmt(t.egreso_tecnoelectro));
         $('#cierre-deposito-tecno').text('-' + fmt(t.deposito_banco_tecnoelectro));
+        $('#cierre-neto-credito-tecno').text('-' + fmt(t.neto_credito_debito_tecno));
         $('#cierre-tecno-valor').text(fmt(t.cierre_tecnoelectro));
     }
 
-    var mediosTecno = ['tecnoelectro', 'deposito_banco_tecnoelectro'];
+    var mediosTecno = ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono', 'deposito_banco_tecnoelectro'];
 
     function agregarFilaMovimiento(m) {
         var esTecno = mediosTecno.indexOf(m.medio) !== -1;

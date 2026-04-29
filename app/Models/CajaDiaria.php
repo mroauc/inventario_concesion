@@ -50,7 +50,7 @@ class CajaDiaria extends Model
     }
 
     private const MEDIOS_CAJA_CHICA = ['efectivo', 'credito_debito', 'transferencia'];
-    private const MEDIOS_TECNOELECTRO = ['efectivo_tecno', 'credito_debito_tecno'];
+    private const MEDIOS_TECNOELECTRO = ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono'];
 
     // Suma de ingresos en efectivo no anulados
     public function totalIngresoEfectivo(): float
@@ -158,13 +158,22 @@ class CajaDiaria extends Model
             - $this->netoCredito();
     }
 
+    // Neto de crédito/débito Tecnoelectro: no está físicamente en caja
+    public function netoCreditoTecno(): float
+    {
+        $ing = (float) $this->movimientos()->where('tipo_movimiento', 'ingreso')->where('medio', 'credito_debito_tecno')->where('anulado', false)->sum('monto');
+        $egr = (float) $this->movimientos()->where('tipo_movimiento', 'egreso')->where('medio', 'credito_debito_tecno')->where('anulado', false)->sum('monto');
+        return $ing - $egr;
+    }
+
     // Cierre Tecnoelectro calculado en tiempo real
     public function calcularCierreTecnoelectro(): float
     {
         return (float) $this->apertura_tecnoelectro
             + $this->totalIngresoTecnoelectro()
             - $this->totalEgresoTecnoelectro()
-            - $this->totalDepositoBancoTecnoelectro();
+            - $this->totalDepositoBancoTecnoelectro()
+            - $this->netoCreditoTecno();
     }
 
     // Retorna el día hábil anterior (lunes → sábado anterior)
