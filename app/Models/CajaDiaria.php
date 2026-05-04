@@ -149,13 +149,22 @@ class CajaDiaria extends Model
         return $ing - $egr;
     }
 
+    // Neto de transferencias (ingresos - egresos): no está físicamente en caja
+    public function netoTransferencia(): float
+    {
+        $ing = (float) $this->movimientos()->where('tipo_movimiento', 'ingreso')->where('medio', 'transferencia')->where('anulado', false)->sum('monto');
+        $egr = (float) $this->movimientos()->where('tipo_movimiento', 'egreso')->where('medio', 'transferencia')->where('anulado', false)->sum('monto');
+        return $ing - $egr;
+    }
+
     public function calcularCierreCaja(): float
     {
         return (float) $this->apertura_caja
             + $this->totalIngresoCajaChica()
             - $this->totalEgresoCajaChica()
             - $this->totalDepositoBanco()
-            - $this->netoCredito();
+            - $this->netoCredito()
+            - $this->netoTransferencia();
     }
 
     // Neto de crédito/débito Tecnoelectro: no está físicamente en caja

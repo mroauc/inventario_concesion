@@ -417,8 +417,9 @@ class FlujoCajaController extends Controller
             'egreso_tecnoelectro'  => (float) $movimientos->where('tipo_movimiento', 'egreso')
                 ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono'])->sum('monto'),
 
-            // Neto crédito/débito (no está físicamente en caja)
+            // Netos no físicos (no están en caja chica)
             'neto_credito_debito'      => $caja->netoCredito(),
+            'neto_transferencia'       => $caja->netoTransferencia(),
             'neto_credito_debito_tecno' => $caja->netoCreditoTecno(),
 
             // Cierres calculados en tiempo real
