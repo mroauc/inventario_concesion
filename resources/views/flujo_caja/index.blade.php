@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Flujo de Caja')
 @section('content')
 <section class="content-header">
     <div class="container-fluid">
