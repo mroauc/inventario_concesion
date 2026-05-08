@@ -136,6 +136,9 @@
                                 <option value="devolucion_abono">Devolución Abono</option>
                                 <option value="deposito_banco_tecnoelectro">Depósito Banco Tecnoelectro</option>
                             </optgroup>
+                            <optgroup label="Transbank">
+                                <option value="transbank">Transbank</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div class="col-md-2 form-group required">
@@ -163,151 +166,222 @@
     </div>
     @endif
 
-    {{-- TABLA DE MOVIMIENTOS: Caja Chica --}}
+    {{-- TABLAS DE MOVIMIENTOS: pestañas unificadas --}}
+    @php
+        $movsCajaChica = $movimientos->filter(fn($m) => !$m->esTecnoelectro() && !$m->esTransbank());
+        $movsTecno     = $movimientos->filter(fn($m) => $m->esTecnoelectro());
+        $movsTransbank = $movimientos->filter(fn($m) => $m->esTransbank());
+    @endphp
     <div class="card card-outline card-secondary shadow-sm">
-        <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-coins text-brand mr-1"></i> Movimientos Caja Chica</h3>
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="tabs-movimientos" role="tablist" style="border-bottom:0;">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-caja-chica" data-toggle="tab" href="#panel-caja-chica" role="tab">
+                        <i class="fas fa-coins mr-1"></i> Caja Chica
+                        <span class="badge badge-secondary ml-1">{{ $movsCajaChica->count() }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-tecnoelectro" data-toggle="tab" href="#panel-tecnoelectro" role="tab">
+                        <i class="fas fa-file-invoice-dollar mr-1"></i> Tecnoelectro
+                        <span class="badge badge-secondary ml-1">{{ $movsTecno->count() }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-transbank" data-toggle="tab" href="#panel-transbank" role="tab">
+                        <i class="fas fa-credit-card mr-1"></i> Transbank
+                        <span class="badge badge-secondary ml-1">{{ $movsTransbank->count() }}</span>
+                    </a>
+                </li>
+            </ul>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0" id="tabla-movimientos">
-                    <thead class="thead-light">
-                        <tr>
-                            <th style="width:60px">Hora</th>
-                            <th>Tipo</th>
-                            <th>Medio</th>
-                            <th>Detalle</th>
-                            <th class="text-right">Monto</th>
-                            <th>Usuario</th>
-                            <th style="width:80px">Estado</th>
-                            @if($caja->isAbierta())
-                            <th style="width:60px"></th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-movimientos">
-                        @php $movsCajaChica = $movimientos->filter(fn($m) => !$m->esTecnoelectro()); @endphp
-                        @forelse($movsCajaChica as $mov)
-                        <tr id="fila-{{ $mov->id }}" class="{{ $mov->anulado ? 'text-muted' : '' }}">
-                            <td>{{ $mov->created_at->timezone(config('app.timezone'))->format('H:i') }}</td>
-                            <td>
-                                @if(!$mov->anulado)
-                                    <span class="badge {{ $mov->tipo_movimiento === 'ingreso' ? 'badge-success' : 'badge-danger' }}">
-                                        {{ $mov->getTipoLabel() }}
-                                    </span>
-                                @else
-                                    <span class="badge badge-secondary">{{ $mov->getTipoLabel() }}</span>
-                                @endif
-                            </td>
-                            <td>{{ $mov->getMedioLabel() }}</td>
-                            <td>{{ $mov->detalle ?? '—' }}</td>
-                            <td class="text-right {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'ingreso' ? 'text-success font-weight-bold' : 'text-danger font-weight-bold') }}">
-                                {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'egreso' ? '-' : '+') }}${{ number_format($mov->monto, 0, ',', '.') }}
-                            </td>
-                            <td>{{ $mov->usuario->name ?? '—' }}</td>
-                            <td>
-                                @if($mov->anulado)
-                                    <span class="badge badge-secondary">Anulado</span>
-                                @else
-                                    <span class="badge badge-success">Activo</span>
-                                @endif
-                            </td>
-                            @if($caja->isAbierta())
-                            <td>
-                                @if(!$mov->anulado)
-                                <button class="btn btn-xs btn-outline-danger btn-anular"
-                                        data-id="{{ $mov->id }}"
-                                        title="Anular movimiento">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                                @endif
-                            </td>
-                            @endif
-                        </tr>
-                        @empty
-                        <tr id="fila-vacia">
-                            <td colspan="{{ $caja->isAbierta() ? 8 : 7 }}" class="text-center text-muted py-3">
-                                Sin movimientos de caja chica para este día.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+            <div class="tab-content" id="tabs-movimientos-content">
 
-    {{-- TABLA DE MOVIMIENTOS: Tecnoelectro --}}
-    <div class="card card-outline card-primary shadow-sm">
-        <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-file-invoice-dollar text-brand mr-1"></i> Movimientos Tecnoelectro</h3>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0" id="tabla-movimientos-tecno">
-                    <thead class="thead-light">
-                        <tr>
-                            <th style="width:60px">Hora</th>
-                            <th>Tipo</th>
-                            <th>Medio</th>
-                            <th>Detalle</th>
-                            <th class="text-right">Monto</th>
-                            <th>Usuario</th>
-                            <th style="width:80px">Estado</th>
-                            @if($caja->isAbierta())
-                            <th style="width:60px"></th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-movimientos-tecno">
-                        @php $movsTecno = $movimientos->filter(fn($m) => $m->esTecnoelectro()); @endphp
-                        @forelse($movsTecno as $mov)
-                        <tr id="fila-{{ $mov->id }}" class="{{ $mov->anulado ? 'text-muted' : '' }}">
-                            <td>{{ $mov->created_at->timezone(config('app.timezone'))->format('H:i') }}</td>
-                            <td>
-                                @if(!$mov->anulado)
-                                    <span class="badge {{ $mov->tipo_movimiento === 'ingreso' ? 'badge-success' : 'badge-danger' }}">
-                                        {{ $mov->getTipoLabel() }}
-                                    </span>
-                                @else
-                                    <span class="badge badge-secondary">{{ $mov->getTipoLabel() }}</span>
-                                @endif
-                            </td>
-                            <td>{{ $mov->getMedioLabel() }}</td>
-                            <td>{{ $mov->detalle ?? '—' }}</td>
-                            <td class="text-right {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'ingreso' ? 'text-success font-weight-bold' : 'text-danger font-weight-bold') }}">
-                                {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'egreso' ? '-' : '+') }}${{ number_format($mov->monto, 0, ',', '.') }}
-                            </td>
-                            <td>{{ $mov->usuario->name ?? '—' }}</td>
-                            <td>
-                                @if($mov->anulado)
-                                    <span class="badge badge-secondary">Anulado</span>
-                                @else
-                                    <span class="badge badge-success">Activo</span>
-                                @endif
-                            </td>
-                            @if($caja->isAbierta())
-                            <td>
-                                @if(!$mov->anulado)
-                                <button class="btn btn-xs btn-outline-danger btn-anular"
-                                        data-id="{{ $mov->id }}"
-                                        title="Anular movimiento">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                                @endif
-                            </td>
-                            @endif
-                        </tr>
-                        @empty
-                        <tr id="fila-vacia-tecno">
-                            <td colspan="{{ $caja->isAbierta() ? 8 : 7 }}" class="text-center text-muted py-3">
-                                Sin movimientos Tecnoelectro para este día.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                {{-- Pestaña Caja Chica --}}
+                <div class="tab-pane fade show active" id="panel-caja-chica" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0" id="tabla-movimientos">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width:60px">Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Medio</th>
+                                    <th>Detalle</th>
+                                    <th class="text-right">Monto</th>
+                                    <th>Usuario</th>
+                                    <th style="width:80px">Estado</th>
+                                    @if($caja->isAbierta())<th style="width:60px"></th>@endif
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-movimientos">
+                                @forelse($movsCajaChica as $mov)
+                                <tr id="fila-{{ $mov->id }}" class="{{ $mov->anulado ? 'text-muted' : '' }}">
+                                    <td>{{ $mov->created_at->timezone(config('app.timezone'))->format('H:i') }}</td>
+                                    <td>
+                                        @if(!$mov->anulado)
+                                            <span class="badge {{ $mov->tipo_movimiento === 'ingreso' ? 'badge-success' : 'badge-danger' }}">{{ $mov->getTipoLabel() }}</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ $mov->getTipoLabel() }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $mov->getMedioLabel() }}</td>
+                                    <td>{{ $mov->detalle ?? '—' }}</td>
+                                    <td class="text-right {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'ingreso' ? 'text-success font-weight-bold' : 'text-danger font-weight-bold') }}">
+                                        {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'egreso' ? '-' : '+') }}${{ number_format($mov->monto, 0, ',', '.') }}
+                                    </td>
+                                    <td>{{ $mov->usuario->name ?? '—' }}</td>
+                                    <td>
+                                        @if($mov->anulado)
+                                            <span class="badge badge-secondary">Anulado</span>
+                                        @else
+                                            <span class="badge badge-success">Activo</span>
+                                        @endif
+                                    </td>
+                                    @if($caja->isAbierta())
+                                    <td>
+                                        @if(!$mov->anulado)
+                                        <button class="btn btn-xs btn-outline-danger btn-anular" data-id="{{ $mov->id }}" title="Anular movimiento"><i class="fas fa-ban"></i></button>
+                                        @endif
+                                    </td>
+                                    @endif
+                                </tr>
+                                @empty
+                                <tr id="fila-vacia">
+                                    <td colspan="{{ $caja->isAbierta() ? 8 : 7 }}" class="text-center text-muted py-3">Sin movimientos de caja chica para este día.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Pestaña Tecnoelectro --}}
+                <div class="tab-pane fade" id="panel-tecnoelectro" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0" id="tabla-movimientos-tecno">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width:60px">Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Medio</th>
+                                    <th>Detalle</th>
+                                    <th class="text-right">Monto</th>
+                                    <th>Usuario</th>
+                                    <th style="width:80px">Estado</th>
+                                    @if($caja->isAbierta())<th style="width:60px"></th>@endif
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-movimientos-tecno">
+                                @forelse($movsTecno as $mov)
+                                <tr id="fila-{{ $mov->id }}" class="{{ $mov->anulado ? 'text-muted' : '' }}">
+                                    <td>{{ $mov->created_at->timezone(config('app.timezone'))->format('H:i') }}</td>
+                                    <td>
+                                        @if(!$mov->anulado)
+                                            <span class="badge {{ $mov->tipo_movimiento === 'ingreso' ? 'badge-success' : 'badge-danger' }}">{{ $mov->getTipoLabel() }}</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ $mov->getTipoLabel() }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $mov->getMedioLabel() }}</td>
+                                    <td>{{ $mov->detalle ?? '—' }}</td>
+                                    <td class="text-right {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'ingreso' ? 'text-success font-weight-bold' : 'text-danger font-weight-bold') }}">
+                                        {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'egreso' ? '-' : '+') }}${{ number_format($mov->monto, 0, ',', '.') }}
+                                    </td>
+                                    <td>{{ $mov->usuario->name ?? '—' }}</td>
+                                    <td>
+                                        @if($mov->anulado)
+                                            <span class="badge badge-secondary">Anulado</span>
+                                        @else
+                                            <span class="badge badge-success">Activo</span>
+                                        @endif
+                                    </td>
+                                    @if($caja->isAbierta())
+                                    <td>
+                                        @if(!$mov->anulado)
+                                        <button class="btn btn-xs btn-outline-danger btn-anular" data-id="{{ $mov->id }}" title="Anular movimiento"><i class="fas fa-ban"></i></button>
+                                        @endif
+                                    </td>
+                                    @endif
+                                </tr>
+                                @empty
+                                <tr id="fila-vacia-tecno">
+                                    <td colspan="{{ $caja->isAbierta() ? 8 : 7 }}" class="text-center text-muted py-3">Sin movimientos Tecnoelectro para este día.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Pestaña Transbank --}}
+                <div class="tab-pane fade" id="panel-transbank" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0" id="tabla-movimientos-transbank">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width:60px">Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Medio</th>
+                                    <th>Detalle</th>
+                                    <th class="text-right">Monto</th>
+                                    <th>Usuario</th>
+                                    <th style="width:80px">Estado</th>
+                                    @if($caja->isAbierta())<th style="width:60px"></th>@endif
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-movimientos-transbank">
+                                @forelse($movsTransbank as $mov)
+                                <tr id="fila-{{ $mov->id }}" class="{{ $mov->anulado ? 'text-muted' : '' }}">
+                                    <td>{{ $mov->created_at->timezone(config('app.timezone'))->format('H:i') }}</td>
+                                    <td>
+                                        @if(!$mov->anulado)
+                                            <span class="badge {{ $mov->tipo_movimiento === 'ingreso' ? 'badge-success' : 'badge-danger' }}">{{ $mov->getTipoLabel() }}</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ $mov->getTipoLabel() }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $mov->getMedioLabel() }}</td>
+                                    <td>{{ $mov->detalle ?? '—' }}</td>
+                                    <td class="text-right {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'ingreso' ? 'text-success font-weight-bold' : 'text-danger font-weight-bold') }}">
+                                        {{ $mov->anulado ? '' : ($mov->tipo_movimiento === 'egreso' ? '-' : '+') }}${{ number_format($mov->monto, 0, ',', '.') }}
+                                    </td>
+                                    <td>{{ $mov->usuario->name ?? '—' }}</td>
+                                    <td>
+                                        @if($mov->anulado)
+                                            <span class="badge badge-secondary">Anulado</span>
+                                        @else
+                                            <span class="badge badge-success">Activo</span>
+                                        @endif
+                                    </td>
+                                    @if($caja->isAbierta())
+                                    <td>
+                                        @if(!$mov->anulado)
+                                        <button class="btn btn-xs btn-outline-danger btn-anular" data-id="{{ $mov->id }}" title="Anular movimiento"><i class="fas fa-ban"></i></button>
+                                        @endif
+                                    </td>
+                                    @endif
+                                </tr>
+                                @empty
+                                <tr id="fila-vacia-transbank">
+                                    <td colspan="{{ $caja->isAbierta() ? 8 : 7 }}" class="text-center text-muted py-3">Sin movimientos Transbank para este día.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                            <tfoot class="thead-light">
+                                <tr class="font-weight-bold">
+                                    <td colspan="{{ $caja->isAbierta() ? 4 : 3 }}">TOTALES</td>
+                                    <td class="text-right" id="transbank-total-monto">
+                                        ${{ number_format($totales['ingreso_transbank'] - $totales['egreso_transbank'], 0, ',', '.') }}
+                                    </td>
+                                    <td colspan="{{ $caja->isAbierta() ? 3 : 2 }}"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+            </div>{{-- /tab-content --}}
         </div>
     </div>
 
@@ -422,7 +496,7 @@
         </div>
 
         {{-- Columna derecha: cierres --}}
-        <div class="col-md-4">
+        <div class="col-md-4" id="col-cierres">
             {{-- Cierre caja chica --}}
             <div class="card card-outline card-success card-brand-top shadow-sm">
                 <div class="card-header">
@@ -495,6 +569,31 @@
                             <td>= Cierre Tecnoelectro</td>
                             <td class="text-right font-weight-bold" id="cierre-tecno-valor" style="font-size:1.1rem">
                                 ${{ number_format($totales['cierre_tecnoelectro'], 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Resumen Transbank --}}
+            <div class="card card-outline card-warning card-brand-top shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-credit-card text-brand mr-1"></i> Resumen Transbank</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <td class="text-muted">+ Ingresos Transbank</td>
+                            <td class="text-right text-success" id="resumen-ing-transbank">+${{ number_format($totales['ingreso_transbank'], 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">- Egresos Transbank</td>
+                            <td class="text-right text-danger" id="resumen-egr-transbank">-${{ number_format($totales['egreso_transbank'], 0, ',', '.') }}</td>
+                        </tr>
+                        <tr class="border-top font-weight-bold">
+                            <td>= Neto Transbank</td>
+                            <td class="text-right font-weight-bold" id="resumen-neto-transbank" style="font-size:1.1rem">
+                                ${{ number_format($totales['ingreso_transbank'] - $totales['egreso_transbank'], 0, ',', '.') }}
                             </td>
                         </tr>
                     </table>
@@ -617,16 +716,29 @@ $(document).ready(function () {
         $('#cierre-deposito-tecno').text('-' + fmt(t.deposito_banco_tecnoelectro));
         $('#cierre-neto-credito-tecno').text('-' + fmt(t.neto_credito_debito_tecno));
         $('#cierre-tecno-valor').text(fmt(t.cierre_tecnoelectro));
+
+        // Transbank
+        var netoTransbank = t.ingreso_transbank - t.egreso_transbank;
+        $('#resumen-ing-transbank').text('+' + fmt(t.ingreso_transbank));
+        $('#resumen-egr-transbank').text('-' + fmt(t.egreso_transbank));
+        $('#resumen-neto-transbank').text(fmt(netoTransbank));
+        $('#transbank-total-monto').text(fmt(netoTransbank));
     }
 
-    var mediosTecno = ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono', 'deposito_banco_tecnoelectro'];
+    var mediosTecno     = ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono', 'deposito_banco_tecnoelectro'];
+    var mediosTransbank = ['transbank'];
 
     function agregarFilaMovimiento(m) {
-        var esTecno = mediosTecno.indexOf(m.medio) !== -1;
-        var tbodyId = esTecno ? '#tbody-movimientos-tecno' : '#tbody-movimientos';
-        var filaCero = esTecno ? '#fila-vacia-tecno' : '#fila-vacia';
+        var esTecno     = mediosTecno.indexOf(m.medio) !== -1;
+        var esTransbank = mediosTransbank.indexOf(m.medio) !== -1;
+        var tbodyId = esTransbank ? '#tbody-movimientos-transbank' : (esTecno ? '#tbody-movimientos-tecno' : '#tbody-movimientos');
+        var filaCero = esTransbank ? '#fila-vacia-transbank' : (esTecno ? '#fila-vacia-tecno' : '#fila-vacia');
 
         $(filaCero).remove();
+
+        // Activar la pestaña correspondiente al movimiento recién registrado
+        var tabId = esTransbank ? '#tab-transbank' : (esTecno ? '#tab-tecnoelectro' : '#tab-caja-chica');
+        $(tabId).tab('show');
 
         var badgeTipo = m.tipo_movimiento === 'ingreso'
             ? '<span class="badge badge-success">Ingreso</span>'

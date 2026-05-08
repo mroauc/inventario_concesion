@@ -96,6 +96,7 @@ Route::middleware(['auth', 'permission:tipo_artefactos.ver'])->group(function ()
 
 // ─── FLUJO DE CAJA ────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->name('flujo_caja.')->group(function () {
+    Route::get('/preview',                             [App\Http\Controllers\FlujoCajaController::class, 'index2'])->name('index2');
     Route::get('/',                                    [App\Http\Controllers\FlujoCajaController::class, 'index'])->name('index');
     Route::get('/dia',                                 [App\Http\Controllers\FlujoCajaController::class, 'cargarDia'])->name('dia');
     Route::post('/movimiento',                         [App\Http\Controllers\FlujoCajaController::class, 'registrarMovimiento'])->name('movimiento');

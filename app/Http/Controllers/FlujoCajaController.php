@@ -35,6 +35,28 @@ class FlujoCajaController extends Controller
     }
 
     /**
+     * Vista rediseñada (preview) — mismo payload que index().
+     */
+    public function index2(Request $request)
+    {
+        $fecha = $request->filled('fecha')
+            ? Carbon::parse($request->input('fecha'))
+            : Carbon::now()->startOfDay();
+
+        $idConcession = auth()->user()->id_concession;
+
+        $caja = $this->obtenerOCrearCaja($idConcession, $fecha);
+
+        $movimientos = MovimientoCaja::where('caja_id', $caja->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $totales = $this->calcularTotales($caja);
+
+        return view('flujo_caja.index2', compact('caja', 'movimientos', 'totales', 'fecha'));
+    }
+
+    /**
      * AJAX: carga datos de un día distinto al cambiar el selector de fecha.
      */
     public function cargarDia(Request $request)
@@ -67,7 +89,7 @@ class FlujoCajaController extends Controller
         $request->validate([
             'caja_id'        => 'required|exists:cajas_diarias,id',
             'tipo_movimiento' => 'required|in:ingreso,egreso',
-            'medio'          => 'required|in:efectivo,credito_debito,transferencia,efectivo_tecno,credito_debito_tecno,devolucion_abono,deposito_banco,deposito_banco_tecnoelectro',
+            'medio'          => 'required|in:efectivo,credito_debito,transferencia,efectivo_tecno,credito_debito_tecno,devolucion_abono,deposito_banco,deposito_banco_tecnoelectro,transbank',
             'monto'          => 'required|numeric|min:0.01',
             'detalle'        => 'required|string|max:255',
         ]);
@@ -416,6 +438,10 @@ class FlujoCajaController extends Controller
                 ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono'])->sum('monto'),
             'egreso_tecnoelectro'  => (float) $movimientos->where('tipo_movimiento', 'egreso')
                 ->whereIn('medio', ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono'])->sum('monto'),
+
+            // Transbank (independiente)
+            'ingreso_transbank' => $sumar('ingreso', 'transbank'),
+            'egreso_transbank'  => $sumar('egreso', 'transbank'),
 
             // Netos no físicos (no están en caja chica)
             'neto_credito_debito'      => $caja->netoCredito(),

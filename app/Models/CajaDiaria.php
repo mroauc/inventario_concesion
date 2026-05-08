@@ -51,6 +51,7 @@ class CajaDiaria extends Model
 
     private const MEDIOS_CAJA_CHICA = ['efectivo', 'credito_debito', 'transferencia'];
     private const MEDIOS_TECNOELECTRO = ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono'];
+    private const MEDIOS_TRANSBANK = ['transbank'];
 
     // Suma de ingresos en efectivo no anulados
     public function totalIngresoEfectivo(): float
@@ -183,6 +184,26 @@ class CajaDiaria extends Model
             - $this->totalEgresoTecnoelectro()
             - $this->totalDepositoBancoTecnoelectro()
             - $this->netoCreditoTecno();
+    }
+
+    // Suma de ingresos Transbank no anulados
+    public function totalIngresoTransbank(): float
+    {
+        return (float) $this->movimientos()
+            ->where('tipo_movimiento', 'ingreso')
+            ->where('medio', 'transbank')
+            ->where('anulado', false)
+            ->sum('monto');
+    }
+
+    // Suma de egresos Transbank no anulados
+    public function totalEgresoTransbank(): float
+    {
+        return (float) $this->movimientos()
+            ->where('tipo_movimiento', 'egreso')
+            ->where('medio', 'transbank')
+            ->where('anulado', false)
+            ->sum('monto');
     }
 
     // Retorna el día hábil anterior (lunes → sábado anterior)
