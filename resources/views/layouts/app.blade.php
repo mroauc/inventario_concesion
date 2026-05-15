@@ -2,11 +2,12 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'inventario')</title>
-    <meta property="og:title" content="Inventario">
-    <meta name="twitter:title" content="Inventario">
+    <title>@yield('title', 'PORTAL ROAVAL')</title>
+    <meta property="og:title" content="PORTAL ROAVAL">
+    <meta name="twitter:title" content="PORTAL ROAVAL">
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-    
+    <link rel="icon" type="image/png" href="{{asset('./icon/roaval.png')}}">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
           integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
