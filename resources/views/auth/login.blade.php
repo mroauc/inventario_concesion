@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ config('app.name') }}</title>
+    <title>PORTAL ROAVAL</title>
+    <link rel="icon" type="image/png" href="{{asset('./icon/roaval.png')}}">
 
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -39,8 +40,11 @@
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
+    {{-- <div style="display: flex; jutify-content: center;">
+        <img src="{{asset('./icon/roaval.png')}}" width="100px" height="100px">
+    </div> --}}
     <div class="login-logo">
-        <a href="{{ url('/home') }}"><b>INVENTARIO</b></a>
+        <a href="{{ url('/home') }}"><b>PORTAL ROAVAL</b></a>
     </div>
 
     <!-- /.login-logo -->
