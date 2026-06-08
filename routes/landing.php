@@ -15,7 +15,7 @@ use App\Http\Controllers\LandingController;
 */
 
 Route::get('/',          [LandingController::class, 'home'])->name('landing.home');
-Route::get('/wpp',       fn() => redirect('/'));
+Route::redirect('/wpp', '/', 301);
 Route::get('/repuestos', [LandingController::class, 'repuestos'])->name('landing.repuestos');
 Route::get('/conocenos', [LandingController::class, 'conocenos'])->name('landing.conocenos');
 Route::get('/contacto',  [LandingController::class, 'contacto'])->name('landing.contacto');
