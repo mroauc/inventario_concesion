@@ -2,6 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
+// ─── LANDING PÚBLICA: serviciotecnicoroaval.com ───────────────────────────────
+// Carga las rutas de la landing desde un archivo dedicado para ambos dominios.
+foreach (['serviciotecnicoroaval.com', 'www.serviciotecnicoroaval.com'] as $_landingDomain) {
+    Route::domain($_landingDomain)->group(function () {
+        require __DIR__ . '/landing.php';
+    });
+}
+unset($_landingDomain);
+// ─────────────────────────────────────────────────────────────────────────────
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes();
@@ -108,8 +118,16 @@ Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->
     Route::get('/logs/datatables',                     [App\Http\Controllers\LogFlujoCajaController::class, 'datatables'])->name('logs.datatables');
 });
 
+// // ─── LANDING PREVIEW (solo desarrollo local) ─────────────────────────────────
+// // Acceder en: http://localhost:8888/landing-preview/
+// // Eliminar este bloque antes de subir a producción.
+// Route::prefix('landing-preview')->group(function () {
+//     require __DIR__ . '/landing.php';
+// });
+// // ─────────────────────────────────────────────────────────────────────────────
+
 // ─── PRUEBAS (solo desarrollo) ────────────────────────────────────────────────
 Route::get('/pruebas', function () {
     $test = \App\Models\Product_Store::where('id_product', 1)->where('id_store', 2)->first();
-    dd(implode(', ', $test->positions()->select('position')->get()->pluck('position')->toArray()));
+    dd(implode(', ', $test->positions()->select('positi on')->get()->pluck('position')->toArray()));
 });
