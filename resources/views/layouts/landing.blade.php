@@ -8,12 +8,13 @@
     <title>{{ $title ?? 'ROAVAL LIMITADA – Servicio Técnico Autorizado' }}</title>
     <meta name="description" content="{{ $description ?? 'Servicio técnico autorizado de línea blanca en Linares, Región del Maule.' }}">
 
+    <link rel="icon" type="image/png" href="{{asset('./icon/roaval.png')}}">
     {{-- Open Graph --}}
     <meta property="og:type"        content="website">
     <meta property="og:title"       content="{{ $title ?? 'ROAVAL LIMITADA' }}">
     <meta property="og:description" content="{{ $description ?? 'Servicio técnico autorizado de línea blanca.' }}">
     <meta property="og:url"         content="{{ url()->current() }}">
-    <meta property="og:image"       content="{{ asset('landing/images/og-image.jpg') }}">
+    <meta property="og:image"       content="{{ asset('landing/images/empresa_foto.webp') }}">
 
     {{-- Canonical --}}
     <link rel="canonical" href="{{ url()->current() }}">
