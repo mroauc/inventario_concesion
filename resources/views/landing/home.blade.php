@@ -4,7 +4,7 @@
 
 <style>
     .hero-slide--1 {
-        background-image: url("{{ asset('landing/images/empresa_foto.png') }}");
+        background-image: url("{{ asset('landing/images/empresa_foto.webp') }}");
     }
 </style>
 
@@ -150,7 +150,7 @@
         </div>
         <div class="row justify-content-center align-items-center g-4">
             <div class="col-6 col-md-3 text-center">
-                <img width="100px" src="{{asset('./landing/images/sai-logo.png')}}" alt="">
+                <img width="100px" src="{{asset('./landing/images/sai-logo.webp')}}" alt="">
             </div>
             <div class="col-6 col-md-3 text-center">
                 <img width="70%" src="{{asset('./landing/images/electrolux-logo.png')}}" alt="">

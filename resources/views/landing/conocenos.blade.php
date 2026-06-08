@@ -80,7 +80,7 @@
         <div class="row justify-content-center g-4">
             @php
             $marcas = [
-                ['nombre' => 'SAI',       'desc' => 'Servicio de Asistencia Integral — organismo coordinador del servicio técnico.', 'img_url' => "sai-logo.png", 'width' => '100px'],
+                ['nombre' => 'SAI',       'desc' => 'Servicio de Asistencia Integral — organismo coordinador del servicio técnico.', 'img_url' => "sai-logo.webp", 'width' => '100px'],
                 ['nombre' => 'Electrolux','desc' => 'Líder mundial en electrodomésticos. Reparaciones certificadas.', 'img_url' => "electrolux-logo.png", 'width' => '70%'],
                 ['nombre' => 'Mademsa',   'desc' => 'Marca chilena con larga historia en línea blanca nacional.', 'img_url' => "logo-mademsa.png", 'width' => '70%'],
                 ['nombre' => 'Fensa',     'desc' => 'Electrodomésticos de alto rendimiento para el hogar chileno.', 'img_url' => "fensa-logo.png", 'width' => '70%'],
