@@ -126,6 +126,9 @@ Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->
 // });
 // // ─────────────────────────────────────────────────────────────────────────────
 
+// ─── STATS PRIVADAS LANDING ───────────────────────────────────────────────────
+Route::get('/roait', [App\Http\Controllers\LandingStatsController::class, 'index']);
+
 // ─── PRUEBAS (solo desarrollo) ────────────────────────────────────────────────
 Route::get('/pruebas', function () {
     $test = \App\Models\Product_Store::where('id_product', 1)->where('id_store', 2)->first();

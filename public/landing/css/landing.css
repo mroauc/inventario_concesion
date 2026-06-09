@@ -78,6 +78,25 @@ body {
     color: var(--white) !important;
 }
 
+/* ─── Botón Instagram ───────────────────────────────────────── */
+.btn-instagram {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    color: var(--white) !important;
+    border: none;
+    border-radius: 2rem;
+    font-weight: 600;
+    padding: 0.45rem 1.1rem;
+    transition: filter var(--transition), box-shadow var(--transition);
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-instagram:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 16px rgba(214, 36, 159, 0.35);
+    color: var(--white) !important;
+}
+
 /* ─── Botón principal de marca ──────────────────────────────── */
 .btn-brand-primary {
     background: var(--brand-red);

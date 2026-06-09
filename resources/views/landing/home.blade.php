@@ -229,8 +229,11 @@
             <a href="{{ route('landing.contacto') }}" class="btn btn-light btn-lg px-5">
                 <i class="fas fa-envelope me-2"></i>Envíanos un mensaje
             </a>
-            <a href="https://wa.me/56933223194" target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg px-5">
-                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            <a href="https://wa.me/56933223194" target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg px-4" title="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://www.instagram.com/roaval_serviciotecnico" target="_blank" rel="noopener" class="btn btn-instagram btn-lg px-4" title="Instagram">
+                <i class="fab fa-instagram"></i>
             </a>
         </div>
     </div>

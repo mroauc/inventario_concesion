@@ -12,10 +12,16 @@
                     Servicio técnico autorizado de línea blanca en la Provincia de Linares
                     y Cauquenes, Región del Maule.
                 </p>
-                <a href="https://wa.me/56933223194" target="_blank" rel="noopener"
-                   class="btn btn-whatsapp btn-sm">
-                    <i class="fab fa-whatsapp me-1"></i> +56 9 3322 3194
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="https://wa.me/56933223194" target="_blank" rel="noopener"
+                       class="btn btn-whatsapp btn-sm" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="https://www.instagram.com/roaval_serviciotecnico" target="_blank" rel="noopener"
+                       class="btn btn-instagram btn-sm" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
 
             {{-- Columna: links --}}

@@ -35,8 +35,12 @@
             </ul>
 
             <a href="https://wa.me/56933223194" target="_blank" rel="noopener"
-               class="btn btn-whatsapp ms-3 d-none d-lg-inline-flex align-items-center gap-2">
-                <i class="fab fa-whatsapp"></i> WhatsApp
+               class="ms-3 d-none d-lg-inline-flex align-items-center text-white fs-5 text-decoration-none" title="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://www.instagram.com/roaval_serviciotecnico" target="_blank" rel="noopener"
+               class="ms-3 d-none d-lg-inline-flex align-items-center text-white fs-5 text-decoration-none" title="Instagram">
+                <i class="fab fa-instagram"></i>
             </a>
         </div>
     </div>

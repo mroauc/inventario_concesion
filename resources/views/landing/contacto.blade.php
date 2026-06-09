@@ -160,10 +160,14 @@
                         </li>
                     </ul>
 
-                    <div class="mt-4 pt-4 border-top">
+                    <div class="mt-4 pt-4 border-top d-flex gap-2">
                         <a href="https://wa.me/56933223194" target="_blank" rel="noopener"
-                           class="btn btn-whatsapp w-100">
-                            <i class="fab fa-whatsapp me-2"></i>Chatear por WhatsApp
+                           class="btn btn-whatsapp flex-fill" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="https://www.instagram.com/roaval_serviciotecnico" target="_blank" rel="noopener"
+                           class="btn btn-instagram flex-fill" title="Instagram">
+                            <i class="fab fa-instagram"></i>
                         </a>
                     </div>
                 </div>
