@@ -17,6 +17,13 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// ─── Mensajes de contacto (landing) ──────────────────────────────────────────
+Route::middleware(['auth', 'role:super_admin|administrador'])->group(function () {
+    Route::get('mensajes-contacto', [App\Http\Controllers\LandingController::class, 'mensajes'])->name('mensajes.index');
+    Route::patch('mensajes-contacto/{contacto}/leido', [App\Http\Controllers\LandingController::class, 'mensajeMarcarLeido'])->name('mensajes.leido');
+    Route::delete('mensajes-contacto/{contacto}', [App\Http\Controllers\LandingController::class, 'mensajeDestroy'])->name('mensajes.destroy');
+});
+
 // ─── SUPER ADMIN: Roles y Permisos ───────────────────────────────────────────
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('roles', [App\Http\Controllers\RolController::class, 'index'])->name('roles.index');

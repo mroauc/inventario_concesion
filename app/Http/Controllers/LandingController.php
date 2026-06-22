@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ContactoLanding;
 
 class LandingController extends Controller
 {
@@ -43,6 +44,7 @@ class LandingController extends Controller
         $request->validate([
             'nombre'              => 'required|string|max:100',
             'email'               => 'required|email|max:100',
+            'telefono'            => 'nullable|string|max:20',
             'asunto'              => 'nullable|string|max:150',
             'mensaje'             => 'required|string|max:2000',
             'g-recaptcha-response' => 'required',
@@ -50,7 +52,6 @@ class LandingController extends Controller
             'g-recaptcha-response.required' => 'Por favor verifica que no eres un robot.',
         ]);
 
-        // Verificar token con Google
         $response = \Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
             'secret'   => config('services.recaptcha.secret_key'),
             'response' => $request->input('g-recaptcha-response'),
@@ -61,8 +62,26 @@ class LandingController extends Controller
             return back()->withErrors(['g-recaptcha-response' => 'La verificación del captcha falló. Inténtalo de nuevo.'])->withInput();
         }
 
-        // Por ahora solo redirige con mensaje de éxito.
-        // Para enviar emails: configurar MAIL_* en .env y usar Mail::to(...)->send(...)
+        ContactoLanding::create($request->only('nombre', 'email', 'telefono', 'asunto', 'mensaje'));
+
         return back()->with('success', '¡Mensaje enviado! Nos pondremos en contacto pronto.');
+    }
+
+    public function mensajes()
+    {
+        $mensajes = ContactoLanding::latest()->paginate(20);
+        return view('contactos_landing.index', compact('mensajes'));
+    }
+
+    public function mensajeMarcarLeido(ContactoLanding $contacto)
+    {
+        $contacto->update(['leido' => !$contacto->leido]);
+        return back();
+    }
+
+    public function mensajeDestroy(ContactoLanding $contacto)
+    {
+        $contacto->delete();
+        return back()->with('success', 'Mensaje eliminado.');
     }
 }

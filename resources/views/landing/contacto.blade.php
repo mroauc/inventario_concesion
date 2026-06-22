@@ -64,7 +64,18 @@
                             @enderror
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-sm-6">
+                            <label for="telefono" class="form-label fw-semibold">Teléfono</label>
+                            <input type="tel" name="telefono" id="telefono"
+                                   class="form-control @error('telefono') is-invalid @enderror"
+                                   value="{{ old('telefono') }}"
+                                   placeholder="+56 9 1234 5678">
+                            @error('telefono')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-sm-6">
                             <label for="asunto" class="form-label fw-semibold">Asunto</label>
                             <input type="text" name="asunto" id="asunto"
                                    class="form-control @error('asunto') is-invalid @enderror"
