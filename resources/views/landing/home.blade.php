@@ -88,7 +88,7 @@
             <div class="col-12 col-md-4">
                 <i class="fas fa-clock me-2"></i>
                 <span class="d-none d-sm-inline">Lun–Jue 9:00–18:30 · Vie 9:00–17:30 · Sáb 9:15–13:00</span>
-                <span class="d-sm-none">Lun–Vie 9:00–18:30<br>Sáb 9:15–13:00</span>
+                <span class="d-sm-none">Lun–Jue 9:00–18:30 · Vie 9:00–17:30 · Sáb 9:15–13:00</span>
             </div>
         </div>
     </div>
