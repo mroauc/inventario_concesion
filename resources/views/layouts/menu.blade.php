@@ -240,3 +240,12 @@
     </a>
 </li>
 @endcan
+
+<li class="nav-item">
+    <a href="{!! route('mensajes.index') !!}"
+       class="nav-link {{ Request::is('mensajes-contacto*') ? 'active' : '' }}">
+       {{-- <i class="nav-icon fas fa-message"></i> --}}
+       <i class="nav-icon fas fa-inbox"></i>
+        <p>Mensajes Contacto</p>
+    </a>
+</li>
