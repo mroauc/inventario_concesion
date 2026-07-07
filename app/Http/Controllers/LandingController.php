@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ContactoLanding;
+use App\Models\LandingVisit;
 
 class LandingController extends Controller
 {
@@ -65,6 +66,22 @@ class LandingController extends Controller
         ContactoLanding::create($request->only('nombre', 'email', 'telefono', 'asunto', 'mensaje'));
 
         return back()->with('success', '¡Mensaje enviado! Nos pondremos en contacto pronto.');
+    }
+
+    public function trackClick(Request $request, $tipo)
+    {
+        if (!in_array($tipo, ['whatsapp', 'instagram', 'llamada'])) {
+            abort(404);
+        }
+
+        LandingVisit::create([
+            'pagina'     => 'click:' . $tipo,
+            'ip'         => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'referrer'   => $request->headers->get('referer'),
+        ]);
+
+        return response()->noContent();
     }
 
     public function mensajes()

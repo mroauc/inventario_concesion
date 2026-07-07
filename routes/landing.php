@@ -20,3 +20,4 @@ Route::get('/repuestos', [LandingController::class, 'repuestos'])->middleware('t
 Route::get('/conocenos', [LandingController::class, 'conocenos'])->middleware('track.landing:conocenos')->name('landing.conocenos');
 Route::get('/contacto',  [LandingController::class, 'contacto'])->middleware('track.landing:contacto')->name('landing.contacto');
 Route::post('/contacto', [LandingController::class, 'contactoEnviar'])->name('landing.contacto.enviar');
+Route::post('/click/{tipo}', [LandingController::class, 'trackClick'])->name('landing.click');

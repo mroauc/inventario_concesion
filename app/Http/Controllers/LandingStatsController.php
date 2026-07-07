@@ -12,15 +12,20 @@ class LandingStatsController extends Controller
     {
         $paginas = ['home', 'repuestos', 'conocenos', 'contacto'];
 
+        // Las visitas excluyen las filas click:* (esas se cuentan aparte en $clicks)
+        $soloVisitas = fn ($q) => $q->where('pagina', 'not like', 'click:%');
+
         // Totales por página
-        $totalesPorPagina = LandingVisit::select('pagina', DB::raw('COUNT(*) as total'))
+        $totalesPorPagina = LandingVisit::where($soloVisitas)
+            ->select('pagina', DB::raw('COUNT(*) as total'))
             ->groupBy('pagina')
             ->pluck('total', 'pagina');
 
-        $totalGeneral = LandingVisit::count();
+        $totalGeneral = LandingVisit::where($soloVisitas)->count();
 
         // Visitas por día (últimos 30 días)
-        $visitasPorDia = LandingVisit::select(
+        $visitasPorDia = LandingVisit::where($soloVisitas)
+            ->select(
                 DB::raw('DATE(created_at) as fecha'),
                 DB::raw('COUNT(*) as total')
             )
@@ -30,7 +35,8 @@ class LandingStatsController extends Controller
             ->get();
 
         // Visitas por página por día (últimos 30 días)
-        $visitasPorPaginaDia = LandingVisit::select(
+        $visitasPorPaginaDia = LandingVisit::where($soloVisitas)
+            ->select(
                 DB::raw('DATE(created_at) as fecha'),
                 'pagina',
                 DB::raw('COUNT(*) as total')
@@ -49,14 +55,25 @@ class LandingStatsController extends Controller
             ->limit(10)
             ->get();
 
+        // Clicks de contacto (whatsapp / instagram / llamada)
+        $clicks = LandingVisit::where('pagina', 'like', 'click:%')
+            ->select('pagina', DB::raw('COUNT(*) as total'))
+            ->groupBy('pagina')
+            ->pluck('total', 'pagina');
+        $clicks = [
+            'whatsapp'  => $clicks['click:whatsapp']  ?? 0,
+            'instagram' => $clicks['click:instagram'] ?? 0,
+            'llamada'   => $clicks['click:llamada']   ?? 0,
+        ];
+
         // Visitas de hoy
-        $hoy = LandingVisit::whereDate('created_at', today())->count();
+        $hoy = LandingVisit::where($soloVisitas)->whereDate('created_at', today())->count();
 
         // Visitas esta semana
-        $semana = LandingVisit::where('created_at', '>=', now()->startOfWeek())->count();
+        $semana = LandingVisit::where($soloVisitas)->where('created_at', '>=', now()->startOfWeek())->count();
 
         // Últimas 20 visitas
-        $ultimas = LandingVisit::orderByDesc('created_at')->limit(20)->get();
+        $ultimas = LandingVisit::where($soloVisitas)->orderByDesc('created_at')->limit(20)->get();
 
         return view('roait.stats', compact(
             'paginas',
@@ -67,7 +84,8 @@ class LandingStatsController extends Controller
             'topReferrers',
             'hoy',
             'semana',
-            'ultimas'
+            'ultimas',
+            'clicks'
         ));
     }
 }

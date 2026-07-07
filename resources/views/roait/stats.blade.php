@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stats – ROAVAL</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
         body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
@@ -55,6 +56,28 @@
             <div class="card-dark p-3 text-center">
                 <div class="stat-number">{{ count($paginas) }}</div>
                 <div class="stat-label">Páginas tracked</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Clicks de contacto --}}
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4">
+            <div class="card-dark p-3 text-center">
+                <div class="stat-number" style="color:#25d366;"><i class="fab fa-whatsapp"></i> {{ number_format($clicks['whatsapp']) }}</div>
+                <div class="stat-label">Clicks WhatsApp</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card-dark p-3 text-center">
+                <div class="stat-number" style="color:#e1306c;"><i class="fab fa-instagram"></i> {{ number_format($clicks['instagram']) }}</div>
+                <div class="stat-label">Clicks Instagram</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card-dark p-3 text-center">
+                <div class="stat-number"><i class="fas fa-phone-alt"></i> {{ number_format($clicks['llamada']) }}</div>
+                <div class="stat-label">Clicks Llamada</div>
             </div>
         </div>
     </div>

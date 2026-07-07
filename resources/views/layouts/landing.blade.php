@@ -49,6 +49,20 @@
     {{-- Bootstrap 5 JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    {{-- Conteo de clicks WhatsApp / Instagram / Llamada (sendBeacon, no bloquea la navegación) --}}
+    <script>
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        var href = a.getAttribute('href') || '';
+        var tipo = href.indexOf('wa.me') > -1 || href.indexOf('whatsapp') > -1 ? 'whatsapp'
+                 : href.indexOf('instagram.com') > -1 ? 'instagram'
+                 : href.indexOf('tel:') === 0 ? 'llamada'
+                 : null;
+        if (tipo) navigator.sendBeacon('/click/' + tipo);
+    });
+    </script>
+
     @stack('scripts')
 </body>
 </html>

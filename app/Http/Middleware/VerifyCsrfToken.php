@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'click/*', // ponytail: landing sendBeacon no puede enviar token CSRF
     ];
 }
