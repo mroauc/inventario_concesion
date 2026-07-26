@@ -521,6 +521,8 @@ body {
 .oferta-card {
     display: flex;
     flex-direction: column;
+    /* Con 1 o 2 ofertas la columna se estira: sin este tope la foto se ve enorme */
+    max-width: 420px;
     background: var(--white);
     border: 1px solid rgba(26, 58, 107, 0.08);
     border-radius: var(--radius);

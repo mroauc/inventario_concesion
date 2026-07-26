@@ -32,7 +32,7 @@
                 </a>
             </div>
         @else
-            <div class="row g-4">
+            <div class="row g-4 justify-content-center">
                 @foreach($ofertas as $oferta)
                     @php $fotos = $oferta->fotos ?? []; @endphp
                     <div class="col-sm-6 col-lg-4">

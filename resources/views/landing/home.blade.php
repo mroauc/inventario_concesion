@@ -151,7 +151,7 @@
             <p class="text-muted mb-0">Los mismos productos que ves en tienda, a mejor precio. Stock limitado.</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($ofertasDestacadas as $oferta)
             <div class="col-sm-6 col-lg-4">
                 <article class="oferta-card h-100">

@@ -247,11 +247,19 @@ class OfertaController extends Controller
         return $finales ?: null;
     }
 
+    /** Lienzo fijo 4:3, el mismo que usa la card de la landing. */
+    private const FOTO_ANCHO = 1200;
+    private const FOTO_ALTO  = 900;
+
     /**
      * Redimensiona y guarda hasta 3 fotos. Devuelve los paths relativos al disco public.
      *
-     * ponytail: redimensiona in-place a 1200px de ancho máx, sin thumbnails.
-     * Agregar thumbnails si la grilla de la landing se pone lenta.
+     * Todas quedan en un lienzo 4:3 de 1200x900: la imagen se escala para caber
+     * entera (sin recortar) y se rellena con blanco lo que sobra. Así una foto
+     * vertical de producto no se ve gigante ni deformada junto a una apaisada.
+     *
+     * ponytail: un solo tamaño, sin thumbnails. Agregar una versión pequeña si
+     * la grilla de la landing se pone lenta.
      */
     private function guardarFotos(?array $archivos): array
     {
@@ -264,7 +272,16 @@ class OfertaController extends Controller
 
         foreach (array_slice($archivos, 0, 3) as $archivo) {
             $nombre = uniqid('of_') . '.jpg';
-            $imagen = $manager->read($archivo->getRealPath())->scaleDown(width: 1200);
+            $imagen = $manager->read($archivo->getRealPath());
+
+            // Una foto más chica que el lienzo no se agranda (quedaría borrosa):
+            // se centra sobre el fondo blanco a su tamaño original.
+            if ($imagen->width() < self::FOTO_ANCHO && $imagen->height() < self::FOTO_ALTO) {
+                $imagen->resizeCanvas(self::FOTO_ANCHO, self::FOTO_ALTO, 'ffffff', 'center');
+            } else {
+                $imagen->contain(self::FOTO_ANCHO, self::FOTO_ALTO, 'ffffff');
+            }
+
             Storage::disk('public')->put("ofertas/{$nombre}", (string) $imagen->toJpeg(80));
             $paths[] = "ofertas/{$nombre}";
         }
