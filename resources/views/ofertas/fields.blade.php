@@ -25,39 +25,49 @@
 </div>
 
 <!-- Fotos Field -->
+@php $fotosActuales = $oferta->fotos ?? []; @endphp
+
 <div class="form-group col-sm-12">
-    <label for="fotos">Fotografías (máximo 3):</label>
-    <div class="custom-file">
-        <input type="file" name="fotos[]" id="fotos" class="custom-file-input"
-               accept="image/*" multiple>
-        <label class="custom-file-label" for="fotos">Seleccionar imágenes...</label>
+    <label class="d-block">Fotografías (máximo 3):</label>
+
+    {{-- Una casilla por posición: cada una es su propio input y se reemplaza sola --}}
+    <div class="foto-slots">
+        @for($i = 0; $i < 3; $i++)
+            @php $actual = $fotosActuales[$i] ?? null; @endphp
+            <div class="foto-slot {{ $actual ? 'foto-slot--llena' : '' }}" data-slot="{{ $i }}">
+                <input type="file" name="fotos[{{ $i }}]" id="foto{{ $i }}"
+                       class="foto-slot__input" accept="image/*">
+
+                {{-- Si se borra una foto existente, el backend lo sabe por este flag --}}
+                <input type="hidden" name="fotos_eliminadas[{{ $i }}]" value="0"
+                       class="foto-slot__eliminar">
+
+                <label for="foto{{ $i }}" class="foto-slot__label">
+                    <img src="{{ $actual ? asset('storage/' . $actual) : '' }}"
+                         alt="" class="foto-slot__img" {{ $actual ? '' : 'hidden' }}>
+
+                    <span class="foto-slot__vacio" {{ $actual ? 'hidden' : '' }}>
+                        <i class="fas fa-plus"></i>
+                        <span class="foto-slot__texto">Agregar foto</span>
+                    </span>
+
+                    <span class="foto-slot__num">{{ $i + 1 }}</span>
+                </label>
+
+                <button type="button" class="foto-slot__quitar" {{ $actual ? '' : 'hidden' }}
+                        title="Quitar esta foto" aria-label="Quitar foto {{ $i + 1 }}">&times;</button>
+
+                <small class="foto-slot__nombre text-muted d-block text-truncate"></small>
+            </div>
+        @endfor
     </div>
+
     <small class="form-text text-muted">
         JPG, PNG o WEBP. Máximo 5 MB cada una. Se redimensionan automáticamente.
-        @isset($oferta)
-            Si subes archivos nuevos, <strong>reemplazarán todas las fotos actuales</strong>.
-        @endisset
+        Haz clic en una casilla para elegir o cambiar esa foto.
     </small>
-
-    {{-- Previsualización de lo que se acaba de seleccionar --}}
-    <div id="preview-fotos" class="d-flex flex-wrap mt-3" style="gap:.75rem;"></div>
     <div id="preview-aviso" class="text-danger small mt-2 d-none"></div>
 </div>
-
-@isset($oferta)
-    @if($oferta->fotos)
-        {{-- Se atenúan si el usuario elige archivos nuevos: van a ser reemplazadas --}}
-        <div class="form-group col-sm-12" id="fotos-actuales">
-            <label class="d-block">Fotos actuales:</label>
-            <div class="d-flex flex-wrap" style="gap:.5rem;">
-                @foreach($oferta->fotos as $foto)
-                    <img src="{{ asset('storage/' . $foto) }}" alt=""
-                         style="width:120px;height:120px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6;">
-                @endforeach
-            </div>
-        </div>
-    @endif
-@endisset
 
 
 <!-- Vendido Field -->

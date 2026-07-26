@@ -1,66 +1,75 @@
 <script>
 $(function () {
-    // ponytail: URL.createObjectURL es nativo; no hace falta FileReader ni librerías.
-    var MAX_FOTOS = 3;
-    var MAX_MB    = 5;
-    var $input    = $('#fotos');
-    var $preview  = $('#preview-fotos');
-    var $aviso    = $('#preview-aviso');
-    var urls      = [];
+    // ponytail: una casilla = un input. Sin librerías; createObjectURL es nativo.
+    var MAX_MB = 5;
+    var urls   = {};   // slot -> objectURL, para liberarlos al reemplazar
 
-    $input.on('change', function () {
-        urls.forEach(URL.revokeObjectURL);   // liberar las miniaturas anteriores
-        urls = [];
-        $preview.empty();
-        $aviso.addClass('d-none').empty();
+    function aviso(msg) {
+        var $a = $('#preview-aviso');
+        msg ? $a.removeClass('d-none').text(msg) : $a.addClass('d-none').empty();
+    }
 
-        var archivos = Array.from(this.files || []);
-        if (!archivos.length) {
-            $('#fotos-actuales').css('opacity', '');
+    function vaciar($slot) {
+        $slot.removeClass('foto-slot--llena');
+        $slot.find('.foto-slot__img').attr('src', '').prop('hidden', true);
+        $slot.find('.foto-slot__vacio').prop('hidden', false);
+        $slot.find('.foto-slot__quitar').prop('hidden', true);
+        $slot.find('.foto-slot__nombre').empty();
+    }
+
+    function liberar(slot) {
+        if (urls[slot]) {
+            URL.revokeObjectURL(urls[slot]);
+            delete urls[slot];
+        }
+    }
+
+    $('.foto-slot__input').on('change', function () {
+        var $slot   = $(this).closest('.foto-slot');
+        var slot    = $slot.data('slot');
+        var archivo = this.files && this.files[0];
+
+        aviso('');
+        liberar(slot);
+
+        if (!archivo) { return; }   // el usuario canceló el diálogo
+
+        if (!archivo.type.startsWith('image/')) {
+            aviso('"' + archivo.name + '" no es una imagen.');
+            this.value = '';
             return;
         }
 
-        var errores = [];
-        if (archivos.length > MAX_FOTOS) {
-            errores.push('Seleccionaste ' + archivos.length + ' imágenes; el máximo es ' + MAX_FOTOS + '.');
+        var mb = archivo.size / 1048576;
+        if (mb > MAX_MB) {
+            aviso('"' + archivo.name + '" pesa ' + mb.toFixed(1) + ' MB; el máximo es ' + MAX_MB + ' MB.');
+            this.value = '';
+            return;
         }
 
-        archivos.slice(0, MAX_FOTOS).forEach(function (archivo, i) {
-            if (!archivo.type.startsWith('image/')) {
-                errores.push('"' + archivo.name + '" no es una imagen.');
-                return;
-            }
-            var mb = archivo.size / 1048576;
-            if (mb > MAX_MB) {
-                errores.push('"' + archivo.name + '" pesa ' + mb.toFixed(1) + ' MB; el máximo es ' + MAX_MB + ' MB.');
-                return;
-            }
+        urls[slot] = URL.createObjectURL(archivo);
 
-            var url = URL.createObjectURL(archivo);
-            urls.push(url);
+        $slot.addClass('foto-slot--llena');
+        $slot.find('.foto-slot__img').attr('src', urls[slot]).prop('hidden', false);
+        $slot.find('.foto-slot__vacio').prop('hidden', true);
+        $slot.find('.foto-slot__quitar').prop('hidden', false);
+        $slot.find('.foto-slot__nombre').text(archivo.name + ' · ' + mb.toFixed(1) + ' MB');
 
-            $preview.append(
-                $('<div>').css({position: 'relative', width: '120px'}).append(
-                    $('<img>').attr({src: url, alt: archivo.name}).css({
-                        width: '120px', height: '120px', objectFit: 'cover',
-                        borderRadius: '6px', border: '1px solid #dee2e6'
-                    }),
-                    $('<span>').addClass('badge badge-dark').css({
-                        position: 'absolute', top: '4px', left: '4px'
-                    }).text(i + 1),
-                    $('<small>').addClass('d-block text-muted text-truncate mt-1')
-                        .attr('title', archivo.name)
-                        .text(archivo.name + ' · ' + mb.toFixed(1) + ' MB')
-                )
-            );
-        });
+        // Elegir un archivo anula un borrado pendiente de esta misma casilla
+        $slot.find('.foto-slot__eliminar').val('0');
+    });
 
-        if (errores.length) {
-            $aviso.removeClass('d-none').html(errores.join('<br>'));
-        }
+    $('.foto-slot__quitar').on('click', function () {
+        var $slot = $(this).closest('.foto-slot');
+        var slot  = $slot.data('slot');
 
-        // Aviso visual de que las fotos actuales serán reemplazadas
-        $('#fotos-actuales').css('opacity', $preview.children().length ? '.4' : '');
+        liberar(slot);
+        $slot.find('.foto-slot__input').val('');
+        // Marca el borrado para el backend: sirve tanto para una foto guardada
+        // como para una recién elegida (en ese caso el flag es inofensivo).
+        $slot.find('.foto-slot__eliminar').val('1');
+        vaciar($slot);
+        aviso('');
     });
 });
 </script>

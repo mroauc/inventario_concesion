@@ -32,6 +32,10 @@
     </div>
 @endsection
 
+@push('page_css')
+    @include('ofertas._slots_css')
+@endpush
+
 @push('page_scripts')
     @include('ofertas._preview_script')
 @endpush

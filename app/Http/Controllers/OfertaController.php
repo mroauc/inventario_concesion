@@ -110,13 +110,17 @@ class OfertaController extends Controller
     {
         $request->validate($this->reglas());
 
+        // Las casillas llegan indexadas (0,1,2) y pueden venir con huecos:
+        // se compactan para que las fotos queden consecutivas.
+        $subidas = array_values(array_filter($request->file('fotos', []) ?: []));
+
         Oferta::create([
             'nombre'        => $request->nombre,
             'descripcion'   => $request->descripcion,
             'precio'        => $request->precio,
             'vendido'       => $request->boolean('vendido'),
             'estado'        => $request->boolean('estado', true),
-            'fotos'         => $this->guardarFotos($request->file('fotos', [])),
+            'fotos'         => $this->guardarFotos($subidas) ?: null,
             'id_concession' => auth()->user()->id_concession,
         ]);
 
@@ -150,12 +154,7 @@ class OfertaController extends Controller
             'estado'      => $request->boolean('estado', true),
         ];
 
-        // ponytail: reemplazo total, no borrado selectivo por foto. Agregar checkboxes si molesta.
-        $nuevas = $this->guardarFotos($request->file('fotos', []));
-        if ($nuevas) {
-            $this->borrarFotos($oferta->fotos);
-            $datos['fotos'] = $nuevas;
-        }
+        $datos['fotos'] = $this->mezclarFotos($request, $oferta);
 
         $oferta->update($datos);
 
@@ -198,9 +197,54 @@ class OfertaController extends Controller
             'nombre'      => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'precio'      => 'required|numeric|min:0',
+            // Una entrada por casilla; las vacías llegan como null
             'fotos'       => 'nullable|array|max:3',
-            'fotos.*'     => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'fotos.*'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ];
+    }
+
+    /**
+     * Combina, posición por posición, las fotos ya guardadas con las nuevas.
+     *
+     * Cada casilla del formulario es independiente: subir un archivo reemplaza
+     * solo esa posición, y el flag fotos_eliminadas marca las que se quitaron.
+     * Devuelve el arreglo final compactado (sin huecos), o null si no queda ninguna.
+     */
+    private function mezclarFotos(Request $request, Oferta $oferta): ?array
+    {
+        $actuales  = $oferta->fotos ?? [];
+        $subidas   = $request->file('fotos', []) ?: [];
+        $eliminar  = $request->input('fotos_eliminadas', []);
+
+        $finales  = [];
+        $aBorrar  = [];
+
+        for ($i = 0; $i < 3; $i++) {
+            $actual = $actuales[$i] ?? null;
+            $nueva  = $subidas[$i] ?? null;
+
+            if ($nueva) {
+                // Reemplazo: la de esta posición se va del disco
+                if ($actual) {
+                    $aBorrar[] = $actual;
+                }
+                $finales[] = $this->guardarFotos([$nueva])[0];
+                continue;
+            }
+
+            if (!empty($eliminar[$i]) && $actual) {
+                $aBorrar[] = $actual;
+                continue;
+            }
+
+            if ($actual) {
+                $finales[] = $actual;
+            }
+        }
+
+        $this->borrarFotos($aBorrar);
+
+        return $finales ?: null;
     }
 
     /**
