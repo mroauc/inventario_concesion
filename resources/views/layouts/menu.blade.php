@@ -169,6 +169,19 @@
 @endcan
 
 {{-- =============================================
+     OFERTAS (retail a la venta)
+     ============================================= --}}
+@can('ofertas.ver')
+<li class="nav-item">
+    <a href="{{ route('ofertas.index') }}"
+       class="nav-link {{ Request::is('ofertas*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-tags"></i>
+        <p>Ofertas</p>
+    </a>
+</li>
+@endcan
+
+{{-- =============================================
      ADMINISTRACIÓN (Submenu)
      ============================================= --}}
 @canany(['concesiones.ver', 'representantes.ver', 'historial.ver'])

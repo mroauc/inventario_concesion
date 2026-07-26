@@ -16,6 +16,7 @@ use App\Http\Controllers\LandingController;
 
 Route::get('/',          [LandingController::class, 'home'])->middleware('track.landing:home')->name('landing.home');
 Route::redirect('/wpp', '/', 301);
+Route::get('/ofertas',   [LandingController::class, 'ofertas'])->middleware('track.landing:ofertas')->name('landing.ofertas');
 Route::get('/repuestos', [LandingController::class, 'repuestos'])->middleware('track.landing:repuestos')->name('landing.repuestos');
 Route::get('/conocenos', [LandingController::class, 'conocenos'])->middleware('track.landing:conocenos')->name('landing.conocenos');
 Route::get('/contacto',  [LandingController::class, 'contacto'])->middleware('track.landing:contacto')->name('landing.contacto');

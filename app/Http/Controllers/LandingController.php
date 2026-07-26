@@ -5,14 +5,35 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ContactoLanding;
 use App\Models\LandingVisit;
+use App\Models\Oferta;
 
 class LandingController extends Controller
 {
     public function home()
     {
         return view('landing.home', [
+            'ofertasDestacadas' => Oferta::where('estado', true)
+                ->where('vendido', false)
+                ->latest()
+                ->take(3)
+                ->get(),
             'title'       => 'ROAVAL LIMITADA – Servicio Técnico Autorizado',
             'description' => 'Servicio técnico autorizado de línea blanca en Linares y Región del Maule. Reparamos Refrigeradores, Lavadoras, Secadoras y Calefones.',
+        ]);
+    }
+
+    public function ofertas()
+    {
+        // ponytail: landing mono-concesión. Filtrar por dominio si algún día hay más de una.
+        $ofertas = Oferta::where('estado', true)
+            ->orderBy('vendido')            // disponibles primero, vendidas al final
+            ->orderByDesc('created_at')
+            ->paginate(12);
+
+        return view('landing.ofertas', [
+            'ofertas'     => $ofertas,
+            'title'       => 'Ofertas – Electrodomésticos a precio rebajado | ROAVAL LIMITADA',
+            'description' => 'Electrodomésticos y línea blanca a precios más bajos que el retail. Lavadoras, refrigeradores, secadoras y más en Linares, Región del Maule.',
         ]);
     }
 

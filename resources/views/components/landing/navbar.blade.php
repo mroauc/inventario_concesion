@@ -1,6 +1,7 @@
 @php
     $navLinks = [
         ['route' => 'landing.home',      'label' => 'Inicio'],
+        ['route' => 'landing.ofertas',   'label' => 'Ofertas'],
         ['route' => 'landing.repuestos', 'label' => 'Repuestos / Accesorios'],
         ['route' => 'landing.conocenos', 'label' => 'Conócenos'],
         ['route' => 'landing.contacto',  'label' => 'Contacto'],

@@ -10,6 +10,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "infyomlabs/adminlte-templates": "^3.0",
+        "intervention/image": "^3.0",
         "laracasts/flash": "^3.2",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
@@ -63,7 +64,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2.26"
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

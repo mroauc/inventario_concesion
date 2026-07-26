@@ -140,6 +140,53 @@
 </section>
 
 {{-- ═══════════════════════════════════════════════════
+    OFERTAS DESTACADAS
+════════════════════════════════════════════════════ --}}
+@if($ofertasDestacadas->isNotEmpty())
+<section class="section-ofertas py-6">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">Tenemos a la venta</span>
+            <h2 class="section-title">Electrodomésticos más baratos que el retail</h2>
+            <p class="text-muted mb-0">Los mismos productos que ves en tienda, a mejor precio. Stock limitado.</p>
+        </div>
+
+        <div class="row g-4">
+            @foreach($ofertasDestacadas as $oferta)
+            <div class="col-sm-6 col-lg-4">
+                <article class="oferta-card h-100">
+                    <div class="oferta-card__media">
+                        @if($oferta->fotoPrincipal())
+                            <img src="{{ asset('storage/' . $oferta->fotoPrincipal()) }}"
+                                 alt="{{ $oferta->nombre }}" class="oferta-card__img" loading="lazy">
+                        @else
+                            <div class="oferta-card__img oferta-card__img--placeholder">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="oferta-card__body">
+                        <h3 class="oferta-card__title">{{ $oferta->nombre }}</h3>
+                        <p class="oferta-card__precio">${{ number_format($oferta->precio, 0, ',', '.') }}</p>
+                        @if($oferta->descripcion)
+                            <p class="oferta-card__text">{{ Str::limit($oferta->descripcion, 90) }}</p>
+                        @endif
+                    </div>
+                </article>
+            </div>
+            @endforeach
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{{ route('landing.ofertas') }}" class="btn btn-brand-primary btn-lg px-5">
+                <i class="fas fa-tags me-2"></i>Ver todas las ofertas
+            </a>
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- ═══════════════════════════════════════════════════
     MARCAS AUTORIZADAS
 ════════════════════════════════════════════════════ --}}
 <section class="section-brands py-5 bg-light">

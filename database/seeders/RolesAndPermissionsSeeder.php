@@ -72,6 +72,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'servicios.editar',
             'servicios.eliminar',
 
+            // Ofertas (retail a la venta)
+            'ofertas.ver',
+            'ofertas.crear',
+            'ofertas.editar',
+            'ofertas.eliminar',
+
             // Flujo de Caja
             'flujo_caja.ver',
             'flujo_caja.operar',
@@ -120,6 +126,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'clientes.ver', 'clientes.crear', 'clientes.editar', 'clientes.eliminar',
             'tecnicos.ver', 'tecnicos.crear', 'tecnicos.editar', 'tecnicos.eliminar',
             'servicios.ver', 'servicios.crear', 'servicios.editar', 'servicios.eliminar',
+            'ofertas.ver', 'ofertas.crear', 'ofertas.editar', 'ofertas.eliminar',
             'flujo_caja.ver', 'flujo_caja.operar', 'flujo_caja.reabrir',
             'historial.ver',
             'usuarios.ver', 'usuarios.crear', 'usuarios.editar', 'usuarios.eliminar', 'usuarios.asignar_rol',
@@ -133,6 +140,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'ordenes.ver', 'ordenes.crear', 'ordenes.editar', 'ordenes.cerrar',
             'clientes.ver', 'clientes.crear', 'clientes.editar',
             'servicios.ver',
+            'ofertas.ver', 'ofertas.crear', 'ofertas.editar', 'ofertas.eliminar',
             'flujo_caja.ver', 'flujo_caja.operar',
         ]);
 

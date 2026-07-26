@@ -111,6 +111,13 @@ Route::middleware(['auth', 'permission:tipo_artefactos.ver'])->group(function ()
     Route::resource('tipo_artefactos', App\Http\Controllers\TipoArtefactoController::class)->except(['show']);
 });
 
+// ─── OFERTAS (retail a la venta) ──────────────────────────────────────────────
+Route::middleware(['auth', 'permission:ofertas.ver'])->group(function () {
+    Route::get('ofertas-datatables', [App\Http\Controllers\OfertaController::class, 'datatables'])->name('ofertas.datatables');
+    Route::post('ofertas/{oferta}/vendido', [App\Http\Controllers\OfertaController::class, 'toggleVendido'])->name('ofertas.vendido');
+    Route::resource('ofertas', App\Http\Controllers\OfertaController::class);
+});
+
 // ─── FLUJO DE CAJA ────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->name('flujo_caja.')->group(function () {
     Route::get('/preview',                             [App\Http\Controllers\FlujoCajaController::class, 'index2'])->name('index2');

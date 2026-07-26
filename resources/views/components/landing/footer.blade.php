@@ -29,6 +29,7 @@
                 <h6 class="footer-heading">Navegación</h6>
                 <ul class="list-unstyled footer-links">
                     <li><a href="{{ route('landing.home') }}">Inicio</a></li>
+                    <li><a href="{{ route('landing.ofertas') }}">Ofertas</a></li>
                     <li><a href="{{ route('landing.repuestos') }}">Repuestos / Accesorios</a></li>
                     <li><a href="{{ route('landing.conocenos') }}">Conócenos</a></li>
                     <li><a href="{{ route('landing.contacto') }}">Contacto</a></li>
