@@ -32,3 +32,7 @@
         </div>
     </div>
 @endsection
+
+@push('page_scripts')
+    @include('ofertas._preview_script')
+@endpush

@@ -38,11 +38,16 @@
             Si subes archivos nuevos, <strong>reemplazarán todas las fotos actuales</strong>.
         @endisset
     </small>
+
+    {{-- Previsualización de lo que se acaba de seleccionar --}}
+    <div id="preview-fotos" class="d-flex flex-wrap mt-3" style="gap:.75rem;"></div>
+    <div id="preview-aviso" class="text-danger small mt-2 d-none"></div>
 </div>
 
 @isset($oferta)
     @if($oferta->fotos)
-        <div class="form-group col-sm-12">
+        {{-- Se atenúan si el usuario elige archivos nuevos: van a ser reemplazadas --}}
+        <div class="form-group col-sm-12" id="fotos-actuales">
             <label class="d-block">Fotos actuales:</label>
             <div class="d-flex flex-wrap" style="gap:.5rem;">
                 @foreach($oferta->fotos as $foto)
@@ -53,6 +58,7 @@
         </div>
     @endif
 @endisset
+
 
 <!-- Vendido Field -->
 <div class="form-group col-sm-6">
