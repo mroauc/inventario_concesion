@@ -153,7 +153,7 @@
 
         <div class="row g-4 justify-content-center">
             @foreach($ofertasDestacadas as $oferta)
-            <div class="col-sm-6 col-lg-4">
+            <div class="col-sm-6 col-lg-4 oferta-col">
                 <article class="oferta-card h-100">
                     <div class="oferta-card__media">
                         @if($oferta->fotoPrincipal())

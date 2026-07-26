@@ -32,7 +32,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     {{-- Landing CSS --}}
-    <link href="{{ asset('landing/css/landing.css') }}" rel="stylesheet">
+    {{-- ?v=<fecha del archivo>: fuerza al navegador a recargar el CSS al cambiarlo --}}
+    <link href="{{ asset('landing/css/landing.css') }}?v={{ filemtime(public_path('landing/css/landing.css')) }}" rel="stylesheet">
 
     @stack('head')
 </head>
