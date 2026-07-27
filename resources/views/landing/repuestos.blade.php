@@ -1,11 +1,49 @@
 @extends('layouts.landing')
 
+{{-- Schema.org: declara a Google que vendemos repuestos con cobertura en todo Chile --}}
+@push('head')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "ROAVAL LIMITADA – Repuestos de Línea Blanca",
+  "description": "Venta de repuestos y accesorios para lavadoras, refrigeradores, secadoras, cocinas a gas, calefones y estufas a parafina. Envíos a todo Chile.",
+  "url": "{{ url()->current() }}",
+  "telephone": "+56933223194",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Lautaro Nº 533",
+    "addressLocality": "Linares",
+    "addressRegion": "Región del Maule",
+    "addressCountry": "CL"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Chile"
+  },
+  "makesOffer": [
+    @foreach($categorias ?? [] as $i => $cat)
+    {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Repuestos para {{ $cat['nombre'] }}",
+        "category": "Repuestos de línea blanca"
+      },
+      "availableAtOrFrom": { "@type": "Country", "name": "Chile" }
+    }@if(!$loop->last),@endif
+    @endforeach
+  ]
+}
+</script>
+@endpush
+
 @section('content')
 
 {{-- Page Header --}}
 <section class="page-header">
     <div class="container">
-        <h1 class="page-header__title">Repuestos y Accesorios</h1>
+        <h1 class="page-header__title">Repuestos y Accesorios de Línea Blanca en Chile</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('landing.home') }}">Inicio</a></li>
@@ -20,12 +58,17 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h2 class="section-title mb-3">Repuestos Originales para Línea Blanca</h2>
+                <h2 class="section-title mb-3">Repuestos Originales para Línea Blanca en Chile</h2>
                 <p class="text-muted">
                     Contamos con un amplio stock de repuestos y accesorios para las marcas
                     <strong>Electrolux, Fensa</strong> y <strong>Mademsa</strong>, además de repuestos para
                     calefones, estufas a parafina y otras marcas del mercado chileno.
-                    Visítanos en nuestro local o consúltanos vía WhatsApp.
+                </p>
+                <p class="text-muted mb-0">
+                    <strong>Enviamos repuestos a todo Chile.</strong> Despachamos por courier a cualquier
+                    ciudad del país — Santiago, Valparaíso, Concepción, Temuco, Antofagasta, La Serena,
+                    Puerto Montt, Iquique, Rancagua, Talca, Chillán, Arica, Punta Arenas y más.
+                    Visítanos en nuestro local en Linares o consúltanos vía WhatsApp y coordinamos el envío.
                 </p>
             </div>
         </div>
@@ -38,101 +81,6 @@
         <div class="text-center mb-5">
             <h2 class="section-title">Categorías de Repuestos</h2>
         </div>
-
-        @php
-        $categorias = [
-            [
-                'icon'    => 'fa-tshirt',
-                'nombre'  => 'Lavadoras',
-                'color'   => 'primary',
-                'items'   => [
-                    'Bombas de desagüe (Electrolux, Daewoo, Askol)',
-                    'Motores de lavado (7 a 20 kg)',
-                    'Timers y tarjetas electrónicas (PCB)',
-                    'Electroválvulas de agua fría',
-                    'Correas de transmisión (M-21, M-20.5, M-28)',
-                    'Mangueras de desagüe y alimentación',
-                    'Rodamientos y transmisiones (dumping)',
-                    'Cables, conectores y presostatos',
-                ],
-            ],
-            [
-                'icon'    => 'fa-temperature-low',
-                'nombre'  => 'Refrigeradores',
-                'color'   => 'info',
-                'items'   => [
-                    'Termostatos (1 puerta y No Frost)',
-                    'Sensores de temperatura NTC',
-                    'Timers de deshielo (Sankyo, azul)',
-                    'Ventiladores No Frost',
-                    'Resistencias de deshielo',
-                    'Tarjetas electrónicas de control (Altus)',
-                    'Gavetas y estantes evaporador',
-                    'Interruptores de puerta y relays',
-                ],
-            ],
-            [
-                'icon'    => 'fa-burn',
-                'nombre'  => 'Cocinas a Gas',
-                'color'   => 'warning',
-                'items'   => [
-                    'Quemadores y copas (SABAF y CEMCO)',
-                    'Tapas y rejillas de quemadores',
-                    'Perillas de control (Sindelen, Titanium, Volcano)',
-                    'Conmutadores de horno',
-                    'Cables y armados de horno (16 A)',
-                    'Flexibles de gas (1/2×1/2, 3/8×1/2)',
-                    'Lámparas de horno y bujías',
-                    'Burletes y termocuplas de horno',
-                ],
-            ],
-            [
-                'icon'    => 'fa-wind',
-                'nombre'  => 'Secadoras',
-                'color'   => 'success',
-                'items'   => [
-                    'Correas de transmisión (1915, 1930, 1975, 1980)',
-                    'Ventiladores y hélices',
-                    'Termostatos y termofusibles',
-                    'Juntas de tambor (065 y estándar)',
-                    'Filtros de pelusa y rejillas',
-                    'Mangueras y ductos de salida de aire',
-                    'Condensadores y capacitores',
-                    'Tarjetas electrónicas (PCB Solare)',
-                ],
-            ],
-            [
-                'icon'    => 'fa-fire',
-                'nombre'  => 'Calefones',
-                'color'   => 'danger',
-                'items'   => [
-                    'Membranas (Junkers, Neckar, Mademsa, Vitality, Splendid)',
-                    'Módulos de encendido (válvula Tonka y flow switch)',
-                    'Electroválvulas (15 mm, blanco y negro)',
-                    'Flowswitch con despiche',
-                    'Termocuplas (termo par H-200)',
-                    'Cajas de pilas (Altus, Neckar, Junkers)',
-                    'Interruptores de agua (2P y 3P)',
-                    'Válvulas de gas y caño venturi',
-                ],
-            ],
-            [
-                'icon'    => 'fa-fire-alt',
-                'nombre'  => 'Estufas a Parafina',
-                'color'   => 'secondary',
-                'items'   => [
-                    'Mechas (Foguita Pro, Omni 230, Fiamma, KS27, Potenza, Volcano, Nacional)',
-                    'Perillas y portaperillas (Mademsa 5 y 15 kg, Volcano, Fensa)',
-                    'Quemadores y vaporizadores (chico y grande)',
-                    'Filtros de aceite (540, 950/590/990)',
-                    'Encendedores a pilas y piezoeléctricos',
-                    'Jeringas plásticas y trasvasijadores',
-                    'Guías de mecha (F-1120+, Fiamma Pro, 720+)',
-                    'Estanques, cartuchos y bobinas de encendido',
-                ],
-            ],
-        ];
-        @endphp
 
         <div class="row g-4">
             @foreach($categorias as $cat)

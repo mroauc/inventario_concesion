@@ -39,9 +39,105 @@ class LandingController extends Controller
 
     public function repuestos()
     {
+        // Definido acá (y no en la vista) porque el JSON-LD del @push('head') también lo usa,
+        // y el <head> se renderiza antes que el @php de la sección.
+        $categorias = [
+            [
+                'icon'   => 'fa-tshirt',
+                'nombre' => 'Lavadoras',
+                'color'  => 'primary',
+                'items'  => [
+                    'Bombas de desagüe (Electrolux, Daewoo, Askol)',
+                    'Motores de lavado (7 a 20 kg)',
+                    'Timers y tarjetas electrónicas (PCB)',
+                    'Electroválvulas de agua fría',
+                    'Correas de transmisión (M-21, M-20.5, M-28)',
+                    'Mangueras de desagüe y alimentación',
+                    'Rodamientos y transmisiones (dumping)',
+                    'Cables, conectores y presostatos',
+                ],
+            ],
+            [
+                'icon'   => 'fa-temperature-low',
+                'nombre' => 'Refrigeradores',
+                'color'  => 'info',
+                'items'  => [
+                    'Termostatos (1 puerta y No Frost)',
+                    'Sensores de temperatura NTC',
+                    'Timers de deshielo (Sankyo, azul)',
+                    'Ventiladores No Frost',
+                    'Resistencias de deshielo',
+                    'Tarjetas electrónicas de control (Altus)',
+                    'Gavetas y estantes evaporador',
+                    'Interruptores de puerta y relays',
+                ],
+            ],
+            [
+                'icon'   => 'fa-burn',
+                'nombre' => 'Cocinas a Gas',
+                'color'  => 'warning',
+                'items'  => [
+                    'Quemadores y copas (SABAF y CEMCO)',
+                    'Tapas y rejillas de quemadores',
+                    'Perillas de control (Sindelen, Titanium, Volcano)',
+                    'Conmutadores de horno',
+                    'Cables y armados de horno (16 A)',
+                    'Flexibles de gas (1/2×1/2, 3/8×1/2)',
+                    'Lámparas de horno y bujías',
+                    'Burletes y termocuplas de horno',
+                ],
+            ],
+            [
+                'icon'   => 'fa-wind',
+                'nombre' => 'Secadoras',
+                'color'  => 'success',
+                'items'  => [
+                    'Correas de transmisión (1915, 1930, 1975, 1980)',
+                    'Ventiladores y hélices',
+                    'Termostatos y termofusibles',
+                    'Juntas de tambor (065 y estándar)',
+                    'Filtros de pelusa y rejillas',
+                    'Mangueras y ductos de salida de aire',
+                    'Condensadores y capacitores',
+                    'Tarjetas electrónicas (PCB Solare)',
+                ],
+            ],
+            [
+                'icon'   => 'fa-fire',
+                'nombre' => 'Calefones',
+                'color'  => 'danger',
+                'items'  => [
+                    'Membranas (Junkers, Neckar, Mademsa, Vitality, Splendid)',
+                    'Módulos de encendido (válvula Tonka y flow switch)',
+                    'Electroválvulas (15 mm, blanco y negro)',
+                    'Flowswitch con despiche',
+                    'Termocuplas (termo par H-200)',
+                    'Cajas de pilas (Altus, Neckar, Junkers)',
+                    'Interruptores de agua (2P y 3P)',
+                    'Válvulas de gas y caño venturi',
+                ],
+            ],
+            [
+                'icon'   => 'fa-fire-alt',
+                'nombre' => 'Estufas a Parafina',
+                'color'  => 'secondary',
+                'items'  => [
+                    'Mechas (Foguita Pro, Omni 230, Fiamma, KS27, Potenza, Volcano, Nacional)',
+                    'Perillas y portaperillas (Mademsa 5 y 15 kg, Volcano, Fensa)',
+                    'Quemadores y vaporizadores (chico y grande)',
+                    'Filtros de aceite (540, 950/590/990)',
+                    'Encendedores a pilas y piezoeléctricos',
+                    'Jeringas plásticas y trasvasijadores',
+                    'Guías de mecha (F-1120+, Fiamma Pro, 720+)',
+                    'Estanques, cartuchos y bobinas de encendido',
+                ],
+            ],
+        ];
+
         return view('landing.repuestos', [
-            'title'       => 'Repuestos y Accesorios – ROAVAL LIMITADA',
-            'description' => 'Venta de repuestos y accesorios para línea blanca: lavadoras, refrigeradores, secadoras, calefones y más. Marcas Electrolux, Fensa, Mademsa.',
+            'categorias'  => $categorias,
+            'title'       => 'Repuestos de Línea Blanca en Chile – Envíos a Todo el País | ROAVAL',
+            'description' => 'Repuestos para lavadoras, refrigeradores, secadoras, cocinas, calefones y estufas a parafina. Electrolux, Fensa, Mademsa. Despacho a todo Chile: Santiago, Valparaíso, Concepción, Temuco y más.',
         ]);
     }
 
