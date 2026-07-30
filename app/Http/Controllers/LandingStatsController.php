@@ -10,7 +10,7 @@ class LandingStatsController extends Controller
 {
     public function index(Request $request)
     {
-        $paginas = ['home', 'repuestos', 'conocenos', 'contacto'];
+        $paginas = ['home', 'ofertas', 'repuestos', 'conocenos', 'contacto'];
 
         // Las visitas excluyen las filas click:* (esas se cuentan aparte en $clicks)
         $soloVisitas = fn ($q) => $q->where('pagina', 'not like', 'click:%');
