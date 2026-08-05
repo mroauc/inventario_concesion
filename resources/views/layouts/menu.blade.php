@@ -254,6 +254,7 @@
 </li>
 @endcan
 
+@can('mensajes.ver')
 <li class="nav-item">
     <a href="{!! route('mensajes.index') !!}"
        class="nav-link {{ Request::is('mensajes-contacto*') ? 'active' : '' }}">
@@ -262,3 +263,4 @@
         <p>Mensajes Contacto</p>
     </a>
 </li>
+@endcan

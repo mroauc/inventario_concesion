@@ -83,6 +83,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'flujo_caja.operar',
             'flujo_caja.reabrir',
 
+            // Mensajes de contacto (landing)
+            'mensajes.ver',
+            'mensajes.editar',
+            'mensajes.eliminar',
+
             // Historial / Logs
             'historial.ver',
 
@@ -128,6 +133,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'servicios.ver', 'servicios.crear', 'servicios.editar', 'servicios.eliminar',
             'ofertas.ver', 'ofertas.crear', 'ofertas.editar', 'ofertas.eliminar',
             'flujo_caja.ver', 'flujo_caja.operar', 'flujo_caja.reabrir',
+            'mensajes.ver', 'mensajes.editar', 'mensajes.eliminar',
             'historial.ver',
             'usuarios.ver', 'usuarios.crear', 'usuarios.editar', 'usuarios.eliminar', 'usuarios.asignar_rol',
         ]);

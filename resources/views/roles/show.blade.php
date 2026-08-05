@@ -48,6 +48,7 @@
             'tecnicos'        => ['icon' => 'fa-hard-hat',          'color' => 'warning'],
             'servicios'       => ['icon' => 'fa-wrench',            'color' => 'warning'],
             'flujo_caja'      => ['icon' => 'fa-cash-register',     'color' => 'primary'],
+            'mensajes'        => ['icon' => 'fa-inbox',             'color' => 'primary'],
             'historial'       => ['icon' => 'fa-history',           'color' => 'secondary'],
             'usuarios'        => ['icon' => 'fa-users-cog',         'color' => 'danger'],
             'concesiones'     => ['icon' => 'fa-building',          'color' => 'danger'],

@@ -41,19 +41,23 @@
                                     <td>{{ $msg->asunto ?? '—' }}</td>
                                     <td style="max-width:300px;white-space:pre-wrap;">{{ $msg->mensaje }}</td>
                                     <td>
+                                        @can('mensajes.editar')
                                         <form action="{{ route('mensajes.leido', $msg) }}" method="POST">
                                             @csrf @method('PATCH')
                                             <button class="btn btn-xs {{ $msg->leido ? 'btn-secondary' : 'btn-success' }}">
                                                 {{ $msg->leido ? 'No leído' : 'Leído' }}
                                             </button>
                                         </form>
+                                        @endcan
                                     </td>
                                     <td>
+                                        @can('mensajes.eliminar')
                                         <form action="{{ route('mensajes.destroy', $msg) }}" method="POST"
                                               onsubmit="return confirm('¿Eliminar este mensaje?')">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
                                         </form>
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach
