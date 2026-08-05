@@ -255,12 +255,18 @@
 @endcan
 
 @can('mensajes.ver')
+@php $mensajesSinLeer = \App\Models\ContactoLanding::where('leido', false)->count(); @endphp
 <li class="nav-item">
     <a href="{!! route('mensajes.index') !!}"
        class="nav-link {{ Request::is('mensajes-contacto*') ? 'active' : '' }}">
        {{-- <i class="nav-icon fas fa-message"></i> --}}
        <i class="nav-icon fas fa-inbox"></i>
-        <p>Mensajes Contacto</p>
+        <p>
+            Mensajes Contacto
+            @if($mensajesSinLeer)
+            <span class="badge badge-danger right">{{ $mensajesSinLeer }}</span>
+            @endif
+        </p>
     </a>
 </li>
 @endcan
