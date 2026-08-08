@@ -8,6 +8,9 @@
                 <h1><i class="fas fa-cash-register text-brand mr-2"></i>Flujo de Caja</h1>
             </div>
             <div class="col-sm-6 d-flex justify-content-end align-items-center gap-2">
+                <a href="{{ route('flujo_caja.informes') }}" class="btn btn-outline-brand btn-sm mr-2">
+                    <i class="fas fa-chart-line mr-1"></i> Informes
+                </a>
                 <a href="{{ route('flujo_caja.logs.index') }}" class="btn btn-outline-brand btn-sm mr-2">
                     <i class="fas fa-history mr-1"></i> Ver historial
                 </a>

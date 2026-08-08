@@ -57,6 +57,87 @@ class FlujoCajaController extends Controller
     }
 
     /**
+     * Informe con gráficos: ingresos/egresos por categoría en un rango de fechas.
+     */
+    public function informes(Request $request)
+    {
+        $request->validate([
+            'desde' => 'nullable|date',
+            'hasta' => 'nullable|date|after_or_equal:desde',
+        ]);
+
+        $desde = $request->filled('desde')
+            ? Carbon::parse($request->input('desde'))->startOfDay()
+            : Carbon::now()->startOfMonth();
+
+        $hasta = $request->filled('hasta')
+            ? Carbon::parse($request->input('hasta'))->startOfDay()
+            : Carbon::now()->startOfDay();
+
+        // ponytail: rangos largos se agrupan por mes; diario sobre 6 meses es ruido ilegible
+        $agrupacion = $desde->diffInDays($hasta) > 60 ? 'mes' : 'dia';
+        $formatoSql = $agrupacion === 'mes' ? '%Y-%m' : '%Y-%m-%d';
+
+        $filas = MovimientoCaja::where('id_concession', auth()->user()->id_concession)
+            ->where('anulado', false)
+            ->whereBetween('fecha', [$desde->toDateString(), $hasta->toDateString()])
+            ->selectRaw("DATE_FORMAT(fecha, '{$formatoSql}') as periodo, medio, tipo_movimiento, SUM(monto) as total")
+            ->groupBy('periodo', 'medio', 'tipo_movimiento')
+            ->orderBy('periodo')
+            ->get();
+
+        // Los depósitos al banco quedan fuera de las categorías: van en su propio gráfico.
+        $categorias = [
+            'caja_chica'   => ['efectivo', 'credito_debito', 'transferencia'],
+            'tecnoelectro' => ['efectivo_tecno', 'credito_debito_tecno', 'devolucion_abono'],
+            'transbank'    => ['transbank'],
+        ];
+
+        $periodos = $filas->pluck('periodo')->unique()->sort()->values();
+
+        // Estructura: series[categoria][ingreso|egreso][periodo] = monto
+        $series = [];
+        foreach ($categorias as $cat => $medios) {
+            foreach (['ingreso', 'egreso'] as $tipo) {
+                $series[$cat][$tipo] = $periodos->map(fn($p) => (float) $filas
+                    ->where('periodo', $p)
+                    ->where('tipo_movimiento', $tipo)
+                    ->whereIn('medio', $medios)
+                    ->sum('total'))->all();
+            }
+        }
+
+        // Depósitos al banco por período (excluidos de las categorías de arriba).
+        // Neto: un depósito normalmente es egreso, pero existen registros como ingreso
+        // (reversas/retiros), que deben restar y no sumar al monto depositado.
+        $netoDeposito = fn($p, $medio) => (float) $filas
+                ->where('periodo', $p)->where('medio', $medio)->where('tipo_movimiento', 'egreso')->sum('total')
+            - (float) $filas
+                ->where('periodo', $p)->where('medio', $medio)->where('tipo_movimiento', 'ingreso')->sum('total');
+
+        $depositos = [
+            'caja_chica'   => $periodos->map(fn($p) => $netoDeposito($p, 'deposito_banco'))->all(),
+            'tecnoelectro' => $periodos->map(fn($p) => $netoDeposito($p, 'deposito_banco_tecnoelectro'))->all(),
+        ];
+
+        // Etiquetas legibles para el eje X
+        $etiquetas = $periodos->map(function ($p) use ($agrupacion) {
+            return $agrupacion === 'mes'
+                ? Carbon::createFromFormat('Y-m-d', $p . '-01')->locale('es')->isoFormat('MMM YYYY')
+                : Carbon::createFromFormat('Y-m-d', $p)->format('d/m');
+        })->all();
+
+        return view('flujo_caja.informes', [
+            'desde'      => $desde,
+            'hasta'      => $hasta,
+            'agrupacion' => $agrupacion,
+            'etiquetas'  => $etiquetas,
+            'series'     => $series,
+            'depositos'  => $depositos,
+        ]);
+    }
+
+    /**
      * AJAX: carga datos de un día distinto al cambiar el selector de fecha.
      */
     public function cargarDia(Request $request)
