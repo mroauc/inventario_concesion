@@ -61,6 +61,8 @@ class FlujoCajaController extends Controller
      */
     public function informes(Request $request)
     {
+        $this->authorize('flujo_caja.informes');
+
         $request->validate([
             'desde' => 'nullable|date',
             'hasta' => 'nullable|date|after_or_equal:desde',

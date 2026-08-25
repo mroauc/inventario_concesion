@@ -82,6 +82,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'flujo_caja.ver',
             'flujo_caja.operar',
             'flujo_caja.reabrir',
+            'flujo_caja.informes',
 
             // Mensajes de contacto (landing)
             'mensajes.ver',
@@ -132,7 +133,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'tecnicos.ver', 'tecnicos.crear', 'tecnicos.editar', 'tecnicos.eliminar',
             'servicios.ver', 'servicios.crear', 'servicios.editar', 'servicios.eliminar',
             'ofertas.ver', 'ofertas.crear', 'ofertas.editar', 'ofertas.eliminar',
-            'flujo_caja.ver', 'flujo_caja.operar', 'flujo_caja.reabrir',
+            'flujo_caja.ver', 'flujo_caja.operar', 'flujo_caja.reabrir', 'flujo_caja.informes',
             'mensajes.ver', 'mensajes.editar', 'mensajes.eliminar',
             'historial.ver',
             'usuarios.ver', 'usuarios.crear', 'usuarios.editar', 'usuarios.eliminar', 'usuarios.asignar_rol',

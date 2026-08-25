@@ -119,9 +119,13 @@ Route::middleware(['auth', 'permission:ofertas.ver'])->group(function () {
 });
 
 // ─── FLUJO DE CAJA ────────────────────────────────────────────────────────────
+// Informes: solo administrador y super_admin (operador_servicio no tiene flujo_caja.informes)
+Route::middleware(['auth', 'permission:flujo_caja.informes'])->prefix('flujo-caja')->name('flujo_caja.')->group(function () {
+    Route::get('/informes',                            [App\Http\Controllers\FlujoCajaController::class, 'informes'])->name('informes');
+});
+
 Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->name('flujo_caja.')->group(function () {
     Route::get('/preview',                             [App\Http\Controllers\FlujoCajaController::class, 'index2'])->name('index2');
-    Route::get('/informes',                            [App\Http\Controllers\FlujoCajaController::class, 'informes'])->name('informes');
     Route::get('/',                                    [App\Http\Controllers\FlujoCajaController::class, 'index'])->name('index');
     Route::get('/dia',                                 [App\Http\Controllers\FlujoCajaController::class, 'cargarDia'])->name('dia');
     Route::post('/movimiento',                         [App\Http\Controllers\FlujoCajaController::class, 'registrarMovimiento'])->name('movimiento');
