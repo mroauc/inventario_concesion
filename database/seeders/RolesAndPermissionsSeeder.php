@@ -114,6 +114,10 @@ class RolesAndPermissionsSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permiso, 'guard_name' => 'web']);
         }
 
+        // Los permisos recien creados no estan en la lista cacheada que lee
+        // syncPermissions(); sin este olvido falla con PermissionDoesNotExist.
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
         // ─── SUPER ADMIN ────────────────────────────────────────────────────
         // Tiene todos los permisos sin excepción
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
