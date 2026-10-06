@@ -10,6 +10,7 @@ use App\Models\Artefacto;
 use App\Models\Tecnico;
 use App\Models\Product;
 use App\Models\Servicio;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Flash;
 use DB;
 
@@ -79,6 +80,7 @@ class OrdenServicioController extends Controller
             $acciones = '
                 <div class="btn-group">
                     <a href="' . route('ordenes_servicio.show', $orden->id) . '" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                    <a href="' . route('ordenes_servicio.pdf', $orden->id) . '" class="btn btn-secondary btn-sm" title="Descargar PDF"><i class="fas fa-file-pdf"></i></a>
                     <a href="' . route('ordenes_servicio.edit', $orden->id) . '" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                     <form method="POST" action="' . route('ordenes_servicio.destroy', $orden->id) . '" style="display:inline">
                         <input type="hidden" name="_token" value="' . csrf_token() . '">
@@ -204,6 +206,53 @@ class OrdenServicioController extends Controller
     {
         $orden = OrdenServicio::with(['cliente', 'artefacto', 'tecnico', 'detalles.producto', 'detalles.servicio'])->findOrFail($id);
         return view('ordenes_servicio.show', compact('orden'));
+    }
+
+    /**
+     * Genera y descarga la orden de servicio en PDF para entregar al cliente.
+     */
+    public function pdf($id)
+    {
+        $orden = OrdenServicio::where('id_concession', auth()->user()->id_concession)
+            ->with(['cliente', 'artefacto.tipoArtefacto', 'tecnico', 'detalles.producto', 'detalles.servicio'])
+            ->findOrFail($id);
+
+        $concesion = \App\Models\Concession::find($orden->id_concession);
+        $logo = $this->logoPdf();
+
+        // El subsetting embebe solo los glifos usados de la fuente (~1 MB → ~60 KB)
+        $pdf = Pdf::setOption('isFontSubsettingEnabled', true)
+            ->loadView('ordenes_servicio.pdf', compact('orden', 'concesion', 'logo'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->download('orden-servicio-' . $orden->numero . '.pdf');
+    }
+
+    /**
+     * Logo reducido a 200px y embebido en base64, para no depender de URLs dentro de dompdf
+     * ni inflar el PDF con la imagen original.
+     */
+    private function logoPdf()
+    {
+        $logoPath = public_path('icon/roaval.png');
+        if (!file_exists($logoPath)) {
+            return null;
+        }
+
+        $imagen = @imagecreatefrompng($logoPath);
+        if (!$imagen) {
+            return 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
+        $reducida = imagescale($imagen, 200);
+        imagesavealpha($reducida, true);
+        ob_start();
+        imagepng($reducida, null, 9);
+        $png = ob_get_clean();
+        imagedestroy($imagen);
+        imagedestroy($reducida);
+
+        return 'data:image/png;base64,' . base64_encode($png);
     }
 
     public function edit($id)

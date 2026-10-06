@@ -98,6 +98,11 @@
                             @enderror
                         </div>
 
+                        {{-- ponytail: honeypot anti-spam, los bots rellenan todo --}}
+                        <div style="position:absolute;left:-9999px" aria-hidden="true">
+                            <input type="text" name="website" tabindex="-1" autocomplete="off">
+                        </div>
+
                         <div class="col-12">
                             <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
                             @error('g-recaptcha-response')

@@ -159,6 +159,11 @@ class LandingController extends Controller
 
     public function contactoEnviar(Request $request)
     {
+        // ponytail: honeypot + links = spam. Descarte silencioso: el bot cree que envió.
+        if ($request->filled('website') || preg_match('~https?://|t\.me/|wa\.me/|www\.~i', $request->input('mensaje', ''))) {
+            return back()->with('success', '¡Mensaje enviado! Nos pondremos en contacto pronto.');
+        }
+
         $request->validate([
             'nombre'              => 'required|string|max:100',
             'email'               => 'required|email|max:100',

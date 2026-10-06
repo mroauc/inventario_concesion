@@ -11,6 +11,9 @@
                     <a class="btn btn-primary float-right" href="{{ route('ordenes_servicio.edit', $orden->id) }}">
                         Editar Orden
                     </a>
+                    <a class="btn btn-secondary float-right mr-2" href="{{ route('ordenes_servicio.pdf', $orden->id) }}">
+                        <i class="fas fa-file-pdf mr-1"></i> Descargar PDF
+                    </a>
                 </div>
             </div>
         </div>
