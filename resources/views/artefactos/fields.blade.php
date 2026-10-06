@@ -36,7 +36,7 @@
     <label for="marca">Marca:</label>
     <select name="marca" id="marca" class="form-control select2">
         <option value="">Sin marca asignada</option>
-        @foreach(['Electrolux', 'Fensa', 'Mademsa', 'Somela'] as $marca)
+        @foreach(['Electrolux', 'Fensa', 'Mademsa', 'Somela', 'Groner'] as $marca)
             <option value="{{ $marca }}"
                 {{ old('marca', $artefacto->marca ?? '') == $marca ? 'selected' : '' }}>
                 {{ $marca }}
