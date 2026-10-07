@@ -92,6 +92,8 @@ Route::middleware(['auth', 'permission:tecnicos.ver'])->group(function () {
 
 // ─── SERVICIO TÉCNICO: Órdenes de Servicio ───────────────────────────────────
 Route::middleware(['auth', 'permission:ordenes.ver'])->group(function () {
+    Route::post('ordenes-servicio/clientes', [App\Http\Controllers\OrdenServicioController::class, 'storeCliente'])
+        ->name('ordenes_servicio.clientes.store');
     Route::get('clientes/{cliente}/datos', [App\Http\Controllers\OrdenServicioController::class, 'clienteDatos'])->name('clientes.datos');
     Route::get('ordenes-datatables', [App\Http\Controllers\OrdenServicioController::class, 'datatables'])->name('ordenes_servicio.datatables');
     Route::get('ordenes_servicio/{id}/pdf', [App\Http\Controllers\OrdenServicioController::class, 'pdf'])->name('ordenes_servicio.pdf');

@@ -354,6 +354,8 @@ class OrdenServicioController extends Controller
      */
     public function clienteDatos(Cliente $cliente)
     {
+        abort_if($cliente->id_concession !== auth()->user()->id_concession, 403);
+
         return response()->json([
             'rut'             => $cliente->rut,
             'nombre'          => $cliente->nombre . ' ' . $cliente->apellido,
@@ -362,6 +364,42 @@ class OrdenServicioController extends Controller
             'numero_contacto' => $cliente->numero_contacto,
             'email'           => $cliente->email,
         ]);
+    }
+
+    /**
+     * Crea un cliente sin abandonar el formulario de la orden de servicio.
+     */
+    public function storeCliente(Request $request)
+    {
+        $datos = $request->validate(array_merge(Cliente::$rules, [
+            'nota' => 'nullable|string',
+        ]), [
+            'nombre.required'          => 'Ingresa el nombre del cliente.',
+            'apellido.required'        => 'Ingresa el apellido del cliente.',
+            'direccion.required'       => 'Ingresa la dirección del cliente.',
+            'numero_contacto.required' => 'Ingresa un teléfono de contacto.',
+            'tipo_cliente.required'    => 'Selecciona el tipo de cliente.',
+            'email.email'              => 'Ingresa un correo electrónico válido.',
+        ]);
+
+        $datos['estado'] = true;
+        $datos['id_concession'] = auth()->user()->id_concession;
+        $datos['coordenadas'] = null;
+
+        $cliente = Cliente::create($datos);
+
+        return response()->json([
+            'message' => 'Cliente creado y seleccionado correctamente.',
+            'cliente' => [
+                'id'              => $cliente->id,
+                'rut'             => $cliente->rut,
+                'nombre'          => $cliente->nombre . ' ' . $cliente->apellido,
+                'direccion'       => $cliente->direccion,
+                'ciudad'          => $cliente->ciudad,
+                'numero_contacto' => $cliente->numero_contacto,
+                'email'           => $cliente->email,
+            ],
+        ], 201);
     }
 
     /**

@@ -33,6 +33,11 @@
                         <h3 class="card-title font-weight-semibold">
                             <i class="fas fa-user mr-2 text-brand"></i>Cliente
                         </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-sm btn-outline-brand" data-toggle="modal" data-target="#modal-nuevo-cliente">
+                                <i class="fas fa-user-plus mr-1"></i>Nuevo cliente
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="form-group">
@@ -402,6 +407,8 @@
     </form>
 </div>
 
+@include('ordenes_servicio._cliente_modal')
+
 @push('page_scripts')
 <script>
 $(document).ready(function () {
@@ -465,6 +472,8 @@ $(document).ready(function () {
         });
     }
     $('#cliente_id').on('change', function () { cargarDatosCliente($(this).val()); });
+
+    @include('ordenes_servicio._cliente_quick_script')
 
     // ── Tipo atención ─────────────────────────────────────────────────────────
     $('#tipo_atencion').on('change', function () {
