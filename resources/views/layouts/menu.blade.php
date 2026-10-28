@@ -169,6 +169,53 @@
 @endcan
 
 {{-- =============================================
+     FACTURACION ELECTRONICA (Submenu)
+     ============================================= --}}
+@canany(['dte.configuracion', 'dte.certificados', 'dte.folios', 'dte.boletas.ver'])
+@php
+    $dteActivo = Request::is('dte*');
+@endphp
+<li class="nav-item has-treeview {{ $dteActivo ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ $dteActivo ? 'active' : '' }}">
+        <i class="nav-icon fas fa-file-invoice"></i>
+        <p>
+            Facturacion
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        @can('dte.configuracion')
+        <li class="nav-item">
+            <a href="{{ route('dte.configuracion.index') }}"
+               class="nav-link {{ Request::is('dte/configuracion*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Config. Fiscal</p>
+            </a>
+        </li>
+        @endcan
+        @can('dte.certificados')
+        <li class="nav-item">
+            <a href="{{ route('dte.certificados.index') }}"
+               class="nav-link {{ Request::is('dte/certificados*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Certificados</p>
+            </a>
+        </li>
+        @endcan
+        @can('dte.folios')
+        <li class="nav-item">
+            <a href="{{ route('dte.cafs.index') }}"
+               class="nav-link {{ Request::is('dte/cafs*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Folios (CAF)</p>
+            </a>
+        </li>
+        @endcan
+    </ul>
+</li>
+@endcanany
+
+{{-- =============================================
      OFERTAS (retail a la venta)
      ============================================= --}}
 @can('ofertas.ver')

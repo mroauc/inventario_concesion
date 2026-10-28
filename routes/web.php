@@ -148,6 +148,36 @@ Route::middleware(['auth', 'permission:flujo_caja.ver'])->prefix('flujo-caja')->
 // });
 // // ─────────────────────────────────────────────────────────────────────────────
 
+// ─── FACTURACIÓN ELECTRÓNICA (DTE) ──────────────────────────────────────────
+Route::middleware(['auth'])->prefix('dte')->name('dte.')->group(function () {
+    // Configuración fiscal
+    Route::middleware('permission:dte.configuracion')->group(function () {
+        Route::get('configuracion', [App\Http\Controllers\Dte\ConfiguracionFiscalController::class, 'index'])->name('configuracion.index');
+        Route::get('configuracion/crear', [App\Http\Controllers\Dte\ConfiguracionFiscalController::class, 'create'])->name('configuracion.create');
+        Route::post('configuracion', [App\Http\Controllers\Dte\ConfiguracionFiscalController::class, 'store'])->name('configuracion.store');
+        Route::get('configuracion/{configuracion}', [App\Http\Controllers\Dte\ConfiguracionFiscalController::class, 'show'])->name('configuracion.show');
+        Route::get('configuracion/{configuracion}/editar', [App\Http\Controllers\Dte\ConfiguracionFiscalController::class, 'edit'])->name('configuracion.edit');
+        Route::put('configuracion/{configuracion}', [App\Http\Controllers\Dte\ConfiguracionFiscalController::class, 'update'])->name('configuracion.update');
+    });
+
+    // Certificados digitales
+    Route::middleware('permission:dte.certificados')->group(function () {
+        Route::get('certificados', [App\Http\Controllers\Dte\CertificadoController::class, 'index'])->name('certificados.index');
+        Route::get('certificados/crear', [App\Http\Controllers\Dte\CertificadoController::class, 'create'])->name('certificados.create');
+        Route::post('certificados', [App\Http\Controllers\Dte\CertificadoController::class, 'store'])->name('certificados.store');
+        Route::post('certificados/{certificado}/activar', [App\Http\Controllers\Dte\CertificadoController::class, 'activar'])->name('certificados.activar');
+        Route::delete('certificados/{certificado}', [App\Http\Controllers\Dte\CertificadoController::class, 'destroy'])->name('certificados.destroy');
+    });
+
+    // CAF (Folios)
+    Route::middleware('permission:dte.folios')->group(function () {
+        Route::get('cafs', [App\Http\Controllers\Dte\CafController::class, 'index'])->name('cafs.index');
+        Route::get('cafs/crear', [App\Http\Controllers\Dte\CafController::class, 'create'])->name('cafs.create');
+        Route::post('cafs', [App\Http\Controllers\Dte\CafController::class, 'store'])->name('cafs.store');
+        Route::get('cafs/{caf}', [App\Http\Controllers\Dte\CafController::class, 'show'])->name('cafs.show');
+    });
+});
+
 // ─── STATS PRIVADAS LANDING ───────────────────────────────────────────────────
 Route::get('/roait', [App\Http\Controllers\LandingStatsController::class, 'index']);
 

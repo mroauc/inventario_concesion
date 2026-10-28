@@ -99,6 +99,15 @@ class RolesAndPermissionsSeeder extends Seeder
             'usuarios.eliminar',
             'usuarios.asignar_rol',
 
+            // Facturación Electrónica (DTE)
+            'dte.configuracion',
+            'dte.certificados',
+            'dte.folios',
+            'dte.boletas.ver',
+            'dte.boletas.emitir',
+            'dte.boletas.anular',
+            'dte.consultar',
+
             // Administración (solo super_admin)
             'concesiones.ver',
             'concesiones.crear',
@@ -141,6 +150,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'mensajes.ver', 'mensajes.editar', 'mensajes.eliminar',
             'historial.ver',
             'usuarios.ver', 'usuarios.crear', 'usuarios.editar', 'usuarios.eliminar', 'usuarios.asignar_rol',
+            'dte.configuracion', 'dte.certificados', 'dte.folios',
+            'dte.boletas.ver', 'dte.boletas.emitir', 'dte.boletas.anular', 'dte.consultar',
         ]);
 
         // ─── OPERADOR DE SERVICIO ────────────────────────────────────────────
@@ -153,6 +164,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'servicios.ver',
             'ofertas.ver', 'ofertas.crear', 'ofertas.editar', 'ofertas.eliminar',
             'flujo_caja.ver', 'flujo_caja.operar',
+            'dte.boletas.ver', 'dte.boletas.emitir',
         ]);
 
         // ─── ASIGNAR ROL ADMINISTRADOR A TODOS LOS USUARIOS EXISTENTES ──────
