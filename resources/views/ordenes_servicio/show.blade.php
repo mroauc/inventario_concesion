@@ -11,6 +11,11 @@
                     <a class="btn btn-primary float-right" href="{{ route('ordenes_servicio.edit', $orden->id) }}">
                         Editar Orden
                     </a>
+                    @can('dte.boletas.emitir')
+                    <a class="btn btn-success float-right mr-2" href="{{ route('dte.boletas.create', ['orden_servicio_id' => $orden->id]) }}">
+                        <i class="fas fa-file-invoice mr-1"></i> Emitir Boleta
+                    </a>
+                    @endcan
                     <a class="btn btn-secondary float-right mr-2" href="{{ route('ordenes_servicio.pdf', $orden->id) }}">
                         <i class="fas fa-file-pdf mr-1"></i> Descargar PDF
                     </a>

@@ -211,6 +211,15 @@
             </a>
         </li>
         @endcan
+        @can('dte.boletas.ver')
+        <li class="nav-item">
+            <a href="{{ route('dte.boletas.index') }}"
+               class="nav-link {{ Request::is('dte/boletas*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Boletas</p>
+            </a>
+        </li>
+        @endcan
     </ul>
 </li>
 @endcanany

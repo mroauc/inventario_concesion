@@ -176,6 +176,17 @@ Route::middleware(['auth'])->prefix('dte')->name('dte.')->group(function () {
         Route::post('cafs', [App\Http\Controllers\Dte\CafController::class, 'store'])->name('cafs.store');
         Route::get('cafs/{caf}', [App\Http\Controllers\Dte\CafController::class, 'show'])->name('cafs.show');
     });
+
+    // Boletas electrónicas
+    Route::middleware('permission:dte.boletas.ver')->group(function () {
+        Route::get('boletas', [App\Http\Controllers\Dte\BoletaController::class, 'index'])->name('boletas.index');
+        Route::get('boletas/{boleta}', [App\Http\Controllers\Dte\BoletaController::class, 'show'])->name('boletas.show');
+        Route::get('boletas/{boleta}/pdf', [App\Http\Controllers\Dte\BoletaController::class, 'pdf'])->name('boletas.pdf');
+    });
+    Route::middleware('permission:dte.boletas.emitir')->group(function () {
+        Route::get('boletas-crear', [App\Http\Controllers\Dte\BoletaController::class, 'create'])->name('boletas.create');
+        Route::post('boletas', [App\Http\Controllers\Dte\BoletaController::class, 'store'])->name('boletas.store');
+    });
 });
 
 // ─── STATS PRIVADAS LANDING ───────────────────────────────────────────────────
