@@ -187,6 +187,13 @@ Route::middleware(['auth'])->prefix('dte')->name('dte.')->group(function () {
         Route::get('boletas-crear', [App\Http\Controllers\Dte\BoletaController::class, 'create'])->name('boletas.create');
         Route::post('boletas', [App\Http\Controllers\Dte\BoletaController::class, 'store'])->name('boletas.store');
     });
+
+    // Consulta de estado SII
+    Route::middleware('permission:dte.consultar')->group(function () {
+        Route::get('consulta', [App\Http\Controllers\Dte\DteConsultaController::class, 'index'])->name('consulta.index');
+        Route::post('consulta/{documento}/consultar', [App\Http\Controllers\Dte\DteConsultaController::class, 'consultar'])->name('consulta.consultar');
+        Route::post('consulta/sincronizar', [App\Http\Controllers\Dte\DteConsultaController::class, 'sincronizarTodos'])->name('consulta.sincronizar');
+    });
 });
 
 // ─── STATS PRIVADAS LANDING ───────────────────────────────────────────────────

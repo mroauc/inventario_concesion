@@ -220,6 +220,15 @@
             </a>
         </li>
         @endcan
+        @can('dte.consultar')
+        <li class="nav-item">
+            <a href="{{ route('dte.consulta.index') }}"
+               class="nav-link {{ Request::is('dte/consulta*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Estado SII</p>
+            </a>
+        </li>
+        @endcan
     </ul>
 </li>
 @endcanany
