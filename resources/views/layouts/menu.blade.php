@@ -171,7 +171,7 @@
 {{-- =============================================
      FACTURACION ELECTRONICA (Submenu)
      ============================================= --}}
-@canany(['dte.configuracion', 'dte.certificados', 'dte.folios', 'dte.boletas.ver'])
+@canany(['dte.configuracion', 'dte.certificados', 'dte.folios', 'dte.boletas.ver', 'dte.boletas.emitir'])
 @php
     $dteActivo = Request::is('dte*');
 @endphp
@@ -208,6 +208,15 @@
                class="nav-link {{ Request::is('dte/cafs*') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Folios (CAF)</p>
+            </a>
+        </li>
+        @endcan
+        @can('dte.boletas.emitir')
+        <li class="nav-item">
+            <a href="{{ route('dte.boleta_rapida.create') }}"
+               class="nav-link {{ Request::is('dte/venta-rapida*') ? 'active' : '' }}">
+                <i class="fas fa-bolt nav-icon text-warning"></i>
+                <p>Venta Rapida</p>
             </a>
         </li>
         @endcan

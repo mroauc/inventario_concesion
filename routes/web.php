@@ -186,6 +186,12 @@ Route::middleware(['auth'])->prefix('dte')->name('dte.')->group(function () {
     Route::middleware('permission:dte.boletas.emitir')->group(function () {
         Route::get('boletas-crear', [App\Http\Controllers\Dte\BoletaController::class, 'create'])->name('boletas.create');
         Route::post('boletas', [App\Http\Controllers\Dte\BoletaController::class, 'store'])->name('boletas.store');
+
+        // Venta rapida (boleta sincrona sin orden de servicio)
+        Route::get('venta-rapida', [App\Http\Controllers\Dte\BoletaRapidaController::class, 'create'])->name('boleta_rapida.create');
+        Route::post('venta-rapida', [App\Http\Controllers\Dte\BoletaRapidaController::class, 'store'])->name('boleta_rapida.store');
+        Route::get('venta-rapida/{boleta}/resultado', [App\Http\Controllers\Dte\BoletaRapidaController::class, 'resultado'])->name('boleta_rapida.resultado');
+        Route::get('venta-rapida/{boleta}/pdf', [App\Http\Controllers\Dte\BoletaRapidaController::class, 'pdf'])->name('boleta_rapida.pdf');
     });
 
     // Consulta de estado SII

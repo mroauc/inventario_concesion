@@ -14,14 +14,18 @@ use App\Models\Dte\Certificado;
 use App\Models\Dte\ConfiguracionFiscal;
 use App\Models\Dte\DocumentoTributario;
 use App\Models\Dte\DocumentoTributarioDetalle;
+use App\Models\Dte\EnvioSii;
 use App\Models\OrdenServicio;
 use App\Services\Dte\Folio\CafManager;
 use App\Services\Dte\Folio\FolioAllocator;
+use App\Services\Dte\Sii\SiiAuthClient;
+use App\Services\Dte\Sii\SiiBoletaClient;
 use App\Services\Dte\Tax\TributaryCalculator;
 use App\Services\Dte\Xml\DteXmlBuilder;
 use App\Services\Dte\Xml\TedGenerator;
 use App\Services\Dte\Xml\XmlSigner;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DteService
 {
@@ -31,6 +35,8 @@ class DteService
     private DteXmlBuilder $xmlBuilder;
     private TedGenerator $tedGenerator;
     private XmlSigner $xmlSigner;
+    private SiiAuthClient $authClient;
+    private SiiBoletaClient $boletaClient;
 
     public function __construct(
         TributaryCalculator $calculator,
@@ -38,7 +44,9 @@ class DteService
         CafManager $cafManager,
         DteXmlBuilder $xmlBuilder,
         TedGenerator $tedGenerator,
-        XmlSigner $xmlSigner
+        XmlSigner $xmlSigner,
+        SiiAuthClient $authClient,
+        SiiBoletaClient $boletaClient
     ) {
         $this->calculator = $calculator;
         $this->folioAllocator = $folioAllocator;
@@ -46,6 +54,8 @@ class DteService
         $this->xmlBuilder = $xmlBuilder;
         $this->tedGenerator = $tedGenerator;
         $this->xmlSigner = $xmlSigner;
+        $this->authClient = $authClient;
+        $this->boletaClient = $boletaClient;
     }
 
     public function emitirBoleta(int $concessionId, OrdenServicio $orden, array $items): DocumentoTributario
@@ -66,7 +76,155 @@ class DteService
             return $existente;
         }
 
-        return DB::transaction(function () use ($concessionId, $orden, $items, $config, $certificado, $idempotencyKey) {
+        $receptor = $this->construirReceptor($orden);
+
+        $documento = $this->crearDocumentoTributario(
+            $concessionId,
+            $items,
+            $receptor,
+            $config,
+            $certificado,
+            $idempotencyKey,
+            $orden->id
+        );
+
+        SendBoletaToSiiJob::dispatch($documento->id);
+
+        return $documento;
+    }
+
+    public function emitirBoletaRapida(int $concessionId, array $items, ?array $datosReceptor = null): DocumentoTributario
+    {
+        $config = ConfiguracionFiscal::where('id_concession', $concessionId)
+            ->activa()
+            ->firstOrFail();
+
+        $certificado = Certificado::where('id_concession', $concessionId)
+            ->activo()
+            ->vigente()
+            ->firstOrFail();
+
+        $idempotencyKey = hash('sha256', "{$concessionId}:39:rapida:" . now()->timestamp . ':' . md5(json_encode($items)));
+
+        $existente = DocumentoTributario::where('idempotency_key', $idempotencyKey)->first();
+        if ($existente) {
+            return $existente;
+        }
+
+        $receptor = $this->construirReceptorDesdeArray($datosReceptor);
+
+        $documento = $this->crearDocumentoTributario(
+            $concessionId,
+            $items,
+            $receptor,
+            $config,
+            $certificado,
+            $idempotencyKey,
+            null
+        );
+
+        $this->enviarSincrono($documento, $config, $certificado);
+
+        return $documento->fresh();
+    }
+
+    public function enviarSincrono(
+        DocumentoTributario $documento,
+        ?ConfiguracionFiscal $config = null,
+        ?Certificado $certificado = null
+    ): array {
+        $config = $config ?? ConfiguracionFiscal::where('id_concession', $documento->id_concession)
+            ->activa()
+            ->firstOrFail();
+
+        $certificado = $certificado ?? Certificado::where('id_concession', $documento->id_concession)
+            ->activo()
+            ->vigente()
+            ->firstOrFail();
+
+        $token = $this->authClient->obtenerToken($config, $certificado);
+
+        $certData = $this->xmlSigner->cargarCertificado(
+            $certificado->archivo_completo,
+            $certificado->password_descifrada
+        );
+
+        $resultado = $this->boletaClient->enviar(
+            $config,
+            $token,
+            $certData['rut_titular'],
+            $documento->xml_sobre
+        );
+
+        EnvioSii::create([
+            'id_concession'    => $documento->id_concession,
+            'tipo_envio'       => 'boleta',
+            'documento_id'     => $documento->id,
+            'xml_enviado_hash' => hash('sha256', $documento->xml_sobre),
+            'respuesta_raw'    => json_encode($resultado),
+            'track_id'         => $resultado['track_id'],
+            'status_code'      => $resultado['status_code'],
+            'http_status'      => 200,
+            'intentos'         => 1,
+            'ambiente'         => $config->ambiente,
+        ]);
+
+        if ($resultado['exitoso'] && $resultado['track_id']) {
+            $estadoAnterior = $documento->estado;
+            $documento->update([
+                'estado'          => 'enviado',
+                'track_id'        => $resultado['track_id'],
+                'envio_intentos'  => 1,
+                'ultimo_envio_at' => now(),
+            ]);
+
+            AuditDte::registrar(
+                $documento->id_concession,
+                $documento->id,
+                'envio_sii_sincrono_exitoso',
+                [
+                    'track_id'    => $resultado['track_id'],
+                    'status_code' => $resultado['status_code'],
+                ],
+                $estadoAnterior,
+                'enviado'
+            );
+
+            Log::info('Boleta enviada al SII sincronamente', [
+                'documento_id' => $documento->id,
+                'track_id'     => $resultado['track_id'],
+            ]);
+        } else {
+            $documento->update([
+                'envio_intentos'  => 1,
+                'ultimo_envio_at' => now(),
+                'respuesta_sii'   => $resultado['glosa'],
+            ]);
+
+            AuditDte::registrar(
+                $documento->id_concession,
+                $documento->id,
+                'envio_sii_sincrono_rechazado',
+                [
+                    'status_code' => $resultado['status_code'],
+                    'glosa'       => $resultado['glosa'],
+                ]
+            );
+        }
+
+        return $resultado;
+    }
+
+    private function crearDocumentoTributario(
+        int $concessionId,
+        array $items,
+        ReceptorData $receptor,
+        ConfiguracionFiscal $config,
+        Certificado $certificado,
+        string $idempotencyKey,
+        ?int $ordenServicioId
+    ): DocumentoTributario {
+        return DB::transaction(function () use ($concessionId, $items, $receptor, $config, $certificado, $idempotencyKey, $ordenServicioId) {
             $detalles = $this->construirDetalles($items);
             $impuestos = $this->calculator->calcularDetallesBoleta($detalles);
 
@@ -77,7 +235,6 @@ class DteService
             $this->cafManager->cargar($caf);
 
             $emisor = EmisorData::fromConfiguracion($config);
-            $receptor = $this->construirReceptor($orden);
 
             $boletaData = new BoletaData([
                 'tipo_documento' => 39,
@@ -144,7 +301,7 @@ class DteService
                 'xml_sobre' => $envioDoc->saveXML(),
                 'ted_xml' => $tedXml,
                 'estado' => 'emitido',
-                'orden_servicio_id' => $orden->id,
+                'orden_servicio_id' => $ordenServicioId,
                 'idempotency_key' => $idempotencyKey,
                 'caf_folio_id' => $caf->id,
             ]);
@@ -172,13 +329,12 @@ class DteService
                 [
                     'folio' => $folio,
                     'monto_total' => $impuestos['total'],
-                    'orden_servicio_id' => $orden->id,
+                    'orden_servicio_id' => $ordenServicioId,
+                    'tipo' => $ordenServicioId ? 'orden_servicio' : 'venta_rapida',
                 ],
                 null,
                 'emitido'
             );
-
-            SendBoletaToSiiJob::dispatch($documento->id);
 
             return $documento;
         });
@@ -225,6 +381,21 @@ class DteService
             'direccion' => $cliente->direccion,
             'comuna' => $cliente->comuna ?? null,
             'ciudad' => $cliente->ciudad ?? null,
+        ]);
+    }
+
+    private function construirReceptorDesdeArray(?array $datos): ReceptorData
+    {
+        if (!$datos || empty($datos['rut'])) {
+            return ReceptorData::anonimo();
+        }
+
+        return new ReceptorData([
+            'rut' => $datos['rut'],
+            'razon_social' => $datos['razon_social'] ?? 'Sin Nombre',
+            'direccion' => $datos['direccion'] ?? null,
+            'comuna' => $datos['comuna'] ?? null,
+            'ciudad' => $datos['ciudad'] ?? null,
         ]);
     }
 }
