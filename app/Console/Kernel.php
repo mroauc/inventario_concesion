@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('dte:sync-status')->everyFifteenMinutes()->withoutOverlapping();
+        $schedule->command('dte:enviar-rcof')->dailyAt('23:30')->withoutOverlapping();
     }
 
     /**

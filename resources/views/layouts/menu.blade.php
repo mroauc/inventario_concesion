@@ -237,6 +237,13 @@
                 <p>Estado SII</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('dte.rcof.index') }}"
+               class="nav-link {{ Request::is('dte/rcof*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>RCOF</p>
+            </a>
+        </li>
         @endcan
     </ul>
 </li>

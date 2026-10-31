@@ -200,6 +200,12 @@ Route::middleware(['auth'])->prefix('dte')->name('dte.')->group(function () {
         Route::post('consulta/{documento}/consultar', [App\Http\Controllers\Dte\DteConsultaController::class, 'consultar'])->name('consulta.consultar');
         Route::post('consulta/sincronizar', [App\Http\Controllers\Dte\DteConsultaController::class, 'sincronizarTodos'])->name('consulta.sincronizar');
     });
+
+    // RCOF (Reporte de Consumo de Folios)
+    Route::middleware('permission:dte.consultar')->group(function () {
+        Route::get('rcof', [App\Http\Controllers\Dte\RcofController::class, 'index'])->name('rcof.index');
+        Route::post('rcof/enviar', [App\Http\Controllers\Dte\RcofController::class, 'enviar'])->name('rcof.enviar');
+    });
 });
 
 // ─── STATS PRIVADAS LANDING ───────────────────────────────────────────────────
