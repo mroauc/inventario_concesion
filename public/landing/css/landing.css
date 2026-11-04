@@ -125,8 +125,16 @@ body {
     position: relative;
 }
 
+/* Repuestos agrupados a la derecha: anclar ahí para que no se recorten en móvil */
 .hero-slide--2 {
-    background: linear-gradient(135deg, #0f2244 0%, #1a5276 100%);
+    background-color: #0f2244;
+    background-position: 70% center;
+}
+
+/* La furgoneta queda a la derecha y pegada al borde inferior de la imagen:
+   anclar abajo para que el recorte de cover se haga solo por arriba */
+.hero-slide--3 {
+    background-position: 75% bottom;
 }
 
 .hero-overlay {
@@ -134,6 +142,13 @@ body {
     inset: 0;
     background: rgba(10, 20, 50, 0.65);
 }
+
+/* Oscurece solo el lado del texto y deja la imagen visible a la derecha */
+.hero-overlay--left {
+    background: linear-gradient(90deg, rgba(10, 20, 50, 0.55) 0%, rgba(10, 20, 50, 0.25) 50%, rgba(10, 20, 50, 0) 75%);
+}
+
+.section-services { scroll-margin-top: 80px; }
 
 .hero-content {
     position: relative;
@@ -507,6 +522,7 @@ body {
     .hero-slide { height: 60vh; min-height: 400px; }
     :root { --section-py: 3.5rem; }
     .hero-title { font-size: 1.9rem; }
+    .hero-overlay--left { background: rgba(10, 20, 50, 0.6); }
 }
 
 @media (max-width: 575.98px) {

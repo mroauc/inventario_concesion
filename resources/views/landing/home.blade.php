@@ -6,6 +6,12 @@
     .hero-slide--1 {
         background-image: url("{{ asset('landing/images/empresa_foto.webp') }}");
     }
+    .hero-slide--2 {
+        background-image: url("{{ asset('landing/images/roaval-banner-repuestos.webp') }}");
+    }
+    .hero-slide--3 {
+        background-image: url("{{ asset('landing/images/roaval-banner-azul.webp') }}");
+    }
 </style>
 
 {{-- ═══════════════════════════════════════════════════
@@ -41,7 +47,7 @@
 
             <div class="carousel-item">
                 <div class="hero-slide hero-slide--2">
-                    <div class="hero-overlay"></div>
+                    <div class="hero-overlay hero-overlay--left"></div>
                     <div class="container h-100 d-flex align-items-center">
                         <div class="hero-content text-white">
                             <span class="hero-badge mb-3">Repuestos Originales</span>
@@ -53,6 +59,30 @@
                             <div class="d-flex flex-wrap gap-3 mt-4">
                                 <a href="{{ route('landing.repuestos') }}" class="btn btn-brand-primary btn-lg">
                                     <i class="fas fa-search me-2"></i>Ver Repuestos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="hero-slide hero-slide--3">
+                    <div class="hero-overlay hero-overlay--left"></div>
+                    <div class="container h-100 d-flex align-items-center">
+                        <div class="hero-content text-white">
+                            <span class="hero-badge mb-3">Atención a Domicilio</span>
+                            <h1 class="hero-title">Servicio técnico que llega <strong>hasta tu hogar</strong></h1>
+                            <p class="hero-subtitle">
+                                Especialistas en reparación de electrodomésticos.
+                                <br class="d-none d-md-block">Atención en las provincias de Linares y Cauquenes.
+                            </p>
+                            <div class="d-flex flex-wrap gap-3 mt-4">
+                                <a href="{{ route('landing.contacto') }}" class="btn btn-brand-primary btn-lg">
+                                    <i class="fas fa-calendar-check me-2"></i>Solicitar Servicio
+                                </a>
+                                <a href="#servicios" class="btn btn-outline-light btn-lg">
+                                    Conoce nuestros servicios <i class="fas fa-arrow-right ms-2"></i>
                                 </a>
                             </div>
                         </div>
@@ -97,7 +127,7 @@
 {{-- ═══════════════════════════════════════════════════
     SERVICIOS DESTACADOS
 ════════════════════════════════════════════════════ --}}
-<section class="section-services py-6">
+<section id="servicios" class="section-services py-6">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Nuestros Servicios</h2>
